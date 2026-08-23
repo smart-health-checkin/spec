@@ -105,7 +105,7 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(docTitle)}</title>
 <meta name="description" content="${escapeHtml(docDescription)}" />
-<link rel="stylesheet" href="./smart-design.css" />
+<link rel="stylesheet" href="/assets/smart-design.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css" />
 <style>
   :root {
@@ -391,7 +391,7 @@ ${body}
 </div>
 
 <div data-smart-footer></div>
-<script src="./smart-chrome.js" defer></script>
+<script src="/assets/site-chrome.js" defer></script>
 
 <script type="module">
   // Syntax highlighting via highlight.js (CDN, ESM build)

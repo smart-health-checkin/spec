@@ -4,30 +4,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SITE_DIR="${1:-"$ROOT/_site"}"
 
-rm -rf "$SITE_DIR" "$ROOT/rp-web/dist" "$ROOT/rp-web/dist-wallet"
-mkdir -p "$SITE_DIR/verifier" "$SITE_DIR/wallet"
-
-if [[ -f "$ROOT/.env" ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  . "$ROOT/.env"
-  set +a
-fi
-if [[ -n "${INSTANT_DB_PUBLIC_ID:-}" && -z "${BUN_PUBLIC_INSTANT_APP_ID:-}" ]]; then
-  export BUN_PUBLIC_INSTANT_APP_ID="$INSTANT_DB_PUBLIC_ID"
-fi
-
-(cd "$ROOT/rp-web" && bun run build)
-(cd "$ROOT/rp-web" && bun run build:wallet)
+rm -rf "$SITE_DIR"
+mkdir -p "$SITE_DIR"
 
 for page in \
-  index.html \
   smart-model-explainer.html \
   kiosk-flow-explainer.html \
   wire-protocol-explainer.html \
-  wire-protocol-inspector.html \
-  smart-design.css \
-  smart-chrome.js
+  wire-protocol-inspector.html
 do
   cp "$ROOT/site/$page" "$SITE_DIR/$page"
 done
@@ -41,22 +25,15 @@ cp "$ROOT/rp-web/src/sdk-web-wallet/WALLET-INTEGRATION-PROTOCOL.md" "$SITE_DIR/w
   "Experimental web-wallet listen/respond contract for producing SMART Health Check-in org-iso-mdoc responses from a web app wallet." \
   "./web-wallet-protocol.md" \
   "Web Wallet Protocol Sketch")
+# This repo deploys to smart-health-checkin.org/spec/. The org site
+# (smart-health-checkin.github.io) serves the apex and /assets/ — the design
+# system and the shared chrome every page here loads — and the draft spec is
+# this section's front page.
+cp "$SITE_DIR/spec.html" "$SITE_DIR/index.html"
 bun "$ROOT/scripts/generate-llms-txt.mjs" "$SITE_DIR/llms.txt"
+# llms.txt here is already the full bundle; every section also serves it as llms-full.txt.
+cp "$SITE_DIR/llms.txt" "$SITE_DIR/llms-full.txt"
 cp -R "$ROOT/fixtures" "$SITE_DIR/fixtures"
-cp -R "$ROOT/rp-web/dist/." "$SITE_DIR/verifier/"
-cp -R "$ROOT/rp-web/dist-wallet/." "$SITE_DIR/wallet/"
-
-clean_verifier_alias() {
-  local name="$1"
-  local source="$SITE_DIR/verifier/$name.html"
-  local target_dir="$SITE_DIR/verifier/$name"
-  mkdir -p "$target_dir"
-  sed -e 's#<head>#<head>\n    <base href="../" />#' "$source" > "$target_dir/index.html"
-}
-
-clean_verifier_alias creator
-clean_verifier_alias submit
-clean_verifier_alias wallet-choice
 
 touch "$SITE_DIR/.nojekyll"
 

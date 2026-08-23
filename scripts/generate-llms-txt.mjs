@@ -11,7 +11,6 @@ const outputPath = path.resolve(process.argv[2] ?? path.join(ROOT, "_site", "llm
 // protocol, the demos, and the reference SDK / wallet libraries -- without
 // pulling in transient plans, research notes, or vendored material.
 const HTML_EXPLAINERS = [
-  "site/index.html",
   "site/smart-model-explainer.html",
   "site/kiosk-flow-explainer.html",
   "site/wire-protocol-explainer.html",

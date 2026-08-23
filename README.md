@@ -3,7 +3,7 @@
 A **SMART Health Check-in** prototype: a transport-neutral check-in
 request/response model bound to the W3C Digital Credentials API over direct
 `org-iso-mdoc`. The repo ships an end-to-end demo — Android wallet, web
-verifier, and an in-person kiosk handoff demo — driven by checked-in byte
+verifier — driven by checked-in byte
 fixtures captured from a real Chrome/Android session and exercised by Android,
 TypeScript, and Python test suites that validate request parsing, HPKE-opened
 response bytes, MSO digest binding, and COSE signatures.
@@ -60,14 +60,10 @@ Research notes and archive material under `docs/research/` and
   Start at [`rp-web/src/sdk/README.md`](rp-web/src/sdk/README.md) and
   [`rp-web/src/sdk/react.README.md`](rp-web/src/sdk/react.README.md).
 
-- **Web verifier and kiosk handoff demo.** React app under
-  [`rp-web/`](rp-web/README.md) hosting the same-device verifier and an
-  in-person desktop-to-phone handoff demo (desktop creator ↔ phone submitter
-  over an untrusted realtime mailbox). That handoff is demo/deployment behavior
-  around the same-device verifier page, not a version 1.0 protocol layer. The
-  demo transport sits behind a small provider interface; the shipped provider
-  uses InstantDB rows plus Instant Storage blobs.
-
+- **Demos.** The same-device check-in, the kiosk hand-off, and the demo web
+  wallet live on [smart-health-checkin.org](https://smart-health-checkin.org/)
+  and are built from the `checkin-client` repo; the apps that used to live
+  under `rp-web/` were retired in favour of them.
 - **Android wallet.** Modular Gradle project under
   [`wallet-android/`](wallet-android/README.md) that registers credentials
   with Credential Manager and answers direct mdoc requests carrying SMART
@@ -86,7 +82,7 @@ Research notes and archive material under `docs/research/` and
   barrel.
 
 - **Public site.** Landing page and HTML explainers in
-  [`site/`](site/index.html): the SMART model explainer, the kiosk handoff demo
+  [`site/`](site/): the SMART model explainer, the kiosk handoff demo
   explainer, and a byte-level wire-protocol inspector that fetches the same
   checked-in fixtures the test suites use.
 
@@ -105,7 +101,7 @@ Paths are relative to the deployed Pages base path.
 
 | Relative path | Page |
 | --- | --- |
-| `./` | Landing page (`site/index.html`) |
+| `./` | The draft spec (the landing page lives on smart-health-checkin.org) |
 | `./verifier/` | Same-device verifier |
 | `./verifier/creator/` | Kiosk handoff demo creator (desktop) |
 | `./verifier/submit/` | Kiosk handoff demo submitter (phone) |
