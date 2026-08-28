@@ -126,6 +126,12 @@ class HandlerActivity : ComponentActivity() {
                 "originError=${originResolution.error}",
         )
 
+        // Which delivery mode this request lives in decides how much the wallet
+        // could safely return (~200 K chars on the Intent-extra path, tens of MB
+        // out of band). This sample only logs it; see ResponseDelivery.
+        val delivery = ResponseDelivery.describe(req)
+        Log.i(TAG, "response delivery mode=${delivery.label} budgetChars=${delivery.budgetChars} heapMaxMB=${delivery.heapMaxMB}")
+
         val mdocOption = req.credentialOptions
             .filterIsInstance<GetDigitalCredentialOption>()
             .firstOrNull()
@@ -387,6 +393,7 @@ class HandlerActivity : ComponentActivity() {
                 return
             }
         appendToDebugBundle("smart-response.json", smartResponse.toString(2))
+        val probePad = PayloadProbe.applyPadding(this, smartResponse)
 
         val walletResponse = runCatching {
             SmartHealthMdocResponder.buildCredentialResponse(
@@ -398,24 +405,53 @@ class HandlerActivity : ComponentActivity() {
                 screenState = ScreenState.Error(it.message ?: it::class.java.simpleName)
                 return
             }
-        appendToDebugBundle("wallet-response.digital-credential.json", JSONObject(walletResponse.credentialJson).toString(2))
-        appendToDebugBundle("credential.json", JSONObject(walletResponse.credentialJson).toString(2))
-        appendToDebugBundle("smart-response.expected.json", smartResponse.toString(2))
-        appendBinaryArtifact("device-response.cbor", walletResponse.deviceResponseBytes)
-        appendBinaryArtifact("dcapi-response.cbor", walletResponse.dcapiResponseBytes)
-        appendBinaryArtifact("hpke-enc.bin", walletResponse.hpkeEnc)
-        appendBinaryArtifact("hpke-ciphertext.bin", walletResponse.hpkeCipherText)
-        appendBinaryArtifact("issuer-signed-item-tag24.cbor", walletResponse.issuerSignedItemTag24Bytes)
-        appendBinaryArtifact("value-digest.bin", walletResponse.valueDigest)
-        appendBinaryArtifact("mso.cbor", walletResponse.msoBytes)
-        appendBinaryArtifact("issuer-auth.cbor", walletResponse.issuerAuthBytes)
-        appendBinaryArtifact("device-authentication.cbor", walletResponse.deviceAuthenticationBytes)
+        if (probePad == 0) {
+            // Fixture-capture artifacts; skipped under the payload probe, where they
+            // would re-serialize and write hundreds of MB per trial.
+            appendToDebugBundle("wallet-response.digital-credential.json", JSONObject(walletResponse.credentialJson).toString(2))
+            appendToDebugBundle("credential.json", JSONObject(walletResponse.credentialJson).toString(2))
+            appendToDebugBundle("smart-response.expected.json", smartResponse.toString(2))
+            appendBinaryArtifact("device-response.cbor", walletResponse.deviceResponseBytes)
+            appendBinaryArtifact("dcapi-response.cbor", walletResponse.dcapiResponseBytes)
+            appendBinaryArtifact("hpke-enc.bin", walletResponse.hpkeEnc)
+            appendBinaryArtifact("hpke-ciphertext.bin", walletResponse.hpkeCipherText)
+            appendBinaryArtifact("issuer-signed-item-tag24.cbor", walletResponse.issuerSignedItemTag24Bytes)
+            appendBinaryArtifact("value-digest.bin", walletResponse.valueDigest)
+            appendBinaryArtifact("mso.cbor", walletResponse.msoBytes)
+            appendBinaryArtifact("issuer-auth.cbor", walletResponse.issuerAuthBytes)
+            appendBinaryArtifact("device-authentication.cbor", walletResponse.deviceAuthenticationBytes)
+        }
 
         val resultData = Intent()
         val response = GetCredentialResponse(DigitalCredential(walletResponse.credentialJson))
-        PendingIntentHandler.setGetCredentialResponse(resultData, response)
+        // The three-argument overload lets androidx (>= 1.7.0-alpha01) hand a
+        // response over 200 KB to the caller through a ResultReceiver + file
+        // descriptor instead of the Binder-bound Intent extra, when the caller
+        // (Chrome) offered one. The two-argument overload is deprecated and
+        // always uses the Intent extra; PayloadProbe can force it for testing.
+        val providerReq = providerRequest
+        val legacyPath = PayloadProbe.forceLegacyPath(this) || providerReq == null
+        if (legacyPath) {
+            @Suppress("DEPRECATION")
+            PendingIntentHandler.setGetCredentialResponse(resultData, response)
+        } else {
+            PendingIntentHandler.setGetCredentialResponse(resultData, response, providerReq)
+        }
+        PayloadProbe.logSizes(
+            pad = probePad,
+            path = if (legacyPath) "legacy-2arg" else "large-payload-3arg",
+            receiverOffered = ResponseDelivery.callerAcceptsLargePayloads(providerReq),
+            passedByReceiver = ResponseDelivery.wentOutOfBand(resultData),
+            credentialJson = walletResponse.credentialJson,
+            resultData = resultData,
+        )
         setResult(Activity.RESULT_OK, resultData)
-        finish()
+        try {
+            finish()
+        } catch (t: Throwable) {
+            PayloadProbe.logFinishFailure(probePad, t)
+            throw t
+        }
     }
 
     private fun finishWithCancel() {

@@ -1,0 +1,52 @@
+// Spike: a native Android relying party that asks the wallet for a SMART Health
+// Check-in directly through Credential Manager — no browser in the loop.
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+}
+
+android {
+    namespace "org.smarthealthit.checkin.rp"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "org.smarthealthit.checkin.rp"
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName "0.1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+}
+
+dependencies {
+    implementation project(":smart-checkin-mdoc")           // CBOR, P-256, HPKE open, SessionTranscript
+    implementation "androidx.credentials:credentials:1.7.0-alpha03"
+    // The verifier-side Digital Credentials call is always routed to the Play
+    // services provider, which this artifact declares in its manifest.
+    implementation "androidx.credentials:credentials-play-services-auth:1.7.0-alpha03"
+    implementation "androidx.activity:activity-ktx:1.10.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.7"
+    implementation "androidx.browser:browser:1.8.0"          // Custom Tabs probe
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "androidx.credentials:credentials:1.7.0-alpha03"
+    }
+}

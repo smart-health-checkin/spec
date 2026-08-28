@@ -210,6 +210,35 @@ object SmartMdocCrypto {
         return HpkeSealResult(enc, cipherText)
     }
 
+    /**
+     * Verifier side of [hpkeSeal]: open a `dcapi` response with the recipient
+     * key pair whose public half was sent in `encryptionInfo`. `info` must be
+     * the same SessionTranscript bytes the wallet used, which for an
+     * app-invoked request depends on the origin string the wallet derived for
+     * the calling app.
+     */
+    fun hpkeOpen(
+        enc: ByteArray,
+        cipherText: ByteArray,
+        recipientKeyPair: KeyPair,
+        info: ByteArray,
+    ): ByteArray {
+        require(enc.size == 1 + 2 * P256_SIZE && enc[0] == 0x04.toByte()) { "enc must be an uncompressed P-256 point" }
+        val ephemeralPublic = publicKeyFromCose(
+            mapOf(-2L to enc.copyOfRange(1, 1 + P256_SIZE), -3L to enc.copyOfRange(1 + P256_SIZE, enc.size)),
+        )
+        val recipientRaw = rawUncompressed(recipientKeyPair.public as ECPublicKey)
+        val dh = ecdh(recipientKeyPair.private, ephemeralPublic)
+        val context = hpkeContext(dh, enc, recipientRaw, info)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(
+            Cipher.DECRYPT_MODE,
+            SecretKeySpec(context.key, "AES"),
+            GCMParameterSpec(128, hpkeNonce(context.baseNonce)),
+        )
+        return cipher.doFinal(cipherText)
+    }
+
     private fun hpkeContext(
         dh: ByteArray,
         enc: ByteArray,
