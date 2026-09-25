@@ -71,6 +71,7 @@ class HandlerActivity : ComponentActivity() {
                     org.json.JSONObject(assets.open(ReferencePatients.assetPath(referencePatient)).bufferedReader().use { it.readText() }),
                     ReferencePatients.labels[referencePatient] ?: "Reference patient",
                 ),
+                sourceLabel = "the synthetic reference patient ${ReferencePatients.labels[referencePatient] ?: referencePatient}",
             )
     }
     private var runId: String = "run-${Instant.now().toEpochMilli()}"

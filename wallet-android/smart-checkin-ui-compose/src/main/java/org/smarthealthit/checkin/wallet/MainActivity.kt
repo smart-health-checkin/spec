@@ -1353,7 +1353,6 @@ private fun ConsentScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         HeaderCard(request)
-        RequestCarrierCheckCard(request.requestCarrierDebug)
 
         Text(
             text = "Choose what to share",
@@ -1420,13 +1419,13 @@ private fun HeaderCard(request: VerifiedRequest) {
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = "Sample Health Android Demo",
+                    text = "SMART Health Check-in Wallet",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Ink,
                 )
                 Text(
-                    text = "Native Android sample holder app",
+                    text = "Reference wallet with synthetic patients",
                     style = MaterialTheme.typography.bodyMedium,
                     color = AppColors.Muted,
                 )
@@ -1436,7 +1435,7 @@ private fun HeaderCard(request: VerifiedRequest) {
         Spacer(Modifier.height(22.dp))
 
         Text(
-            text = "Share sample health information",
+            text = "A practice is asking for your health information",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = AppColors.Ink,
@@ -1448,7 +1447,7 @@ private fun HeaderCard(request: VerifiedRequest) {
             request.readerAuth.present ->
                 "The verifier sent readerAuth, but its signature did not verify. Review carefully before sharing."
             else ->
-                "This request did not include readerAuth; the browser-provided origin is shown below."
+                "Check that you recognize the website below before sharing."
         }
         Text(
             text = readerAuthText,
@@ -1459,27 +1458,6 @@ private fun HeaderCard(request: VerifiedRequest) {
         Spacer(Modifier.height(18.dp))
 
         VerifierStrip(request.verifierOrigin, request.readerAuth)
-    }
-}
-
-@Composable
-private fun RequestCarrierCheckCard(debug: SmartRequestCarrierDebug) {
-    ElevatedPanel {
-        Text(
-            text = "SMART request JSON",
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            color = AppColors.Ink,
-        )
-        Spacer(Modifier.height(12.dp))
-        DebugLine("requestInfo", if (debug.requestInfoPresent) "present" else "absent")
-        DebugLine(
-            "claim",
-            claimPresenceLabel(debug),
-        )
-        if (debug.requestInfoPresent && debug.companionPresent) {
-            DebugLine("agreement", carrierJsonMatchLabel(debug))
-        }
     }
 }
 

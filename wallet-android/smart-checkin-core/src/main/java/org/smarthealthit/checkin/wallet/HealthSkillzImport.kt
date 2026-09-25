@@ -178,6 +178,8 @@ object ImportedHealthRecordsRepository {
 
 class ImportedFhirWalletStore(
     private val records: ImportedHealthRecords,
+    /** Where the records came from, as shown to the patient ("Matched from …"). */
+    private val sourceLabel: String = "imported Health Skillz records",
 ) : SmartHealthWalletStore {
     override fun resolveItems(items: List<RequestItem>): List<RequestItemResolution> {
         return items.map { item ->
@@ -226,7 +228,7 @@ class ImportedFhirWalletStore(
                     availability = WalletItemAvailability.Unavailable,
                     candidates = emptyList(),
                     matchSummary = "No matching records found",
-                    detail = "Imported Health Skillz records are treated as a US Core-derived patient record set for this demo.",
+                    detail = "Nothing in $sourceLabel matches this request.",
                     statusIfShared = RequestItemStatusCode.Unavailable,
                 )
             } else {
@@ -235,7 +237,7 @@ class ImportedFhirWalletStore(
                     availability = WalletItemAvailability.Available,
                     candidates = candidates,
                     matchSummary = "${candidates.size} matching ${if (candidates.size == 1) "record" else "records"} available",
-                    detail = "Matched from imported Health Skillz records.",
+                    detail = "Matched from $sourceLabel.",
                 )
             }
         }
