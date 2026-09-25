@@ -181,7 +181,7 @@ class ImportedFhirWalletStore(
 ) : SmartHealthWalletStore {
     override fun resolveItems(items: List<RequestItem>): List<RequestItemResolution> {
         return items.map { item ->
-            val mediaType = item.acceptedMediaTypes.firstOrNull { it == "application/fhir+json" }
+            val mediaType = preferredMediaType(item)
             if (mediaType == null) {
                 return@map RequestItemResolution(
                     itemId = item.id,
@@ -252,6 +252,12 @@ class ImportedFhirWalletStore(
             )
         }
         val resources = withReferencedResources(selectedCandidates.mapNotNull { it.value }.map { JSONObject(it.toString()) })
+        if (preferredMediaType(item) == SMART_HEALTH_CARD) {
+            return SmartHealthWalletArtifact(
+                mediaType = SMART_HEALTH_CARD,
+                value = JSONObject().put("verifiableCredential", JSONArray().put(TestIssuerHealthCards.mint(resources))),
+            )
+        }
         val value = JSONObject()
             .put("resourceType", "Bundle")
             .put("type", "collection")
@@ -269,6 +275,15 @@ class ImportedFhirWalletStore(
     }
 
     override fun prefillQuestionnaireAnswers(items: List<RequestItem>): Map<String, Any> = emptyMap()
+
+    /**
+     * The first accepted media type this wallet can produce. Forms are always
+     * FHIR JSON; for records, a SMART Health Card signed by the connectathon test
+     * issuer is produced when the item lists it before FHIR JSON.
+     */
+    private fun preferredMediaType(item: RequestItem): String? = item.acceptedMediaTypes.firstOrNull {
+        it == FHIR_JSON || (it == SMART_HEALTH_CARD && item.kind != RequestKind.Questionnaire)
+    }
 
     /**
      * Profile semantics (spec §5.4.1, §5.5). A resource that declares profiles in
@@ -617,6 +632,8 @@ class ImportedFhirWalletStore(
 
     private companion object {
         private const val US_CORE_CANONICAL = "http://hl7.org/fhir/us/core"
+        private const val FHIR_JSON = "application/fhir+json"
+        private const val SMART_HEALTH_CARD = "application/smart-health-card"
         private val UUID_PATTERN = Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
         private val BROAD_US_CORE_RESOURCE_TYPES = linkedSetOf(
             "Patient",

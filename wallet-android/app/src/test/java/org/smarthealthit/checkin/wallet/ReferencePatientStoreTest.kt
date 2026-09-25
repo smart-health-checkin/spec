@@ -97,4 +97,36 @@ class ReferencePatientStoreTest {
         assertEquals(WalletItemAvailability.Unsupported, mystery.availability)
         assertEquals(RequestItemStatusCode.Unsupported, mystery.statusIfShared)
     }
+
+    @Test
+    fun smartHealthCardIsMintedWhenTheItemPrefersIt() {
+        val item = items("o6-smart-health-card").single()
+        val resolution = store.resolveItems(listOf(item)).single()
+        assertEquals(WalletItemAvailability.Available, resolution.availability)
+        val artifact = store.buildArtifact(item, resolution.candidates, emptyMap())
+        assertEquals("application/smart-health-card", artifact.mediaType)
+        val jws = artifact.value.getJSONArray("verifiableCredential").getString(0)
+        val parts = jws.split(".")
+        assertEquals(3, parts.size)
+        val header = JSONObject(String(java.util.Base64.getUrlDecoder().decode(parts[0])))
+        assertEquals("DEF", header.getString("zip"))
+        assertEquals("ES256", header.getString("alg"))
+        // Inflate the payload and check the bundle carries the immunizations with resource:N references.
+        val inflater = java.util.zip.Inflater(true)
+        inflater.setInput(java.util.Base64.getUrlDecoder().decode(parts[1]))
+        val out = java.io.ByteArrayOutputStream()
+        val buf = ByteArray(4096)
+        while (!inflater.finished()) out.write(buf, 0, inflater.inflate(buf))
+        val payload = JSONObject(out.toString("UTF-8"))
+        assertEquals(TestIssuerHealthCards.ISSUER, payload.getString("iss"))
+        val entries = payload.getJSONObject("vc").getJSONObject("credentialSubject").getJSONObject("fhirBundle").getJSONArray("entry")
+        assertEquals(3, entries.length())
+        assertEquals("resource:0", entries.getJSONObject(0).getString("fullUrl"))
+        assertEquals("Immunization", entries.getJSONObject(0).getJSONObject("resource").getString("resourceType"))
+        // Signature is raw r||s, 64 bytes, and verifies with the published public key.
+        val sig = java.util.Base64.getUrlDecoder().decode(parts[2])
+        assertEquals(64, sig.size)
+        // Left for cross-checking with the web verifier (connectathon testing-ehr).
+        File("build/minted-health-card.jws").writeText(jws)
+    }
 }

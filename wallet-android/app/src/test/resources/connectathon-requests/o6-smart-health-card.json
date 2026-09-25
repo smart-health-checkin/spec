@@ -1,0 +1,25 @@
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "replace-with-a-unique-id",
+  "purpose": "Pre-visit check-in",
+  "fhirVersions": [
+    "4.0.1"
+  ],
+  "items": [
+    {
+      "id": "immunizations",
+      "title": "Immunization record",
+      "content": {
+        "kind": "selection.fhir",
+        "profiles": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization"
+        ]
+      },
+      "accept": [
+        "application/smart-health-card",
+        "application/fhir+json"
+      ]
+    }
+  ]
+}
