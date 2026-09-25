@@ -36,6 +36,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.ui.semantics.Role
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -108,6 +110,7 @@ class MainActivity : ComponentActivity() {
     private var importedRecords: ImportedHealthRecords? by mutableStateOf(null)
     private var importedSummary: ImportedHealthRecordsSummary? by mutableStateOf(null)
     private var importState: ImportState by mutableStateOf(ImportState.Idle)
+    private var referencePatient: String by mutableStateOf(ReferencePatients.ARIA)
 
     private val importLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) importHealthRecords(uri)
@@ -123,6 +126,8 @@ class MainActivity : ComponentActivity() {
             .onFailure { Log.w(TAG, "failed to load imported records", it) }
             .getOrNull()
         importedSummary = importedRecords?.summary()
+        referencePatient = getSharedPreferences(ReferencePatients.PREFS, MODE_PRIVATE)
+            .getString(ReferencePatients.PREF_KEY, ReferencePatients.ARIA) ?: ReferencePatients.ARIA
 
         setContent {
             SampleHealthTheme {
@@ -134,6 +139,12 @@ class MainActivity : ComponentActivity() {
                     onRegister = ::registerWithCredentialManager,
                     onImportRecords = ::openImportPicker,
                     onClearImportedRecords = ::clearImportedRecords,
+                    referencePatient = referencePatient,
+                    onReferencePatientChange = { key ->
+                        referencePatient = key
+                        getSharedPreferences(ReferencePatients.PREFS, MODE_PRIVATE).edit()
+                            .putString(ReferencePatients.PREF_KEY, key).apply()
+                    },
                     onClose = { finish() },
                 )
             }
@@ -611,6 +622,8 @@ private fun HomeScreen(
     onRegister: () -> Unit,
     onImportRecords: () -> Unit,
     onClearImportedRecords: () -> Unit,
+    referencePatient: String,
+    onReferencePatientChange: (String) -> Unit,
     onClose: () -> Unit,
 ) {
     Scaffold(
@@ -677,7 +690,7 @@ private fun HomeScreen(
                 Spacer(Modifier.height(8.dp))
                 if (importedSummary == null) {
                     Text(
-                        text = "No imported records. Check-in responses will use bundled demo data.",
+                        text = "No imported records. Check-in responses use the reference patient below.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = AppColors.Muted,
                     )
@@ -730,7 +743,7 @@ private fun HomeScreen(
                         enabled = importState !is ImportState.Pending,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text("Use bundled demo data")
+                        Text("Use the reference patient")
                     }
                 }
             }
@@ -741,24 +754,34 @@ private fun HomeScreen(
 
             ElevatedPanel {
                 Text(
-                    text = "Bundled demo data",
+                    text = "Reference patient",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = AppColors.Ink,
                 )
                 Spacer(Modifier.height(8.dp))
-                listOf(
-                    "carin-coverage.json — CARIN-IG Coverage",
-                    "clinical-history-bundle.json — US Core clinical history bundle",
-                    "migraine-questionnaire.json — Chronic Migraine 3-month follow-up",
-                    "migraine-autofill-values.json — prefill answers",
-                    "sbc-insurance-plan.json — Summary of Benefits and Coverage",
-                ).forEach { line ->
-                    Text(
-                        text = line,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.Muted,
-                    )
+                Text(
+                    text = "The synthetic patient this wallet answers as when no records are imported. The same patients as the SMART Testing Wallet on the web.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = AppColors.Muted,
+                )
+                Spacer(Modifier.height(8.dp))
+                ReferencePatients.labels.forEach { (key, label) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = referencePatient == key,
+                                onClick = { onReferencePatientChange(key) },
+                                role = Role.RadioButton,
+                            )
+                            .padding(vertical = 4.dp),
+                    ) {
+                        RadioButton(selected = referencePatient == key, onClick = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(text = label, style = MaterialTheme.typography.bodyLarge, color = AppColors.Ink)
+                    }
                 }
             }
 

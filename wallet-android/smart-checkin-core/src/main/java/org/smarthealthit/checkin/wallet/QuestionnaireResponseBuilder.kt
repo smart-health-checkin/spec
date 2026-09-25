@@ -20,8 +20,15 @@ object QuestionnaireResponseBuilder {
             .put("status", "completed")
             .put("authored", authored.toString())
 
+        // Echo the requested canonical exactly, including any |version (spec §5.5).
+        // Only fall back to the Questionnaire's own url|version when the request
+        // didn't name one.
+        val requestedCanonical = requestItem.meta.optJSONObject("content")
+            ?.optString("questionnaireCanonical")?.takeIf { it.isNotBlank() }
+        if (requestedCanonical != null) response.put("questionnaire", requestedCanonical)
+
         if (questionnaire != null) {
-            questionnaireReference(questionnaire)?.let { response.put("questionnaire", it) }
+            if (requestedCanonical == null) questionnaireReference(questionnaire)?.let { response.put("questionnaire", it) }
             response.put("item", buildQuestionnaireItems(questionnaire.optJSONArray("item"), values))
         }
 

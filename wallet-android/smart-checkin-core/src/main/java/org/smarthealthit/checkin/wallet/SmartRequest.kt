@@ -56,7 +56,20 @@ object SmartRequestAdapter {
             out += when (content.optString("kind")) {
                 "form.fhir" -> parseQuestionnaireItem(id, item, content, accept)
                 "selection.fhir" -> parseFhirResourcesItem(id, item, content, accept)
-                else -> error("items[$i].content.kind must be selection.fhir or form.fhir")
+                else -> {
+                    // An extension selector kind (spec §5.4.3). Keep the item so the
+                    // wallet can answer it "unsupported" and still serve the others.
+                    val kind = content.optString("kind")
+                    require(kind.isNotBlank()) { "items[$i].content.kind must be a non-empty string" }
+                    RequestItem(
+                        id = id,
+                        title = item.optString("title"),
+                        subtitle = "Selector kind \"$kind\" is not supported by this wallet",
+                        kind = RequestKind.Unknown,
+                        meta = JSONObject(item.toString()),
+                        acceptedMediaTypes = accept,
+                    )
+                }
             }
         }
         return out

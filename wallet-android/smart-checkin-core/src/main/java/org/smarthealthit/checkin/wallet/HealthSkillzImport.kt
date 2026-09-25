@@ -219,7 +219,7 @@ class ImportedFhirWalletStore(
                 )
             }
 
-            val candidates = candidatesForResourceTypes(resourceTypes)
+            val candidates = candidatesForResourceTypes(resourceTypes).filter { matchesProfileSelectors(item, it.value) }
             if (candidates.isEmpty()) {
                 RequestItemResolution(
                     itemId = item.id,
@@ -251,7 +251,7 @@ class ImportedFhirWalletStore(
                 value = QuestionnaireResponseBuilder.build(item, questionnaireAnswers),
             )
         }
-        val resources = selectedCandidates.mapNotNull { it.value }.map { JSONObject(it.toString()) }
+        val resources = withReferencedResources(selectedCandidates.mapNotNull { it.value }.map { JSONObject(it.toString()) })
         val value = JSONObject()
             .put("resourceType", "Bundle")
             .put("type", "collection")
@@ -259,7 +259,9 @@ class ImportedFhirWalletStore(
                 "entry",
                 JSONArray().also { entries ->
                     resources.forEach { resource ->
-                        entries.put(JSONObject().put("resource", resource))
+                        val entry = JSONObject()
+                        fullUrlFor(resource)?.let { entry.put("fullUrl", it) }
+                        entries.put(entry.put("resource", resource))
                     }
                 },
             )
@@ -267,6 +269,68 @@ class ImportedFhirWalletStore(
     }
 
     override fun prefillQuestionnaireAnswers(items: List<RequestItem>): Map<String, Any> = emptyMap()
+
+    /**
+     * Profile semantics (spec §5.4.1, §5.5). A resource that declares profiles in
+     * meta.profile must match a requested profile (unversioned request: any
+     * version; versioned: exact) or sit in a requested profile family.
+     * Resources with no declared profiles, such as imported records, fall back to
+     * the resource-type guess made by requestedResourceTypes.
+     */
+    private fun matchesProfileSelectors(item: RequestItem, resource: JSONObject?): Boolean {
+        if (resource == null) return false
+        val content = item.meta.optJSONObject("content") ?: return true
+        val wantProfiles = stringValues(content.opt("profiles"))
+        val wantFamilies = stringValues(content.opt("profilesFrom")).map { it.substringBefore('|').trimEnd('/') }
+        if (wantProfiles.isEmpty() && wantFamilies.isEmpty()) return true
+        val declared = stringValues(resource.optJSONObject("meta")?.opt("profile"))
+        if (declared.isEmpty()) return true
+        return declared.any { have ->
+            val haveUrl = have.substringBefore('|')
+            wantProfiles.any { want ->
+                haveUrl == want.substringBefore('|') && (!want.contains('|') || have == want)
+            } || wantFamilies.any { family -> haveUrl.startsWith("$family/StructureDefinition/") }
+        }
+    }
+
+    private fun fullUrlFor(resource: JSONObject): String? {
+        val id = resource.optString("id")
+        return when {
+            id.isBlank() -> null
+            UUID_PATTERN.matches(id) -> "urn:uuid:$id"
+            else -> "${resource.optString("resourceType")}/$id"
+        }
+    }
+
+    /** Add resources the selection references (prescriber, payer, ...), except the Patient. */
+    private fun withReferencedResources(selected: List<JSONObject>): List<JSONObject> {
+        val byFullUrl = LinkedHashMap<String, JSONObject>()
+        records.providers.forEach { provider ->
+            provider.fhir.values.flatten().forEach { r -> fullUrlFor(r)?.let { byFullUrl[it] = r } }
+        }
+        val out = LinkedHashMap<String, JSONObject>()
+        selected.forEachIndexed { i, r -> out[fullUrlFor(r) ?: "selected-$i"] = r }
+        val queue = ArrayDeque(selected)
+        while (queue.isNotEmpty()) {
+            collectReferences(queue.removeFirst()).forEach { ref ->
+                val target = byFullUrl[ref] ?: return@forEach
+                if (target.optString("resourceType") == "Patient" || out.containsKey(ref)) return@forEach
+                val copy = JSONObject(target.toString())
+                out[ref] = copy
+                queue.addLast(copy)
+            }
+        }
+        return out.values.toList()
+    }
+
+    private fun collectReferences(value: Any?): List<String> = when (value) {
+        is JSONObject -> value.keys().asSequence().flatMap { key ->
+            val v = value.opt(key)
+            if (key == "reference" && v is String) sequenceOf(v) else collectReferences(v).asSequence()
+        }.toList()
+        is JSONArray -> (0 until value.length()).flatMap { collectReferences(value.opt(it)) }
+        else -> emptyList()
+    }
 
     private fun candidatesForResourceTypes(resourceTypes: Set<String>): List<WalletCandidate> {
         val out = mutableListOf<WalletCandidate>()
@@ -295,8 +359,10 @@ class ImportedFhirWalletStore(
             .flatMap(::resourceTypesForProfile)
             .toSet()
         val profileFamilies = stringValues(content?.opt("profilesFrom")).map { it.substringBefore('|').lowercase() }
+        // resourceTypes narrows any profile selector rather than adding to it (spec §5.4.1);
+        // matchesProfileSelectors then applies the profiles themselves.
+        if (explicitTypes.isNotEmpty()) return explicitTypes
         val requested = linkedSetOf<String>()
-        requested += explicitTypes
         requested += profileTypes
         if (profileFamilies.any { it == US_CORE_CANONICAL }) requested += BROAD_US_CORE_RESOURCE_TYPES
         if (requested.isNotEmpty()) return requested
@@ -551,6 +617,7 @@ class ImportedFhirWalletStore(
 
     private companion object {
         private const val US_CORE_CANONICAL = "http://hl7.org/fhir/us/core"
+        private val UUID_PATTERN = Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
         private val BROAD_US_CORE_RESOURCE_TYPES = linkedSetOf(
             "Patient",
             "RelatedPerson",
@@ -655,5 +722,60 @@ private fun stringValues(value: Any?): List<String> {
         }
         is JSONObject -> listOf(value.optString("canonical")).filter { it.isNotBlank() }
         else -> emptyList()
+    }
+}
+
+
+/**
+ * The reference wallet's bundled synthetic patients, the same ones the SMART
+ * Testing Wallet serves (connectathon repo, testing-wallet/data/). Loaded into an
+ * ImportedFhirWalletStore so matching works the same way as for imported records.
+ */
+object ReferencePatients {
+    const val PREFS = "reference-patients"
+    const val PREF_KEY = "patient"
+    const val ARIA = "aria"
+    const val LARGE = "large"
+
+    val labels = linkedMapOf(
+        ARIA to "Aria Test",
+        LARGE to "Aria Test, large record (over 2 MB)",
+    )
+
+    fun assetPath(key: String): String = when (key) {
+        LARGE -> "reference-patients/large-record.json"
+        else -> "reference-patients/aria-test.json"
+    }
+
+    fun fromBundle(bundle: JSONObject, label: String): ImportedHealthRecords {
+        val fhir = linkedMapOf<String, MutableList<JSONObject>>()
+        var patientName: String? = null
+        var birthDate: String? = null
+        jsonObjectItems(bundle.optJSONArray("entry")).forEach { entry ->
+            val resource = entry.optJSONObject("resource") ?: return@forEach
+            val type = resource.optString("resourceType")
+            if (type.isBlank()) return@forEach
+            fhir.getOrPut(type) { mutableListOf() }.add(JSONObject(resource.toString()))
+            if (type == "Patient") {
+                val name = resource.optJSONArray("name")?.optJSONObject(0)
+                patientName = listOfNotNull(
+                    name?.optJSONArray("given")?.optString(0),
+                    name?.optString("family"),
+                ).joinToString(" ").ifBlank { null }
+                birthDate = resource.optString("birthDate").ifBlank { null }
+            }
+        }
+        return ImportedHealthRecords(
+            importedAt = Instant.now().toString(),
+            providers = listOf(
+                ImportedProviderRecords(
+                    provider = label,
+                    patientDisplayName = patientName,
+                    patientBirthDate = birthDate,
+                    fetchedAt = null,
+                    fhir = fhir,
+                ),
+            ),
+        )
     }
 }

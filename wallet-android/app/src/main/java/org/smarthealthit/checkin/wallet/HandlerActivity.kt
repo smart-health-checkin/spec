@@ -57,12 +57,21 @@ class HandlerActivity : ComponentActivity() {
     private val selectedItems = mutableStateMapOf<String, Boolean>()
     private val selectedCandidates = mutableStateMapOf<String, Set<String>>()
     private val questionnaireAnswers = mutableStateMapOf<String, Any>()
+    private val referencePatient: String by lazy {
+        getSharedPreferences(ReferencePatients.PREFS, MODE_PRIVATE)
+            .getString(ReferencePatients.PREF_KEY, ReferencePatients.ARIA) ?: ReferencePatients.ARIA
+    }
     private val walletStoreMode: String by lazy {
-        if (ImportedHealthRecordsRepository.load(filesDir) != null) "imported-health-skillz" else "bundled-demo"
+        if (ImportedHealthRecordsRepository.load(filesDir) != null) "imported-health-skillz" else "reference-patient-$referencePatient"
     }
     private val walletStore: SmartHealthWalletStore by lazy {
         ImportedHealthRecordsRepository.load(filesDir)?.let(::ImportedFhirWalletStore)
-            ?: DemoWalletStore.fromAssets(assets)
+            ?: ImportedFhirWalletStore(
+                ReferencePatients.fromBundle(
+                    org.json.JSONObject(assets.open(ReferencePatients.assetPath(referencePatient)).bufferedReader().use { it.readText() }),
+                    ReferencePatients.labels[referencePatient] ?: "Reference patient",
+                ),
+            )
     }
     private var runId: String = "run-${Instant.now().toEpochMilli()}"
 
