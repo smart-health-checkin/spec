@@ -1,5 +1,12 @@
 # Wallet integration protocol
 
+> **Superseded for implementers.** The current web wallet hand-off is published at
+> <https://smart-health-checkin.org/connectathon/web-wallet-handoff.html>, and the
+> reference web wallet is the SMART Testing Wallet at
+> <https://smart-health-checkin.org/connectathon/testing-wallet/>
+> ([source](https://github.com/smart-health-checkin/connectathon/tree/main/testing-wallet)).
+> This file documents the earlier rp-web prototype and is kept for history.
+
 This document describes the integration contract used by the web-wallet side
 surface. It is not a new SMART Health Check-in wire protocol: the outer
 postMessage envelope is a generic Digital Credentials web-wallet shim, while the
