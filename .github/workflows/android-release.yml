@@ -29,6 +29,8 @@ jobs:
         run: |
           mkdir -p ~/.android
           echo "${{ secrets.ANDROID_DEBUG_KEYSTORE_B64 }}" | base64 -d > ~/.android/debug.keystore
+      - name: Unit tests
+        run: ./gradlew test -Pskip-matcher
       - name: Build
         # The matcher (app/src/main/assets/matcher.wasm) is committed, so the
         # nightly Rust toolchain isn't needed here. Rebuild it locally with
