@@ -25,7 +25,9 @@ import androidx.credentials.provider.SigningInfoCompat
 import androidx.credentials.registry.provider.selectedEntryId
 import androidx.lifecycle.lifecycleScope
 import org.json.JSONArray
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
 import java.security.MessageDigest
@@ -388,50 +390,55 @@ class HandlerActivity : ComponentActivity() {
         }
 
         screenState = ScreenState.Submitting("Building response", "Packaging selected data as an encrypted mdoc response.")
-        val smartResponse = runCatching {
-            SmartCheckinResponseFactory.build(
-                request = req,
-                selectedItems = selectedItems.toMap(),
-                questionnaireAnswers = questionnaireAnswers.toMap(),
-                walletStore = walletStore,
-                resolutions = itemResolutions,
-                selectedCandidates = selectedCandidates.toMap(),
-            )
-        }.onFailure { Log.e(TAG, "SMART response build failed", it) }
-            .getOrElse {
-                screenState = ScreenState.Error(it.message ?: it::class.java.simpleName)
-                return
-            }
-        appendToDebugBundle("smart-response.json", smartResponse.toString(2))
-        val probePad = PayloadProbe.applyPadding(this, smartResponse)
+        // Building, signing, and encrypting a large record takes seconds, so it
+        // runs off the main thread; only handing the result back runs on it.
+        lifecycleScope.launch {
+            val built = withContext(Dispatchers.Default) {
+                val smartResponse = runCatching {
+                    SmartCheckinResponseFactory.build(
+                        request = req,
+                        selectedItems = selectedItems.toMap(),
+                        questionnaireAnswers = questionnaireAnswers.toMap(),
+                        walletStore = walletStore,
+                        resolutions = itemResolutions,
+                        selectedCandidates = selectedCandidates.toMap(),
+                    )
+                }.onFailure { Log.e(TAG, "SMART response build failed", it) }
+                    .getOrElse { return@withContext Result.failure(it) }
+                appendToDebugBundle("smart-response.json", smartResponse.toString(2))
+                val probePad = PayloadProbe.applyPadding(this@HandlerActivity, smartResponse)
 
-        val walletResponse = runCatching {
-            SmartHealthMdocResponder.buildCredentialResponse(
-                request = mdocRequest,
-                smartResponse = smartResponse,
-            )
-        }.onFailure { Log.e(TAG, "DeviceResponse build failed", it) }
-            .getOrElse {
-                screenState = ScreenState.Error(it.message ?: it::class.java.simpleName)
-                return
+                val walletResponse = runCatching {
+                    SmartHealthMdocResponder.buildCredentialResponse(
+                        request = mdocRequest,
+                        smartResponse = smartResponse,
+                    )
+                }.onFailure { Log.e(TAG, "DeviceResponse build failed", it) }
+                    .getOrElse { return@withContext Result.failure(it) }
+                if (probePad == 0) {
+                    // Fixture-capture artifacts; skipped under the payload probe, where they
+                    // would re-serialize and write hundreds of MB per trial.
+                    appendToDebugBundle("wallet-response.digital-credential.json", JSONObject(walletResponse.credentialJson).toString(2))
+                    appendToDebugBundle("credential.json", JSONObject(walletResponse.credentialJson).toString(2))
+                    appendToDebugBundle("smart-response.expected.json", smartResponse.toString(2))
+                    appendBinaryArtifact("device-response.cbor", walletResponse.deviceResponseBytes)
+                    appendBinaryArtifact("dcapi-response.cbor", walletResponse.dcapiResponseBytes)
+                    appendBinaryArtifact("hpke-enc.bin", walletResponse.hpkeEnc)
+                    appendBinaryArtifact("hpke-ciphertext.bin", walletResponse.hpkeCipherText)
+                    appendBinaryArtifact("issuer-signed-item-tag24.cbor", walletResponse.issuerSignedItemTag24Bytes)
+                    appendBinaryArtifact("value-digest.bin", walletResponse.valueDigest)
+                    appendBinaryArtifact("mso.cbor", walletResponse.msoBytes)
+                    appendBinaryArtifact("issuer-auth.cbor", walletResponse.issuerAuthBytes)
+                    appendBinaryArtifact("device-authentication.cbor", walletResponse.deviceAuthenticationBytes)
+                }
+                Result.success(walletResponse to probePad)
             }
-        if (probePad == 0) {
-            // Fixture-capture artifacts; skipped under the payload probe, where they
-            // would re-serialize and write hundreds of MB per trial.
-            appendToDebugBundle("wallet-response.digital-credential.json", JSONObject(walletResponse.credentialJson).toString(2))
-            appendToDebugBundle("credential.json", JSONObject(walletResponse.credentialJson).toString(2))
-            appendToDebugBundle("smart-response.expected.json", smartResponse.toString(2))
-            appendBinaryArtifact("device-response.cbor", walletResponse.deviceResponseBytes)
-            appendBinaryArtifact("dcapi-response.cbor", walletResponse.dcapiResponseBytes)
-            appendBinaryArtifact("hpke-enc.bin", walletResponse.hpkeEnc)
-            appendBinaryArtifact("hpke-ciphertext.bin", walletResponse.hpkeCipherText)
-            appendBinaryArtifact("issuer-signed-item-tag24.cbor", walletResponse.issuerSignedItemTag24Bytes)
-            appendBinaryArtifact("value-digest.bin", walletResponse.valueDigest)
-            appendBinaryArtifact("mso.cbor", walletResponse.msoBytes)
-            appendBinaryArtifact("issuer-auth.cbor", walletResponse.issuerAuthBytes)
-            appendBinaryArtifact("device-authentication.cbor", walletResponse.deviceAuthenticationBytes)
+            built.onSuccess { (walletResponse, probePad) -> deliver(walletResponse, probePad) }
+                .onFailure { screenState = ScreenState.Error(it.message ?: it::class.java.simpleName) }
         }
+    }
 
+    private fun deliver(walletResponse: DirectMdocWalletResponse, probePad: Int) {
         val resultData = Intent()
         val response = GetCredentialResponse(DigitalCredential(walletResponse.credentialJson))
         // The three-argument overload lets androidx (>= 1.7.0-alpha01) hand a

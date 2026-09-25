@@ -10,43 +10,40 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
+/**
+ * Resolves forms requested by reference (spec §5.4.2). A `form.fhir` item with
+ * `questionnaireCanonical` and no inline `questionnaire` gets the fetched
+ * Questionnaire put inline. An unversioned canonical is fetched directly; for
+ * `url|version`, the base URL is fetched and used only if its `version`
+ * matches. A form that can't be loaded is left out, so that item is answered
+ * `unsupported` and the rest of the request still goes ahead.
+ */
 internal object SmartQuestionnaireFetcher {
     suspend fun hydrateQuestionnaireUrls(smartRequest: JSONObject): JSONObject = withContext(Dispatchers.IO) {
         val copy = JSONObject(smartRequest.toString())
         val items = copy.optJSONArray("items") ?: return@withContext copy
 
         for (i in 0 until items.length()) {
-            val item = items.optJSONObject(i) ?: continue
-            val content = item.optJSONObject("content") ?: continue
-            if (content.optString("kind") != "questionnaire") continue
-
-            require(!content.has("questionnaire")) {
-                "items[$i].content.questionnaire is not a SMART Health Check-in 1.0 selector member; use canonical and resource directly"
-            }
-
-            val existingResource = content.optJSONObject("resource")
-            if (existingResource != null) {
-                require(existingResource.optString("resourceType") == "Questionnaire") {
-                    "items[$i].content.resource is not a Questionnaire"
-                }
-                continue
-            }
-
-            val canonical = content.optString("canonical")
-            require(canonical.isNotBlank()) {
-                "items[$i].content must include canonical or resource"
-            }
-            content.put("resource", fetchAndValidate(i, canonical))
+            val content = items.optJSONObject(i)?.optJSONObject("content") ?: continue
+            if (content.optString("kind") != "form.fhir") continue
+            if (content.optJSONObject("questionnaire") != null) continue
+            val canonical = content.optString("questionnaireCanonical").ifBlank { null } ?: continue
+            runCatching { fetchMatching(canonical) }
+                .onSuccess { content.put("questionnaire", it) }
+                .onFailure { android.util.Log.w("SHCQuestionnaire", "could not load $canonical: ${it.message}") }
         }
 
         copy
     }
 
-    private fun fetchAndValidate(index: Int, canonical: String): JSONObject {
-        require(canonical.isNotBlank()) { "items[$index].content.canonical is blank" }
+    internal fun fetchMatching(canonical: String): JSONObject {
         val questionnaire = fetchQuestionnaire(canonical)
-        require(questionnaire.optString("resourceType") == "Questionnaire") {
-            "items[$index].content.canonical did not return a Questionnaire"
+        require(questionnaire.optString("resourceType") == "Questionnaire") { "$canonical did not return a Questionnaire" }
+        val url = canonical.substringBefore('|')
+        require(questionnaire.optString("url") == url) { "$canonical returned a Questionnaire with url ${questionnaire.optString("url")}" }
+        val version = canonical.substringAfter('|', "")
+        require(version.isEmpty() || questionnaire.optString("version") == version) {
+            "$canonical returned version ${questionnaire.optString("version")}"
         }
         return questionnaire
     }

@@ -193,6 +193,15 @@ class ImportedFhirWalletStore(
                     statusIfShared = RequestItemStatusCode.Unsupported,
                 )
             }
+            if (item.kind == RequestKind.Questionnaire && item.meta.optJSONObject("questionnaire") == null) {
+                return@map RequestItemResolution(
+                    itemId = item.id,
+                    availability = WalletItemAvailability.Unsupported,
+                    candidates = emptyList(),
+                    matchSummary = "This wallet couldn't load the form from ${item.meta.optString("questionnaireCanonical")}.",
+                    statusIfShared = RequestItemStatusCode.Unsupported,
+                )
+            }
             if (item.kind == RequestKind.Questionnaire) {
                 return@map RequestItemResolution(
                     itemId = item.id,
