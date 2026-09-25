@@ -18,8 +18,10 @@ android {
         applicationId "org.smarthealthit.checkin.wallet"
         minSdk 26
         targetSdk 35
-        versionCode 1
-        versionName "0.1.0"
+        // Release builds pass -PversionCode and -PversionName (the release
+        // workflow uses the run number) so each install upgrades the last.
+        versionCode((project.findProperty("versionCode") ?: "1").toString().toInteger())
+        versionName((project.findProperty("versionName") ?: "0.1.0").toString())
         buildConfigField "String", "REGISTRATION_MODE", "\"${registrationMode}\""
         // -Plarge-heap: ask for the larger per-app Java heap (dalvik.vm.heapsize instead of
         // heapgrowthlimit). Only used to separate transport limits from endpoint memory
