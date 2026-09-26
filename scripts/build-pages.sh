@@ -19,6 +19,8 @@ do
   cp "$ROOT/site/$page" "$SITE_DIR/$page"
 done
 cp "$ROOT/spec.md" "$SITE_DIR/spec.md"
+# This section's menu, read by the site chrome.
+cp "$ROOT/site/nav.json" "$SITE_DIR/nav.json"
 bun "$ROOT/scripts/render-spec.ts" "$ROOT/spec.md" "$SITE_DIR/spec.html"
 # The web-wallet hand-off is now documented by the client library.
 HANDOFF="https://smart-health-checkin.org/client/docs/web-wallet-handoff.html"

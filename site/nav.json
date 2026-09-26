@@ -1,0 +1,11 @@
+{
+  "label": "Spec",
+  "href": "./",
+  "items": [
+    { "title": "Model", "href": "smart-model-explainer.html", "note": "Request and response JSON" },
+    { "title": "Wire protocol", "href": "wire-protocol-explainer.html", "note": "CBOR, COSE, HPKE" },
+    { "title": "Capture inspector", "href": "wire-protocol-inspector.html", "note": "Byte-level fixture viewer" },
+    { "title": "Kiosk flow", "href": "kiosk-flow-explainer.html", "note": "Front-desk handoff" },
+    { "title": "Draft spec 1.0", "href": "./", "note": "Normative reference" }
+  ]
+}
