@@ -6,7 +6,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 - **Spec:** <https://smart-health-checkin.org/spec/>
 - **Client library** (EHR pages, web wallets, testing): [smart-health-checkin/client](https://github.com/smart-health-checkin/client), docs at <https://smart-health-checkin.org/client/>
-- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-checkin-wallet-debug.apk)). It moved out of this repo with its history; releases up to wallet-v0.3.2 remain here.
+- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet-debug.apk)). It moved out of this repo with its history; releases up to wallet-v0.3.2 remain here.
 - **Also moved out:** the exploratory Swift package ([smart-health-checkin/swift](https://github.com/smart-health-checkin/swift)) and archived planning notes ([smart-health-checkin/notes](https://github.com/smart-health-checkin/notes)).
 - **Connectathon:** [smart-health-checkin/connectathon](https://github.com/smart-health-checkin/connectathon), at <https://smart-health-checkin.org/connectathon/>
 
@@ -22,7 +22,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | [`tools/capture/`](tools/capture/README.md) | Browser capture and probing scripts. |
 | [`docs/research/`](docs/research/) | Research notes, such as Android response-size limits. Not part of the spec. |
 
-The TypeScript verifier and web-wallet code that used to live in `rp-web/` is now the [client library](https://github.com/smart-health-checkin/client); its demos run at <https://smart-health-checkin.org/client/demo/>.
+The TypeScript Verifier and web-wallet code is the [client library](https://github.com/smart-health-checkin/client); its demos run at <https://smart-health-checkin.org/client/demo/>.
 
 ## Build the site
 

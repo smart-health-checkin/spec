@@ -240,7 +240,7 @@
       </p>
       <p class="terms">
         <b>Words on this page, and in the spec:</b>
-        clinic app = <i>Verifier</i> · health app = <i>Wallet</i> ·
+        clinic app = <i>Verifier</i> · the patient's wallet app = <i>Wallet</i> ·
         patient = <i>Holder</i> · record = <i>Artifact</i>.
         Tags like <a class="rid" href="./spec.html#XV-2">XV-2</a> link to the requirement in the
         <a href="./spec.html">spec</a>, which is the authority where this page and it differ.
@@ -310,7 +310,7 @@
 
     <section id="request">
       <h2>The request</h2>
-      <p>The app builds this object and hands it to the health app.</p>
+      <p>The app builds this object and hands it to the wallet.</p>
 <pre>{
   "type": "smart-health-checkin-request",
   "version": "1",
@@ -345,7 +345,7 @@
         <div><dt>id</dt><dd>Short and unique within the request. The response refers to the item by this id. <a class="rid" href="./spec.html#ITEM-1">ITEM-1</a></dd></div>
         <div><dt>title</dt><dd>What the patient sees.</dd></div>
         <div><dt>summary</dt><dd>Optional. One more line for the patient.</dd></div>
-        <div><dt>required</dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the health app can still answer <code>unavailable</code>. <a class="rid" href="./spec.html#HOLD-3">HOLD-3</a></small></dd></div>
+        <div><dt>required</dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the wallet can still answer <code>unavailable</code>. <a class="rid" href="./spec.html#HOLD-3">HOLD-3</a></small></dd></div>
         <div><dt>content</dt><dd>What is being asked for. See the next section.</dd></div>
         <div><dt>accept</dt><dd>Media types the app can read for this item, most preferred first. <a class="rid" href="./spec.html#ACC-1">ACC-1</a></dd></div>
       </dl>
@@ -355,7 +355,7 @@
       <h2>What an item can ask for</h2>
       <p>
         <code>content.kind</code> is either <code>selection.fhir</code> (share records the
-        patient already has) or <code>form.fhir</code> (fill in a form). A health app
+        patient already has) or <code>form.fhir</code> (fill in a form). A wallet
         that sees a kind it doesn't know answers <code>unsupported</code> for that
         item and handles the rest of the request as usual <a class="rid" href="./spec.html#SEL-9">SEL-9</a>. The same
         goes for a selector whose members have the wrong types, such as a
@@ -384,7 +384,7 @@
 }</pre>
         <p class="note warning">
           Keep canonical strings exactly as written, including any
-          <code>|version</code> <a class="rid" href="./spec.html#CAN-2">CAN-2</a>. A health app reports
+          <code>|version</code> <a class="rid" href="./spec.html#CAN-2">CAN-2</a>. A wallet reports
           <code>fulfilled</code> for a versioned profile only when a returned record
           claims that exact version <a class="rid" href="./spec.html#CAN-5">CAN-5</a>. See
           <a href="#versions">Versions in canonicals</a>.
@@ -415,7 +415,7 @@
       <div class="panel" id="c-open" role="tabpanel">
         <h4>No filter</h4>
         <p>
-          Leave out all three filters to let the patient and their health app
+          Leave out all three filters to let the patient and their wallet
           decide what's relevant for the visit. Partial answers are expected <a class="rid" href="./spec.html#SEL-7">SEL-7</a>.
         </p>
 <pre data-check="item">{
@@ -429,7 +429,7 @@
       <div class="panel" id="c-canonical" role="tabpanel">
         <h4>A form by URL</h4>
         <p>
-          The health app finds the Questionnaire from its canonical URL <a class="rid" href="./spec.html#CAN-4">CAN-4</a>, shows it,
+          The wallet finds the Questionnaire from its canonical URL <a class="rid" href="./spec.html#CAN-4">CAN-4</a>, shows it,
           and returns a QuestionnaireResponse whose <code>questionnaire</code> is the same
           string <a class="rid" href="./spec.html#FORM-5">FORM-5</a>. If it can't load the form, it answers <code>unsupported</code> or
           <code>error</code> rather than guessing <a class="rid" href="./spec.html#FORM-4">FORM-4</a>.
@@ -489,7 +489,7 @@
   "accept": ["application/fhir+json"]
 }</pre>
       <ol class="steps">
-        <li><div>The health app looks the form up any way it likes: a cache, a FHIR server search, or fetching the bare URL <code>…/phq-2.json</code>.</div></li>
+        <li><div>The wallet looks the form up any way it likes: a cache, a FHIR server search, or fetching the bare URL <code>…/phq-2.json</code>.</div></li>
         <li><div>It checks what it got: a <code>Questionnaire</code> whose <code>url</code> is exactly <code>…/phq-2.json</code> and whose <code>version</code> is exactly <code>1</code>. Anything else doesn't count, and the item is <code>unsupported</code> <a class="rid" href="./spec.html#CAN-4">CAN-4</a>.</div></li>
         <li><div>The answers carry <code>"questionnaire": "…/phq-2.json|1"</code>, the request's string unchanged <a class="rid" href="./spec.html#FORM-5">FORM-5</a>.</div></li>
       </ol>
@@ -502,14 +502,14 @@
     <section id="patient">
       <h2>What the patient sees</h2>
       <ol class="steps">
-        <li><div>The health app shows the <code>purpose</code> and each item's <code>title</code> and <code>summary</code>.</div></li>
+        <li><div>The wallet shows the <code>purpose</code> and each item's <code>title</code> and <code>summary</code>.</div></li>
         <li><div>For each item it finds matching records, or shows the form.</div></li>
-        <li><div>The patient shares, leaves out, or fills in each item. They can share less than was asked for, and the health app can offer other records that would help.</div></li>
-        <li><div>The health app sends back the records and one outcome per item.</div></li>
+        <li><div>The patient shares, leaves out, or fills in each item. They can share less than was asked for, and the wallet can offer other records that would help.</div></li>
+        <li><div>The wallet sends back the records and one outcome per item.</div></li>
       </ol>
       <p>
         The patient decides item by item <a class="rid" href="./spec.html#HOLD-1">HOLD-1</a>. If they review the
-        request and decline everything, the health app still answers, with every
+        request and decline everything, the wallet still answers, with every
         item <code>declined</code>. If they close it without reviewing, nothing comes
         back and the browser call ends with an error <a class="rid" href="./spec.html#HOLD-4">HOLD-4</a>.
       </p>
@@ -584,8 +584,8 @@
           <tr><td><span class="status fulfilled">fulfilled</span></td><td>Shared what was asked for.</td><td>The insurance card was shared.</td></tr>
           <tr><td><span class="status partial">partial</span></td><td>Shared some of it.</td><td>Two of three medications were shared.</td></tr>
           <tr><td><span class="status declined">declined</span></td><td>The patient chose not to share.</td><td>The patient turned off the insurance card.</td></tr>
-          <tr><td><span class="status unavailable">unavailable</span></td><td>The health app has nothing that matches.</td><td>No immunizations are on file.</td></tr>
-          <tr><td><span class="status unsupported">unsupported</span></td><td>The health app can't handle this kind of item.</td><td>An unknown <code>content.kind</code>, or a form it can't load.</td></tr>
+          <tr><td><span class="status unavailable">unavailable</span></td><td>The wallet has nothing that matches.</td><td>No immunizations are on file.</td></tr>
+          <tr><td><span class="status unsupported">unsupported</span></td><td>The wallet can't handle this kind of item.</td><td>An unknown <code>content.kind</code>, or a form it can't load.</td></tr>
           <tr><td><span class="status error">error</span></td><td>It tried and failed.</td><td>The patient portal behind it timed out.</td></tr>
         </tbody>
       </table>
@@ -601,8 +601,8 @@
         Before using a response, the app checks it against the request it sent.
         One bad record or status row costs only that record or item; the rest of
         the response is still used. The client library does this for you, and the
-        <a href="/connectathon/testing-ehr/">Testing EHR</a> runs the same checks
-        against your health app.
+        <a href="/connectathon/testing-ehr/">SMART Testing EHR</a> runs the same checks
+        against your wallet.
       </p>
       <h3>These reject the whole response</h3>
       <ul class="checks">
@@ -775,7 +775,7 @@
       <ul class="next">
         <li><a href="./wire-protocol-explainer.html">Wire protocol explainer</a><span>How this JSON travels: mdoc, CBOR, HPKE, and signatures.</span></li>
         <li><a href="/client/docs/tutorial.html">Developer tutorial</a><span>Build a check-in page with the client library.</span></li>
-        <li><a href="/connectathon/testing-ehr/">Testing EHR</a><span>Send these requests to your health app and see what fails.</span></li>
+        <li><a href="/connectathon/testing-ehr/">SMART Testing EHR</a><span>Send these requests to your wallet and see what fails.</span></li>
         <li><a href="./trust-and-limits.html">Trust and limits</a><span>What the signatures prove, warnings, response size, and cancel.</span></li>
         <li><a href="./platform-notes.html">Platform notes</a><span>Android, iOS, browsers, and native-app origins.</span></li>
         <li><a href="./spec.html">Draft spec 1.0</a><span>The normative text. Sections 5 and 6 cover this page.</span></li>

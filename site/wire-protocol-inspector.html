@@ -750,7 +750,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
           ["reader-auth-detached-payload.cbor", "ReaderAuthentication payload covered by readerAuth."],
           ["smart-request.json", "SMART request JSON pulled from ItemsRequest.requestInfo[\"org.smarthealthit.checkin.request\"]."],
           ["smart-request.hydrated.json", "SMART request after wallet questionnaire URL hydration."],
-          ["inspection.json", "RP request inspection with decoded DeviceRequest, ItemsRequest, readerAuth, and SessionTranscript."],
+          ["inspection.json", "Verifier-side request inspection with decoded DeviceRequest, ItemsRequest, readerAuth, and SessionTranscript."],
         ],
       },
       {
@@ -780,7 +780,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
           ["dcapi-response.cbor", "CBOR ['dcapi', {'enc', 'cipherText'}]."],
           ["wallet-response.digital-credential.json", "Exact JSON passed to DigitalCredential."],
           ["credential.json", "Alias of wallet-response.digital-credential.json."],
-          ["opened-response-inspection.json", "RP HPKE-open and DeviceResponse inspection assertion for the captured encrypted response."],
+          ["opened-response-inspection.json", "Verifier HPKE-open and DeviceResponse inspection assertion for the captured encrypted response."],
           ["pymdoc-byte-check.json", "pyMDOC/cryptography assertion summary for tag-24 digest, issuerAuth, and deviceSignature."],
         ],
       },
@@ -1120,7 +1120,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         </p>
         <div class="callout warn">
           The page recomputes carrier equality, transcript, and SHA-256 digest checks
-          in-browser. It also loads the checked-in RP HPKE-open inspection and pyMDOC
+          in-browser. It also loads the checked-in Verifier HPKE-open inspection and pyMDOC
           COSE assertion fixture so the full validation story is visible on the page.
         </div>
       `;
@@ -1639,7 +1639,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
 
       chain.appendChild(drillNode({
         title: "1. navigator.credentials.get request",
-        text: "This is what the RP page gave the browser. The two load-bearing strings are base64url CBOR values.",
+        text: "This is what the Verifier page gave the browser. The two load-bearing strings are base64url CBOR values.",
         facts: [
           ["protocol", request?.protocol],
           ["data.deviceRequest chars", request?.data?.deviceRequest?.length],
@@ -1765,7 +1765,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
 
       chain.appendChild(drillNode({
         title: "11. Saved assertion fixtures",
-        text: "These are the test-suite assertions saved with the promoted capture: RP web reopened the encrypted credential with the captured HPKE private key, and pyMDOC/cryptography verified tag-24 digest input plus issuer and device COSE signatures.",
+        text: "These are the test-suite assertions saved with the promoted capture: the Verifier reopened the encrypted credential with the captured HPKE private key, and pyMDOC/cryptography verified tag-24 digest input plus issuer and device COSE signatures.",
         facts: [
           ["HPKE opened", openedInspection?.deviceResponse?.status === 0 ? "yes" : undefined],
           ["pyMDOC ok", pyCheck?.ok],
