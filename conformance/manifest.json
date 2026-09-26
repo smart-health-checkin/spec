@@ -1,5 +1,5 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "capabilities": {
     "request-json": "Validate a SMART request (JSON text). Valid or not; some cases also give per-item outcomes (unsupported).",
     "response-json": "Validate a SMART response's shape on its own. Valid or not; some cases also give per-Artifact or per-item outcomes.",
@@ -20,7 +20,7 @@
         "request": "request-json/capture-v2/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "REQ-1",
@@ -37,7 +37,7 @@
         "request": "request-json/minimal/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "REQ-2"
@@ -53,7 +53,7 @@
         "request": "request-json/no-filters/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "SEL-7"
@@ -69,7 +69,7 @@
         "request": "request-json/empty-items/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "REQ-3"
@@ -85,7 +85,7 @@
         "request": "request-json/no-fhir-versions/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "REQ-5"
@@ -101,7 +101,7 @@
         "request": "request-json/empty-fhir-versions/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "REQ-2",
@@ -118,7 +118,7 @@
         "request": "request-json/form-canonical/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "FORM-4"
@@ -129,12 +129,12 @@
       "id": "request-json/form-versioned-canonical",
       "capability": "request-json",
       "description": "form.fhir by a versioned canonical (url|version).",
-      "rule": "CAN-1, CAN-4, D9",
+      "rule": "CAN-1, CAN-4",
       "inputs": {
         "request": "request-json/form-versioned-canonical/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "CAN-1",
@@ -151,7 +151,7 @@
         "request": "request-json/form-inline/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "FORM-2"
@@ -167,7 +167,7 @@
         "request": "request-json/profiles-from/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "SEL-3"
@@ -178,12 +178,12 @@
       "id": "request-json/unknown-kind",
       "capability": "request-json",
       "description": "An unknown content.kind: the request stands; that item is unsupported.",
-      "rule": "SEL-9, D5",
+      "rule": "SEL-9",
       "inputs": {
         "request": "request-json/unknown-kind/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "x": "unsupported"
         }
@@ -197,12 +197,12 @@
       "id": "request-json/legacy-members-ignored",
       "capability": "request-json",
       "description": "Old selector members canonical and resource are ignored like any unknown member.",
-      "rule": "JSON-3, D13",
+      "rule": "JSON-3",
       "inputs": {
         "request": "request-json/legacy-members-ignored/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "JSON-3"
@@ -218,7 +218,7 @@
         "request": "request-json/unknown-top-member/request.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "JSON-3"
@@ -234,7 +234,7 @@
         "request": "request-json/mixed-form-with-profiles/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unsupported"
         }
@@ -254,7 +254,7 @@
         "request": "request-json/mixed-selection-with-questionnaire/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unsupported"
         }
@@ -274,7 +274,7 @@
         "request": "request-json/form-no-source/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unsupported"
         }
@@ -294,7 +294,7 @@
         "request": "request-json/questionnaire-wrong-type/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unsupported"
         }
@@ -314,7 +314,7 @@
         "request": "request-json/canonical-not-string/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unsupported"
         }
@@ -334,7 +334,7 @@
         "request": "request-json/blank-canonical/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unsupported"
         }
@@ -354,7 +354,7 @@
         "request": "request-json/profiles-from-string/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unsupported"
         }
@@ -374,7 +374,7 @@
         "request": "request-json/empty-profiles/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unsupported"
         }
@@ -394,7 +394,7 @@
         "request": "request-json/empty-resource-types/request.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unsupported"
         }
@@ -414,7 +414,7 @@
         "request": "request-json/wrong-type/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "request-type"
       },
       "requirements": [
@@ -431,7 +431,7 @@
         "request": "request-json/version-number/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "request-version"
       },
       "requirements": [
@@ -449,7 +449,7 @@
         "request": "request-json/missing-id/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "request-id"
       },
       "requirements": [
@@ -466,7 +466,7 @@
         "request": "request-json/missing-item-id/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "item-id"
       },
       "requirements": [
@@ -483,7 +483,7 @@
         "request": "request-json/duplicate-item-ids/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "item-id-duplicate"
       },
       "requirements": [
@@ -500,7 +500,7 @@
         "request": "request-json/missing-title/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "item-title"
       },
       "requirements": [
@@ -517,7 +517,7 @@
         "request": "request-json/empty-accept/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "item-accept"
       },
       "requirements": [
@@ -534,7 +534,7 @@
         "request": "request-json/content-not-object/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "content"
       },
       "requirements": [
@@ -551,7 +551,7 @@
         "request": "request-json/content-kind-not-string/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "content"
       },
       "requirements": [
@@ -568,7 +568,7 @@
         "request": "request-json/duplicate-member/request.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "json-duplicate-member"
       },
       "requirements": [
@@ -585,7 +585,7 @@
         "response": "response-json/capture-v2/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "RSP-1"
@@ -601,7 +601,7 @@
         "response": "response-json/minimal/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "RSP-1"
@@ -612,15 +612,16 @@
       "id": "response-json/declined-no-artifacts",
       "capability": "response-json",
       "description": "Everything declined, no Artifacts.",
-      "rule": "RSP-2, D10",
+      "rule": "RSP-2, HOLD-4",
       "inputs": {
         "response": "response-json/declined-no-artifacts/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
-        "RSP-2"
+        "RSP-2",
+        "HOLD-4"
       ],
       "status": "active"
     },
@@ -633,7 +634,7 @@
         "response": "response-json/health-card/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "ART-6"
@@ -649,7 +650,7 @@
         "response": "response-json/all-statuses/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "RSP-3"
@@ -665,7 +666,7 @@
         "response": "response-json/empty-fulfills/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected"
         }
@@ -684,7 +685,7 @@
         "response": "response-json/fhir-missing-fhir-version/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected"
         }
@@ -703,7 +704,7 @@
         "response": "response-json/health-card-with-fhir-version/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "c1": "rejected"
         }
@@ -723,7 +724,7 @@
         "response": "response-json/fhir-value-not-resource/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected"
         }
@@ -742,7 +743,7 @@
         "response": "response-json/duplicate-artifact-ids/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected"
         }
@@ -756,17 +757,18 @@
       "id": "response-json/unknown-status-code",
       "capability": "response-json",
       "description": "A status code outside the six: that item's outcome is unknown.",
-      "rule": "D14 (supersedes XV-3), RSP-3",
+      "rule": "XV-3, RSP-3",
       "inputs": {
         "response": "response-json/unknown-status-code/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unknown"
         }
       },
       "requirements": [
+        "XV-3",
         "RSP-3"
       ],
       "status": "active"
@@ -780,7 +782,7 @@
         "response": "response-json/wrong-type/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "response-type"
       },
       "requirements": [
@@ -797,7 +799,7 @@
         "response": "response-json/wrong-version/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "response-version"
       },
       "requirements": [
@@ -814,7 +816,7 @@
         "response": "response-json/missing-request-status/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "response-status-missing"
       },
       "requirements": [
@@ -831,7 +833,7 @@
         "response": "response-json/artifacts-not-array/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "response-artifacts"
       },
       "requirements": [
@@ -848,7 +850,7 @@
         "response": "response-json/duplicate-member/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "json-duplicate-member"
       },
       "requirements": [
@@ -867,7 +869,7 @@
         "response": "cross-validation/capture-v2/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "XV-1",
@@ -886,7 +888,7 @@
         "response": "cross-validation/baseline/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "XV-1",
@@ -905,7 +907,7 @@
         "response": "cross-validation/one-artifact-two-items/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "MM-1"
@@ -922,7 +924,7 @@
         "response": "cross-validation/two-artifacts-one-item/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "MM-1",
@@ -940,7 +942,7 @@
         "response": "cross-validation/declined-no-artifact/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "RSP-2"
@@ -950,17 +952,18 @@
     {
       "id": "cross-validation/all-declined",
       "capability": "cross-validation",
-      "description": "The patient declined everything: all declined, no Artifacts (D10).",
-      "rule": "RSP-2, D10",
+      "description": "The patient declined everything: all declined, no Artifacts (HOLD-4).",
+      "rule": "RSP-2, HOLD-4",
       "inputs": {
         "request": "cross-validation/all-declined/request.json",
         "response": "cross-validation/all-declined/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
-        "RSP-2"
+        "RSP-2",
+        "HOLD-4"
       ],
       "status": "active"
     },
@@ -974,7 +977,7 @@
         "response": "cross-validation/fulfilled-without-artifact/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "ART-7",
@@ -986,13 +989,13 @@
       "id": "cross-validation/versioned-canonical-echo",
       "capability": "cross-validation",
       "description": "A versioned questionnaireCanonical is echoed exactly in QuestionnaireResponse.questionnaire.",
-      "rule": "FORM-5, CAN-2, XV-10, D9",
+      "rule": "FORM-5, CAN-2, XV-10",
       "inputs": {
         "request": "cross-validation/versioned-canonical-echo/request.json",
         "response": "cross-validation/versioned-canonical-echo/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "FORM-5",
@@ -1011,7 +1014,7 @@
         "response": "cross-validation/request-id-mismatch/response.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "request-id"
       },
       "requirements": [
@@ -1023,18 +1026,19 @@
       "id": "cross-validation/missing-status-row",
       "capability": "cross-validation",
       "description": "An item has no status row: its outcome is unknown, the response stands.",
-      "rule": "D14 (supersedes XV-3), RSP-2",
+      "rule": "XV-3, RSP-2",
       "inputs": {
         "request": "cross-validation/missing-status-row/request.json",
         "response": "cross-validation/missing-status-row/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "intake": "unknown"
         }
       },
       "requirements": [
+        "XV-3",
         "RSP-2"
       ],
       "status": "active"
@@ -1043,18 +1047,19 @@
       "id": "cross-validation/duplicate-status-row",
       "capability": "cross-validation",
       "description": "An item has two status rows: its outcome is unknown, the response stands.",
-      "rule": "D14 (supersedes XV-3), RSP-2",
+      "rule": "XV-3, RSP-2",
       "inputs": {
         "request": "cross-validation/duplicate-status-row/request.json",
         "response": "cross-validation/duplicate-status-row/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "items": {
           "patient": "unknown"
         }
       },
       "requirements": [
+        "XV-3",
         "RSP-2"
       ],
       "status": "active"
@@ -1063,15 +1068,16 @@
       "id": "cross-validation/unknown-status-row",
       "capability": "cross-validation",
       "description": "A status row names an item the request doesn't have: it is ignored.",
-      "rule": "D14 (supersedes XV-3), RSP-2",
+      "rule": "XV-3, RSP-2",
       "inputs": {
         "request": "cross-validation/unknown-status-row/request.json",
         "response": "cross-validation/unknown-status-row/response.json"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
+        "XV-3",
         "RSP-2"
       ],
       "status": "active"
@@ -1086,7 +1092,7 @@
         "response": "cross-validation/fulfills-unknown-item/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected",
           "a2": "accepted",
@@ -1109,7 +1115,7 @@
         "response": "cross-validation/unaccepted-media-type/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "c1": "rejected",
           "a2": "accepted",
@@ -1132,7 +1138,7 @@
         "response": "cross-validation/unknown-media-type/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "u1": "rejected"
         }
@@ -1152,7 +1158,7 @@
         "response": "cross-validation/questionnaire-echo-mismatch/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "accepted",
           "a2": "accepted",
@@ -1168,14 +1174,14 @@
     {
       "id": "cross-validation/fhir-version-not-requested",
       "capability": "cross-validation",
-      "description": "One Artifact uses a FHIR release the request didn't list: only that Artifact is unusable (D6).",
-      "rule": "XV-8 (SHOULD), D6",
+      "description": "One Artifact uses a FHIR release the request didn't list: only that Artifact is unusable.",
+      "rule": "XV-8",
       "inputs": {
         "request": "cross-validation/fhir-version-not-requested/request.json",
         "response": "cross-validation/fhir-version-not-requested/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected",
           "a2": "accepted",
@@ -1190,14 +1196,14 @@
     {
       "id": "cross-validation/fhir-version-bad-format",
       "capability": "cross-validation",
-      "description": "One Artifact's fhirVersion is \"R4\", not a release version: only that Artifact is unusable (D6).",
-      "rule": "ART-2, XV-8 (SHOULD), D6",
+      "description": "One Artifact's fhirVersion is \"R4\", not a release version: only that Artifact is unusable.",
+      "rule": "ART-2, XV-8",
       "inputs": {
         "request": "cross-validation/fhir-version-bad-format/request.json",
         "response": "cross-validation/fhir-version-bad-format/response.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "artifacts": {
           "a1": "rejected",
           "a2": "accepted",
@@ -1219,7 +1225,7 @@
         "navigatorArgument": "request-cbor/capture-v2/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/capture-v2/expected-smart-request.json"
         }
@@ -1239,7 +1245,7 @@
         "navigatorArgument": "request-cbor/synthetic-reader-auth/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/synthetic-reader-auth/expected-smart-request.json"
         }
@@ -1259,7 +1265,7 @@
         "navigatorArgument": "request-cbor/no-reader-auth/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/no-reader-auth/expected-smart-request.json"
         }
@@ -1274,12 +1280,12 @@
       "id": "request-cbor/unknown-docrequest-key",
       "capability": "request-cbor",
       "description": "An unknown key in the DocRequest is ignored.",
-      "rule": "ALG-2, D11",
+      "rule": "ALG-2",
       "inputs": {
         "navigatorArgument": "request-cbor/unknown-docrequest-key/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/unknown-docrequest-key/expected-smart-request.json"
         }
@@ -1293,12 +1299,12 @@
       "id": "request-cbor/unknown-itemsrequest-key",
       "capability": "request-cbor",
       "description": "An unknown key in the ItemsRequest is ignored.",
-      "rule": "ALG-2, D11",
+      "rule": "ALG-2",
       "inputs": {
         "navigatorArgument": "request-cbor/unknown-itemsrequest-key/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/unknown-itemsrequest-key/expected-smart-request.json"
         }
@@ -1311,14 +1317,19 @@
     {
       "id": "request-cbor/wrong-protocol",
       "capability": "request-cbor",
-      "description": "The request's protocol is org.iso.mdoc, not org-iso-mdoc.",
+      "description": "The request's protocol is org.iso.mdoc, not org-iso-mdoc: warn.",
       "rule": "WRQ-2",
       "inputs": {
         "navigatorArgument": "request-cbor/wrong-protocol/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "protocol"
+        "outcome": "warn",
+        "warnings": [
+          "protocol"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/wrong-protocol/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-2"
@@ -1328,14 +1339,19 @@
     {
       "id": "request-cbor/padded-base64url",
       "capability": "request-cbor",
-      "description": "deviceRequest is standard padded base64url, not unpadded.",
+      "description": "deviceRequest is standard padded base64url, not unpadded: warn.",
       "rule": "WRQ-2",
       "inputs": {
         "navigatorArgument": "request-cbor/padded-base64url/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "base64url-padding"
+        "outcome": "warn",
+        "warnings": [
+          "base64url-padding"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/padded-base64url/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-2"
@@ -1351,7 +1367,7 @@
         "navigatorArgument": "request-cbor/wrong-doc-type/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "doc-type"
       },
       "requirements": [
@@ -1362,14 +1378,19 @@
     {
       "id": "request-cbor/intent-not-bool",
       "capability": "request-cbor",
-      "description": "intentToRetain is a string.",
+      "description": "intentToRetain is a string: warn.",
       "rule": "WRQ-5",
       "inputs": {
         "navigatorArgument": "request-cbor/intent-not-bool/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "intent-to-retain"
+        "outcome": "warn",
+        "warnings": [
+          "intent-to-retain"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/intent-not-bool/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-5"
@@ -1379,13 +1400,13 @@
     {
       "id": "request-cbor/missing-request-info",
       "capability": "request-cbor",
-      "description": "No requestInfo carrier (the request travels only there, D7).",
-      "rule": "WRQ-5, D7",
+      "description": "No requestInfo carrier (the request travels only there).",
+      "rule": "WRQ-5",
       "inputs": {
         "navigatorArgument": "request-cbor/missing-request-info/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "request-info-missing"
       },
       "requirements": [
@@ -1402,7 +1423,7 @@
         "navigatorArgument": "request-cbor/request-info-invalid/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "smart-request-invalid"
       },
       "requirements": [
@@ -1414,14 +1435,19 @@
     {
       "id": "request-cbor/unknown-version",
       "capability": "request-cbor",
-      "description": "DeviceRequest version 9.0.",
+      "description": "DeviceRequest version 9.0: warn.",
       "rule": "WRQ-3",
       "inputs": {
         "navigatorArgument": "request-cbor/unknown-version/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "device-request-version"
+        "outcome": "warn",
+        "warnings": [
+          "device-request-version"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/unknown-version/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-3"
@@ -1432,12 +1458,12 @@
       "id": "request-cbor/encryption-key-wrong-curve",
       "capability": "request-cbor",
       "description": "encryptionInfo's recipient key has an unsupported crv.",
-      "rule": "WRQ-7, ALG-2, D11",
+      "rule": "WRQ-7, ALG-2",
       "inputs": {
         "navigatorArgument": "request-cbor/encryption-key-wrong-curve/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "encryption-key"
       },
       "requirements": [
@@ -1449,14 +1475,19 @@
     {
       "id": "request-cbor/encryption-info-wrong-tag",
       "capability": "request-cbor",
-      "description": "encryptionInfo's first entry is not \"dcapi\".",
+      "description": "encryptionInfo's first entry is not \"dcapi\", but its recipient key is usable: warn.",
       "rule": "WRQ-7",
       "inputs": {
         "navigatorArgument": "request-cbor/encryption-info-wrong-tag/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "encryption-info"
+        "outcome": "warn",
+        "warnings": [
+          "encryption-info"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/encryption-info-wrong-tag/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-7"
@@ -1467,12 +1498,12 @@
       "id": "request-cbor/companion-element-present",
       "capability": "request-cbor",
       "description": "The ItemsRequest also requests an old smart_request_b64u.* element: the request is read only from requestInfo, the extra element is ignored.",
-      "rule": "WRQ-6, D7",
+      "rule": "WRQ-6",
       "inputs": {
         "navigatorArgument": "request-cbor/companion-element-present/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/companion-element-present/expected-smart-request.json"
         }
@@ -1491,7 +1522,7 @@
         "navigatorArgument": "request-cbor/other-doc-request-ignored/navigator-argument.json"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "smartRequest": "request-cbor/other-doc-request-ignored/expected-smart-request.json"
         }
@@ -1504,14 +1535,19 @@
     {
       "id": "request-cbor/two-smart-doc-requests",
       "capability": "request-cbor",
-      "description": "Two DocRequests for org.smarthealthit.checkin.1.",
+      "description": "Two DocRequests for org.smarthealthit.checkin.1: use the first and warn.",
       "rule": "WRQ-4",
       "inputs": {
         "navigatorArgument": "request-cbor/two-smart-doc-requests/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "doc-requests"
+        "outcome": "warn",
+        "warnings": [
+          "doc-requests"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/two-smart-doc-requests/expected-smart-request.json"
+        }
       },
       "requirements": [
         "WRQ-4"
@@ -1521,16 +1557,24 @@
     {
       "id": "request-cbor/duplicate-key-items-request",
       "capability": "request-cbor",
-      "description": "The ItemsRequest map has the key docType twice.",
-      "rule": "D15",
+      "description": "The ItemsRequest map has the key docType twice: warn, or fail if the decoder can't process it.",
+      "rule": "ENC-5, WRQ-5",
       "inputs": {
         "navigatorArgument": "request-cbor/duplicate-key-items-request/navigator-argument.json"
       },
       "expected": {
-        "valid": false,
-        "reason": "cbor-duplicate-key"
+        "outcome": "warn-or-reject",
+        "warnings": [
+          "cbor-duplicate-key"
+        ],
+        "outputs": {
+          "smartRequest": "request-cbor/duplicate-key-items-request/expected-smart-request.json"
+        }
       },
-      "requirements": [],
+      "requirements": [
+        "ENC-5",
+        "WRQ-5"
+      ],
       "status": "active"
     },
     {
@@ -1543,7 +1587,7 @@
         "encryptionInfo": "transcript/capture-v2/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "sessionTranscript": "transcript/capture-v2/expected-session-transcript.cbor"
         }
@@ -1564,7 +1608,7 @@
         "encryptionInfo": "transcript/https-default-port/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "sessionTranscript": "transcript/https-default-port/expected-session-transcript.cbor"
         }
@@ -1584,7 +1628,7 @@
         "encryptionInfo": "transcript/https-explicit-port/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "sessionTranscript": "transcript/https-explicit-port/expected-session-transcript.cbor"
         }
@@ -1606,7 +1650,7 @@
         "encryptionInfo": "hpke-open/capture-v2/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "deviceResponse": "hpke-open/capture-v2/expected-device-response.cbor"
         }
@@ -1630,7 +1674,7 @@
         "encryptionInfo": "hpke-open/synthetic/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true,
+        "outcome": "accept",
         "outputs": {
           "deviceResponse": "hpke-open/synthetic/expected-device-response.cbor"
         }
@@ -1653,7 +1697,7 @@
         "encryptionInfo": "hpke-open/wrong-origin/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "hpke-open"
       },
       "requirements": [
@@ -1674,7 +1718,7 @@
         "encryptionInfo": "hpke-open/tampered-ciphertext/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "hpke-open"
       },
       "requirements": [
@@ -1685,7 +1729,7 @@
     {
       "id": "hpke-open/wrong-response-tag",
       "capability": "hpke-open",
-      "description": "The response's first entry is not \"dcapi\".",
+      "description": "The response's first entry is not \"dcapi\", but enc and cipherText are there: warn.",
       "rule": "VRS-2",
       "inputs": {
         "credential": "hpke-open/wrong-response-tag/credential.json",
@@ -1694,7 +1738,32 @@
         "encryptionInfo": "hpke-open/wrong-response-tag/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": false,
+        "outcome": "warn",
+        "warnings": [
+          "dcapi-response"
+        ],
+        "outputs": {
+          "deviceResponse": "hpke-open/wrong-response-tag/expected-device-response.cbor"
+        }
+      },
+      "requirements": [
+        "VRS-2"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "hpke-open/missing-enc",
+      "capability": "hpke-open",
+      "description": "The response has no enc: fail.",
+      "rule": "VRS-2",
+      "inputs": {
+        "credential": "hpke-open/missing-enc/credential.json",
+        "recipientPrivateJwk": "hpke-open/missing-enc/recipient-private.jwk.json",
+        "origin": "hpke-open/missing-enc/origin.txt",
+        "encryptionInfo": "hpke-open/missing-enc/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "outcome": "reject",
         "reason": "dcapi-response"
       },
       "requirements": [
@@ -1705,7 +1774,7 @@
     {
       "id": "hpke-open/padded-base64url",
       "capability": "hpke-open",
-      "description": "data.response is standard padded base64url, not unpadded.",
+      "description": "data.response is standard padded base64url, not unpadded: warn.",
       "rule": "VRS-2",
       "inputs": {
         "credential": "hpke-open/padded-base64url/credential.json",
@@ -1714,8 +1783,13 @@
         "encryptionInfo": "hpke-open/padded-base64url/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "base64url-padding"
+        "outcome": "warn",
+        "warnings": [
+          "base64url-padding"
+        ],
+        "outputs": {
+          "deviceResponse": "hpke-open/padded-base64url/expected-device-response.cbor"
+        }
       },
       "requirements": [
         "VRS-2"
@@ -1725,7 +1799,7 @@
     {
       "id": "hpke-open/wrong-protocol",
       "capability": "hpke-open",
-      "description": "The credential's protocol is not org-iso-mdoc.",
+      "description": "The credential's protocol is not org-iso-mdoc: warn.",
       "rule": "VRS-2",
       "inputs": {
         "credential": "hpke-open/wrong-protocol/credential.json",
@@ -1734,8 +1808,13 @@
         "encryptionInfo": "hpke-open/wrong-protocol/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "protocol"
+        "outcome": "warn",
+        "warnings": [
+          "protocol"
+        ],
+        "outputs": {
+          "deviceResponse": "hpke-open/wrong-protocol/expected-device-response.cbor"
+        }
       },
       "requirements": [
         "VRS-2"
@@ -1757,7 +1836,7 @@
         "now": "mdoc-verify/capture-v2/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "VRS-4",
@@ -1772,7 +1851,7 @@
       "id": "mdoc-verify/capture-v1-attached-equal",
       "capability": "mdoc-verify",
       "description": "The pre-fix capture: device signature payload attached but equal to the rebuilt DeviceAuthentication. Accepted.",
-      "rule": "VRS-7, D2",
+      "rule": "VRS-7",
       "inputs": {
         "deviceResponse": "mdoc-verify/capture-v1-attached-equal/device-response.cbor",
         "credential": "mdoc-verify/capture-v1-attached-equal/credential.json",
@@ -1783,7 +1862,7 @@
         "now": "mdoc-verify/capture-v1-attached-equal/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "VRS-7"
@@ -1805,7 +1884,7 @@
         "now": "mdoc-verify/synthetic/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "WRS-0",
@@ -1821,7 +1900,7 @@
       "id": "mdoc-verify/unknown-top-level-key",
       "capability": "mdoc-verify",
       "description": "An unknown top-level DeviceResponse key is ignored.",
-      "rule": "ALG-2, D11",
+      "rule": "ALG-2",
       "inputs": {
         "deviceResponse": "mdoc-verify/unknown-top-level-key/device-response.cbor",
         "credential": "mdoc-verify/unknown-top-level-key/credential.json",
@@ -1832,7 +1911,7 @@
         "now": "mdoc-verify/unknown-top-level-key/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "ALG-2"
@@ -1843,7 +1922,7 @@
       "id": "mdoc-verify/unknown-unprotected-header",
       "capability": "mdoc-verify",
       "description": "An unknown unprotected header label in issuerAuth is ignored.",
-      "rule": "ALG-2, D11",
+      "rule": "ALG-2",
       "inputs": {
         "deviceResponse": "mdoc-verify/unknown-unprotected-header/device-response.cbor",
         "credential": "mdoc-verify/unknown-unprotected-header/credential.json",
@@ -1854,7 +1933,7 @@
         "now": "mdoc-verify/unknown-unprotected-header/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "ALG-2"
@@ -1864,8 +1943,8 @@
     {
       "id": "mdoc-verify/attached-payload-other-session",
       "capability": "mdoc-verify",
-      "description": "Device signature carries an attached payload built for another origin's transcript.",
-      "rule": "VRS-7, D2",
+      "description": "Device signature carries an attached payload built for another origin's transcript: warn.",
+      "rule": "VRS-7",
       "inputs": {
         "deviceResponse": "mdoc-verify/attached-payload-other-session/device-response.cbor",
         "credential": "mdoc-verify/attached-payload-other-session/credential.json",
@@ -1876,8 +1955,10 @@
         "now": "mdoc-verify/attached-payload-other-session/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "device-signature"
+        "outcome": "warn",
+        "warnings": [
+          "device-signature"
+        ]
       },
       "requirements": [
         "VRS-7"
@@ -1887,7 +1968,7 @@
     {
       "id": "mdoc-verify/tampered-device-signature",
       "capability": "mdoc-verify",
-      "description": "One bit of the device signature flipped.",
+      "description": "One bit of the device signature flipped: warn.",
       "rule": "VRS-7",
       "inputs": {
         "deviceResponse": "mdoc-verify/tampered-device-signature/device-response.cbor",
@@ -1899,8 +1980,10 @@
         "now": "mdoc-verify/tampered-device-signature/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "device-signature"
+        "outcome": "warn",
+        "warnings": [
+          "device-signature"
+        ]
       },
       "requirements": [
         "VRS-7"
@@ -1910,8 +1993,8 @@
     {
       "id": "mdoc-verify/tampered-issuer-signature",
       "capability": "mdoc-verify",
-      "description": "One bit of the issuer signature flipped.",
-      "rule": "VRS-5, D1",
+      "description": "One bit of the issuer signature flipped: warn.",
+      "rule": "VRS-5",
       "inputs": {
         "deviceResponse": "mdoc-verify/tampered-issuer-signature/device-response.cbor",
         "credential": "mdoc-verify/tampered-issuer-signature/credential.json",
@@ -1922,8 +2005,10 @@
         "now": "mdoc-verify/tampered-issuer-signature/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "issuer-signature"
+        "outcome": "warn",
+        "warnings": [
+          "issuer-signature"
+        ]
       },
       "requirements": [
         "VRS-5"
@@ -1933,8 +2018,8 @@
     {
       "id": "mdoc-verify/missing-validity-info",
       "capability": "mdoc-verify",
-      "description": "The MSO has no validityInfo.",
-      "rule": "VRS-5, WRS-3, D2",
+      "description": "The MSO has no validityInfo: warn.",
+      "rule": "VRS-5, WRS-3",
       "inputs": {
         "deviceResponse": "mdoc-verify/missing-validity-info/device-response.cbor",
         "credential": "mdoc-verify/missing-validity-info/credential.json",
@@ -1945,8 +2030,10 @@
         "now": "mdoc-verify/missing-validity-info/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "mso-validity-info"
+        "outcome": "warn",
+        "warnings": [
+          "mso-validity-info"
+        ]
       },
       "requirements": [
         "VRS-5",
@@ -1957,7 +2044,7 @@
     {
       "id": "mdoc-verify/digest-mismatch",
       "capability": "mdoc-verify",
-      "description": "The issuer-signed item changed after the MSO was signed.",
+      "description": "The issuer-signed item changed after the MSO was signed: warn.",
       "rule": "VRS-6",
       "inputs": {
         "deviceResponse": "mdoc-verify/digest-mismatch/device-response.cbor",
@@ -1969,8 +2056,10 @@
         "now": "mdoc-verify/digest-mismatch/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "digest"
+        "outcome": "warn",
+        "warnings": [
+          "digest"
+        ]
       },
       "requirements": [
         "VRS-6"
@@ -1980,7 +2069,7 @@
     {
       "id": "mdoc-verify/digest-missing",
       "capability": "mdoc-verify",
-      "description": "The MSO has no digest for the item's digestID.",
+      "description": "The MSO has no digest for the item's digestID: warn.",
       "rule": "VRS-6",
       "inputs": {
         "deviceResponse": "mdoc-verify/digest-missing/device-response.cbor",
@@ -1992,8 +2081,10 @@
         "now": "mdoc-verify/digest-missing/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "digest"
+        "outcome": "warn",
+        "warnings": [
+          "digest"
+        ]
       },
       "requirements": [
         "VRS-6"
@@ -2003,7 +2094,7 @@
     {
       "id": "mdoc-verify/document-doc-type",
       "capability": "mdoc-verify",
-      "description": "The document's docType isn't org.smarthealthit.checkin.1.",
+      "description": "No document has docType org.smarthealthit.checkin.1: fail.",
       "rule": "VRS-4",
       "inputs": {
         "deviceResponse": "mdoc-verify/document-doc-type/device-response.cbor",
@@ -2015,7 +2106,7 @@
         "now": "mdoc-verify/document-doc-type/now.txt"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "doc-type"
       },
       "requirements": [
@@ -2026,7 +2117,7 @@
     {
       "id": "mdoc-verify/mso-doc-type-mismatch",
       "capability": "mdoc-verify",
-      "description": "The MSO's docType differs from the document's.",
+      "description": "The MSO's docType differs from the document's: warn.",
       "rule": "VRS-5",
       "inputs": {
         "deviceResponse": "mdoc-verify/mso-doc-type-mismatch/device-response.cbor",
@@ -2038,8 +2129,10 @@
         "now": "mdoc-verify/mso-doc-type-mismatch/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "doc-type"
+        "outcome": "warn",
+        "warnings": [
+          "mso-doc-type"
+        ]
       },
       "requirements": [
         "VRS-5"
@@ -2049,7 +2142,7 @@
     {
       "id": "mdoc-verify/status-not-ok",
       "capability": "mdoc-verify",
-      "description": "DeviceResponse status is 10.",
+      "description": "DeviceResponse status is 10: warn.",
       "rule": "VRS-4",
       "inputs": {
         "deviceResponse": "mdoc-verify/status-not-ok/device-response.cbor",
@@ -2061,8 +2154,10 @@
         "now": "mdoc-verify/status-not-ok/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "device-response-status"
+        "outcome": "warn",
+        "warnings": [
+          "device-response-status"
+        ]
       },
       "requirements": [
         "VRS-4"
@@ -2072,7 +2167,7 @@
     {
       "id": "mdoc-verify/version-unknown",
       "capability": "mdoc-verify",
-      "description": "DeviceResponse version is 9.0.",
+      "description": "DeviceResponse version is 9.0: warn.",
       "rule": "VRS-4",
       "inputs": {
         "deviceResponse": "mdoc-verify/version-unknown/device-response.cbor",
@@ -2084,8 +2179,10 @@
         "now": "mdoc-verify/version-unknown/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "device-response-version"
+        "outcome": "warn",
+        "warnings": [
+          "device-response-version"
+        ]
       },
       "requirements": [
         "VRS-4"
@@ -2095,8 +2192,8 @@
     {
       "id": "mdoc-verify/unknown-alg",
       "capability": "mdoc-verify",
-      "description": "issuerAuth's protected alg is an unknown value.",
-      "rule": "ALG-2, D11",
+      "description": "issuerAuth's protected alg is an unknown value: warn.",
+      "rule": "ALG-2",
       "inputs": {
         "deviceResponse": "mdoc-verify/unknown-alg/device-response.cbor",
         "credential": "mdoc-verify/unknown-alg/credential.json",
@@ -2107,8 +2204,10 @@
         "now": "mdoc-verify/unknown-alg/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "alg"
+        "outcome": "warn",
+        "warnings": [
+          "alg"
+        ]
       },
       "requirements": [
         "ALG-2"
@@ -2118,8 +2217,8 @@
     {
       "id": "mdoc-verify/unsupported-digest-algorithm",
       "capability": "mdoc-verify",
-      "description": "The MSO's digestAlgorithm is SHA-512 (1.0 uses SHA-256).",
-      "rule": "ALG-1, ALG-2, D11",
+      "description": "The MSO's digestAlgorithm is SHA-512 (1.0 uses SHA-256): warn.",
+      "rule": "ALG-1, ALG-2",
       "inputs": {
         "deviceResponse": "mdoc-verify/unsupported-digest-algorithm/device-response.cbor",
         "credential": "mdoc-verify/unsupported-digest-algorithm/credential.json",
@@ -2130,8 +2229,10 @@
         "now": "mdoc-verify/unsupported-digest-algorithm/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "digest-algorithm"
+        "outcome": "warn",
+        "warnings": [
+          "digest-algorithm"
+        ]
       },
       "requirements": [
         "ALG-1",
@@ -2142,7 +2243,7 @@
     {
       "id": "mdoc-verify/missing-response-element",
       "capability": "mdoc-verify",
-      "description": "The document carries another element instead of smart_health_checkin_response.",
+      "description": "No smart_health_checkin_response element: fail.",
       "rule": "VRS-8",
       "inputs": {
         "deviceResponse": "mdoc-verify/missing-response-element/device-response.cbor",
@@ -2154,7 +2255,7 @@
         "now": "mdoc-verify/missing-response-element/now.txt"
       },
       "expected": {
-        "valid": false,
+        "outcome": "reject",
         "reason": "response-element"
       },
       "requirements": [
@@ -2177,7 +2278,7 @@
         "now": "mdoc-verify/x5chain-single-certificate/now.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "ENC-3"
@@ -2187,8 +2288,8 @@
     {
       "id": "mdoc-verify/duplicate-key-device-response",
       "capability": "mdoc-verify",
-      "description": "The DeviceResponse map has the key status twice.",
-      "rule": "D15",
+      "description": "The DeviceResponse map has the key status twice: warn, or fail if the decoder can't process it.",
+      "rule": "ENC-5, VRS-4",
       "inputs": {
         "deviceResponse": "mdoc-verify/duplicate-key-device-response/device-response.cbor",
         "credential": "mdoc-verify/duplicate-key-device-response/credential.json",
@@ -2199,16 +2300,21 @@
         "now": "mdoc-verify/duplicate-key-device-response/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "cbor-duplicate-key"
+        "outcome": "warn-or-reject",
+        "warnings": [
+          "cbor-duplicate-key"
+        ]
       },
-      "requirements": [],
+      "requirements": [
+        "ENC-5",
+        "VRS-4"
+      ],
       "status": "active"
     },
     {
       "id": "mdoc-verify/two-documents",
       "capability": "mdoc-verify",
-      "description": "Two documents in the DeviceResponse.",
+      "description": "Two documents in the DeviceResponse: warn.",
       "rule": "VRS-4",
       "inputs": {
         "deviceResponse": "mdoc-verify/two-documents/device-response.cbor",
@@ -2220,8 +2326,10 @@
         "now": "mdoc-verify/two-documents/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "documents"
+        "outcome": "warn",
+        "warnings": [
+          "documents"
+        ]
       },
       "requirements": [
         "VRS-4"
@@ -2231,8 +2339,8 @@
     {
       "id": "mdoc-verify/expired",
       "capability": "mdoc-verify",
-      "description": "Checked after the MSO's validUntil.",
-      "rule": "VRS-10 (SHOULD)",
+      "description": "Checked after the MSO's validUntil: warn.",
+      "rule": "VRS-10",
       "inputs": {
         "deviceResponse": "mdoc-verify/expired/device-response.cbor",
         "credential": "mdoc-verify/expired/credential.json",
@@ -2243,14 +2351,15 @@
         "now": "mdoc-verify/expired/now.txt"
       },
       "expected": {
-        "valid": false,
-        "reason": "mso-expired"
+        "outcome": "warn",
+        "warnings": [
+          "mso-validity"
+        ]
       },
       "requirements": [
         "VRS-10"
       ],
-      "status": "pending",
-      "pendingOn": "VRS-10 is a SHOULD: decide whether conformance cases test SHOULDs."
+      "status": "active"
     },
     {
       "id": "wallet-response/capture-v2-request",
@@ -2265,7 +2374,7 @@
         "encryptionInfo": "wallet-response/capture-v2-request/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "WRS-0",
@@ -2287,7 +2396,7 @@
         "encryptionInfo": "wallet-response/synthetic-request/encryption-info.b64u.txt"
       },
       "expected": {
-        "valid": true
+        "outcome": "accept"
       },
       "requirements": [
         "WRS-0",

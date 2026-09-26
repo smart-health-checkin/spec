@@ -16,7 +16,7 @@ negative case is one deliberate mutation of a positive one.
 
 ```jsonc
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "capabilities": { "request-json": "what it means", … },
   "cases": [
     {
@@ -24,7 +24,7 @@ negative case is one deliberate mutation of a positive one.
       "capability": "cross-validation",
       "description": "requestId differs from the request id.",
       "inputs": { "request": "cross-validation/request-id-mismatch/request.json", … },
-      "expected": { "valid": false, "reason": "request-id" },
+      "expected": { "outcome": "reject", "reason": "request-id" },
       "rule": "XV-2",                // requirement ids and plan decisions (D1–D15) the expectation follows
       "requirements": ["XV-2"],      // just the requirement ids (the spec's requirements.json)
       "status": "active"             // or "pending": expected result waits on a spec decision
@@ -37,12 +37,21 @@ Paths are relative to this folder. Text inputs (`*.txt`, `*.json`) are UTF-8;
 read `*.txt` values with surrounding whitespace trimmed. `*.cbor` and `*.bin`
 are raw bytes.
 
-- `expected.valid` is the verdict every runner compares.
-- `expected.reason` is a short code saying why a case is invalid. It's
+- `expected.outcome` is the verdict every runner compares:
+  - `accept`: the implementation accepts the input.
+  - `warn`: it accepts, and should report the warning codes in
+    `expected.warnings` (§2 RCV-0..2: receivers fail only where §8 says
+    **fail**; every other problem is a warning). CI gates on accepting.
+    Whether the implementation reports the warning is recorded where the
+    runner can see it, but is advisory.
+  - `reject`: it rejects the input.
+  - `warn-or-reject`: either is conformant (ENC-5: a CBOR map with a
+    duplicate key fails only if the decoder can't process it).
+- `expected.reason` is a short code saying why a case is rejected. It's
   documentation: runners don't have to produce it.
 - `expected.outputs` names files an implementation must reproduce byte for
   byte (a transcript, an opened DeviceResponse, a recovered SMART request —
-  compared as parsed JSON).
+  compared as parsed JSON) whenever they accept.
 - `expected.artifacts` gives a per-Artifact outcome (`accepted` or
   `rejected`) when some Artifacts are disregarded but the response stands
   (XV-4: an Artifact that fails a check affects only itself and the items it
@@ -53,7 +62,7 @@ are raw bytes.
   for a response item whose status row is missing, duplicated, or has an
   unknown code (D14).
 - A runner whose implementation reports per-Artifact or per-item results
-  compares them; otherwise it compares only `valid`.
+  compares them; otherwise it compares only `outcome`.
 - `status: "pending"` cases are skipped until the spec decides them;
   `pendingOn` says what's undecided.
 
@@ -61,13 +70,13 @@ are raw bytes.
 
 | Capability | Inputs | Pass when |
 | --- | --- | --- |
-| `request-json` | `request` (JSON text, parsed by the implementation, so duplicate member names are visible) | verdict matches |
-| `response-json` | `response` | verdict matches |
-| `cross-validation` | `request`, `response` | verdict matches (and per-Artifact outcomes, if reported) |
-| `request-cbor` | `navigatorArgument` (the `navigator.credentials.get` argument) | verdict matches; when valid, the recovered SMART request equals `outputs.smartRequest` |
+| `request-json` | `request` (JSON text, parsed by the implementation, so duplicate member names are visible) | outcome matches |
+| `response-json` | `response` | outcome matches |
+| `cross-validation` | `request`, `response` | outcome matches (and per-Artifact or per-item outcomes, if reported) |
+| `request-cbor` | `navigatorArgument` (the `navigator.credentials.get` argument) | outcome matches; when accepted, the recovered SMART request equals `outputs.smartRequest` |
 | `transcript` | `origin`, `encryptionInfo` (base64url string) | the bytes equal `outputs.sessionTranscript` |
-| `hpke-open` | `credential`, `recipientPrivateJwk`, `origin`, `encryptionInfo` | verdict matches; when valid, the plaintext equals `outputs.deviceResponse` |
-| `mdoc-verify` | `deviceResponse`, `sessionTranscript`, `now` (ISO time to check validity against), plus `credential`, `recipientPrivateJwk`, `origin`, `encryptionInfo` for implementations that only verify whole credentials | verdict matches |
+| `hpke-open` | `credential`, `recipientPrivateJwk`, `origin`, `encryptionInfo` | outcome matches; when accepted, the plaintext equals `outputs.deviceResponse` |
+| `mdoc-verify` | `deviceResponse`, `sessionTranscript`, `now` (ISO time to check validity against), plus `credential`, `recipientPrivateJwk`, `origin`, `encryptionInfo` for implementations that only verify whole credentials | outcome matches |
 | `wallet-response` | `navigatorArgument`, `smartResponse`, `origin`, `recipientPrivateJwk`, `encryptionInfo` | the implementation's wallet builds a credential for that origin carrying `smartResponse`, and the reference verifier accepts it (opens, verifies the mdoc layer, finds the same SMART response) |
 
 ## Running them in an implementation
@@ -87,24 +96,9 @@ Runners fetch this folder at a pinned spec ref with
 
 ## What the expectations follow
 
-The requirement ids of the rewritten spec (`requirements.json`), and these
-decisions from the spec and implementation alignment plan where the spec text
-doesn't settle a case yet:
-
-- D2: an attached device-signature payload is accepted only if it equals the
-  rebuilt `DeviceAuthentication` (VRS-7).
-- D5: an unknown selector kind is `unsupported` for that item (SEL-9).
-- D6: a `fhirVersion` problem affects only that Artifact (XV-8).
-- D7: the request travels only in `requestInfo` (WRQ-6).
-- D9: a versioned canonical is echoed exactly (FORM-5, XV-10).
-- D10: a patient who declines everything gets an all-`declined` response.
-- D11: unknown values of security labels are rejected; other unknown keys are
-  ignored (ALG-2).
-- D13: old selector members `canonical` and `resource` are ignored (JSON-3).
-- D14: only a §5.1 failure, a `type`, `version`, or `requestId` mismatch, or
-  non-array `artifacts`/`requestStatus` rejects a whole response. A missing,
-  duplicated, or unknown-code status row makes only that item's outcome
-  unknown, and a status row for an id not in the request is ignored. This
-  supersedes XV-3 as currently written.
-- D15: a CBOR map with a duplicate key makes the structure invalid. No
-  requirement id covers this yet.
+Every case cites the requirement ids its expectation follows, from the spec's
+`requirements.json`. The §8 receiver steps (WRQ-2..9, VRS-2..10) mark each
+problem as **fail** or warning, and ALG-2 and ENC-5 say how receivers treat
+unknown algorithms and duplicate map keys; producers are held to the exact
+structures (the reference verifier for `wallet-response` is strict: detached
+device signature, `validityInfo`, valid signatures and digests).
