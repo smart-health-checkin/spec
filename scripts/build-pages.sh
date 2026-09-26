@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SITE_DIR="${1:-"$ROOT/_site"}"
 
+# Every JSON example in the model explainer must pass the client validators.
+bun "$ROOT/scripts/check-explainer.ts"
+
 rm -rf "$SITE_DIR"
 mkdir -p "$SITE_DIR"
 
