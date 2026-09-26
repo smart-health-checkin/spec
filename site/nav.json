@@ -11,18 +11,19 @@
       ]
     },
     {
-      "title": "Notes",
+      "title": "Implementing",
       "items": [
         { "title": "Trust and limits", "href": "trust-and-limits.html", "note": "What signatures prove, size, cancel" },
-        { "title": "Platform notes", "href": "platform-notes.html", "note": "Android, iOS, browsers, app origins" }
+        { "title": "Platform notes", "href": "platform-notes.html", "note": "Android, iOS, browsers, app origins" },
+        { "title": "Capture inspector", "href": "wire-protocol-inspector.html", "note": "Walk a real capture byte by byte" }
       ]
     },
     {
-      "title": "Tools",
+      "title": "Specification",
       "items": [
-        { "title": "Capture inspector", "href": "wire-protocol-inspector.html", "note": "Byte-level fixture viewer" }
+        { "title": "Draft spec 1.0", "href": "./", "note": "Normative reference" },
+        { "title": "Conformance cases", "href": "https://github.com/smart-health-checkin/spec/tree/main/conformance", "note": "The tests every implementation runs" }
       ]
-    },
-    { "title": "Draft spec 1.0", "href": "./", "note": "Normative reference" }
+    }
   ]
 }
