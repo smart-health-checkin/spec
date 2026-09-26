@@ -42,7 +42,7 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./smart-model-explainer.html` | The request and response model |
 | `./wire-protocol-explainer.html` | The wire protocol, byte by byte |
 | `./wire-protocol-inspector.html` | Inspect the checked-in captures |
-| `./kiosk-flow-explainer.html` | The kiosk hand-off flow |
+| `./kiosk-flow-explainer.html` | Front-desk handoff: start at a kiosk or the desk, continue on the phone |
 | `./trust-and-limits.html` | What signatures prove, warnings, reader authentication, response size |
 | `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
 | `./llms.txt` | The spec and explainers in one file |

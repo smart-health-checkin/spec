@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SMART Health Check-in Wire Protocol Explainer</title>
+  <title>Wire protocol · SMART Health Check-in spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
+  <script src="/assets/site-chrome.js" defer></script>
   <style>
     :root {
       color-scheme: light;
@@ -33,7 +36,7 @@
     code, pre, .mono, .byte-offset, .byte-hex, .byte-ascii {
       font-family: var(--font-mono);
     }
-    header {
+    .page-head {
       background: #ffffff;
       border-bottom: 1px solid var(--line);
     }
@@ -51,7 +54,7 @@
     h3 { font-size: 1.18rem; margin-bottom: 8px; }
     h4 { font-size: 1rem; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
     p { margin: 0 0 12px; }
-    a { color: var(--blue); }
+    :where(main) a { color: var(--blue); }
     .lede {
       color: var(--muted);
       font-size: 1.13rem;
@@ -91,7 +94,7 @@
       flex-wrap: wrap;
       margin: 12px 0;
     }
-    button {
+    :where(main) button {
       border: 1px solid #006fb7;
       background: var(--blue);
       color: #ffffff;
@@ -101,7 +104,7 @@
       font-weight: 800;
       cursor: pointer;
     }
-    button.secondary {
+    :where(main) button.secondary {
       background: #ffffff;
       color: var(--blue);
     }
@@ -111,13 +114,13 @@
       gap: 22px;
       align-items: start;
     }
-    nav {
+    .sections-nav {
       position: sticky;
       top: 12px;
       border-left: 3px solid var(--line);
       padding: 4px 0 4px 12px;
     }
-    nav a {
+    .sections-nav a {
       display: block;
       padding: 8px 10px;
       border-radius: 0;
@@ -125,7 +128,7 @@
       color: var(--ink);
       font-weight: 650;
     }
-    nav a:hover { background: var(--soft); }
+    .sections-nav a:hover { background: var(--soft); }
     section {
       padding: 30px 0;
       margin-bottom: 0;
@@ -514,24 +517,24 @@
       border-radius: 0;
       background: #f8fbff;
     }
-    details {
+    :where(main) details {
       border: 1px solid var(--line);
       border-radius: 0;
       padding: 0;
       margin: 10px 0;
       background: #ffffff;
     }
-    summary {
+    :where(main) summary {
       cursor: pointer;
       padding: 12px 14px;
       font-weight: 800;
     }
-    details > div { padding: 0 14px 14px; }
+    :where(main) details > div { padding: 0 14px 14px; }
     .small { color: var(--muted); font-size: 0.92rem; }
     .nowrap { white-space: nowrap; }
     @media (max-width: 980px) {
       .main-grid { grid-template-columns: 1fr; }
-      nav { position: static; }
+      .sections-nav { position: static; }
       .wrap { padding: 18px; }
     }
 
@@ -548,13 +551,13 @@
     .table-wrap > table { margin: 0; }
 
     /* ----- Hero typography (override earlier h1 sizing) ----- */
-    header h1 {
+    .page-head h1 {
       font-size: clamp(1.6rem, 2.6vw, 2.4rem);
       letter-spacing: -0.02em;
       max-width: none;
       margin: 4px 0 0;
     }
-    header .lede {
+    .page-head .lede {
       font-size: 1.04rem;
       margin-top: 14px;
       max-width: 760px;
@@ -642,15 +645,16 @@
 </head>
 <body>
   <div data-smart-topbar></div>
-  <header>
+  <nav data-smart-breadcrumb></nav>
+  <main id="main">
+  <div class="page-head">
     <div class="wrap hero">
-      <a class="back-link" href="/">← SMART Health Check-in</a>
       <h1>Wire protocol</h1>
       <p class="lede">
         How the request and response travel through the W3C Digital Credentials API as an ISO mdoc presentation:
         who builds each structure, what gets hashed, signed, and encrypted, and what each side checks. The steps follow
         <a href="./spec.html#8-same-device-presentation-flow">spec §8</a>, and each links its requirement. For what the
-        JSON inside means, see the <a href="./smart-model-explainer.html">model explainer</a>.
+        JSON inside means, see <a href="./smart-model-explainer.html">Request and response</a>.
       </p>
       <ul class="param-list">
         <li><b>Protocol</b> <code>org-iso-mdoc</code></li>
@@ -666,10 +670,10 @@
         <a href="./trust-and-limits.html">Trust and limits</a> for why.
       </p>
     </div>
-  </header>
+  </div>
 
-  <main class="wrap main-grid">
-    <nav aria-label="Wire protocol sections">
+  <div class="wrap main-grid">
+    <nav class="sections-nav" aria-label="Wire protocol sections">
       <a href="#flow">Flow</a>
       <a href="#construct-request">1. Verifier builds the request</a>
       <a href="#bind-transcript">2. SessionTranscript</a>
@@ -805,7 +809,7 @@ SessionTranscript = [null, null, Handover]      // HPKE info = CBOR(SessionTrans
               <tr><td><a class="rid" href="./spec.html#WRQ-3">WRQ-3</a></td><td><code>DeviceRequest.version</code> is <code>"1.0"</code></td><td><span class="fw warn">warn</span></td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-4">WRQ-4</a></td><td>Find the DocRequest with this profile's <code>docType</code></td><td><span class="fw fail">fail</span> if none; <span class="fw warn">warn</span> if several (use the first)</td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-5">WRQ-5</a></td><td>Take the request text from <code>requestInfo</code></td><td><span class="fw fail">fail</span> if missing; <span class="fw warn">warn</span> for other <code>nameSpaces</code> or <code>intentToRetain</code> problems</td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-6">WRQ-6</a></td><td>Validate the SMART request (spec §5)</td><td><span class="fw fail">fail</span> where §5 rejects it; problems inside one item make that item <code>unsupported</code></td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-6">WRQ-6</a></td><td>Validate the SMART request (<a href="./spec.html#5-clinical-request-model">spec §5</a>)</td><td><span class="fw fail">fail</span> where §5 rejects it; problems inside one item make that item <code>unsupported</code></td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-7">WRQ-7</a></td><td>Decode <code>encryptionInfo</code> and its P-256 key</td><td><span class="fw fail">fail</span> if no usable key; <span class="fw warn">warn</span> for other shape problems</td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-8">WRQ-8</a></td><td>Compute the SessionTranscript</td><td><span class="fw fail">fail</span> if there is no origin</td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-9">WRQ-9</a></td><td>Check <code>readerAuth</code>, if present</td><td>Never fails; classified as above</td></tr>
@@ -901,7 +905,7 @@ result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dca
               <tr><td><a class="rid" href="./spec.html#VRS-6">VRS-6</a></td><td>SHA-256 of <code>IssuerSignedItemBytes</code> as received equals the MSO digest for its <code>digestID</code></td><td><span class="fw warn">warn</span></td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-7">VRS-7</a></td><td>Rebuild <code>DeviceAuthenticationBytes</code>, verify the device signature</td><td><span class="fw warn">warn</span>, also for an attached payload that differs from the rebuilt bytes</td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-8">VRS-8</a></td><td>Find <code>smart_health_checkin_response</code> with a text value</td><td><span class="fw fail">fail</span> if missing</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="fw fail">fail</span> only for the whole-response problems in §6.4; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">model explainer</a>)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="fw fail">fail</span> only for the whole-response problems in <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">Request and response</a>)</td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-10">VRS-10</a></td><td>MSO <code>validityInfo</code> includes now, give or take a few minutes</td><td><span class="fw warn">warn</span></td></tr>
             </tbody>
           </table>
@@ -922,9 +926,9 @@ result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dca
         </p>
       </section>
     </div>
+  </div>
   </main>
 
   <div data-smart-footer></div>
-  <script src="/assets/site-chrome.js" defer></script>
 </body>
 </html>

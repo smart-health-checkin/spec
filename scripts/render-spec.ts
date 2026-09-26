@@ -55,8 +55,13 @@ const renderer = new Renderer();
 const baseHeading = renderer.heading.bind(renderer);
 const baseCode = renderer.code.bind(renderer);
 
+// "Check-in" must not break at its hyphen in a heading.
+const keepCheckIn = (html: string) => html.replace(/\bCheck-in\b/g, '<span class="nowrap">Check-in</span>');
+// The document's one H1 (its title) goes in the page head, not the body.
+let docH1: { id: string; html: string } | undefined;
+
 renderer.heading = function ({ tokens, depth }) {
-  const text = this.parser.parseInline(tokens);
+  const text = keepCheckIn(this.parser.parseInline(tokens));
   const raw = tokens
     .map((t: any) => ("text" in t ? t.text : "raw" in t ? t.raw : ""))
     .join(" ");
@@ -65,7 +70,9 @@ renderer.heading = function ({ tokens, depth }) {
     headings.push({ depth, text, id });
   }
   if (depth === 1) {
-    return `<h1 id="${id}">${text}</h1>\n`;
+    if (docH1) throw new Error("spec.md has more than one H1");
+    docH1 = { id, html: text };
+    return "";
   }
   return `<h${depth} id="${id}"><a class="anchor" href="#${id}" aria-hidden="true">#</a>${text}</h${depth}>\n`;
 };
@@ -94,7 +101,8 @@ const docDescription =
   descriptionArg ??
   "SMART Health Check-in 1.0 draft: TypeScript/JSDoc clinical model, trust rules and layer separation, same-device org-iso-mdoc flow, and Appendix A diagnostic bridge.";
 const rawHref = rawHrefArg ?? "./spec.md";
-const heroTitle = heroTitleArg ?? "Draft Specification 1.0";
+if (!docH1) throw new Error("spec.md has no H1");
+const heroEyebrow = heroTitleArg ?? "Specification · Editor's draft";
 
 const tocItems = headings
   .map(
@@ -110,7 +118,10 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${escapeHtml(docTitle)}</title>
 <meta name="description" content="${escapeHtml(docDescription)}" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/smart-design.css">
+<script src="/assets/site-chrome.js" defer></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css" />
 <style>
   :root {
@@ -131,7 +142,7 @@ const html = `<!doctype html>
     --measure: 980px;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     font-family: var(--font-sans);
@@ -150,47 +161,29 @@ const html = `<!doctype html>
   }
   a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
 
-  /* Doc-level topbar (under the global SMART topbar) */
-  .topbar {
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-alt);
-  }
-  .topbar-inner {
-    max-width: var(--measure);
-    margin: 0 auto;
-    padding: 10px 24px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: baseline;
-    font-size: 13px;
-  }
-  .topbar-title {
-    font-weight: 700;
-    color: var(--gray-800);
-    letter-spacing: var(--tracking-snug);
-    margin-right: auto;
-  }
-  .topbar a {
-    color: var(--fg-2);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    font-weight: 600;
-  }
-  .topbar a:hover { color: var(--brand-ink); border-bottom-color: var(--brand); }
-
+  /* Page layout. Wide screens: the contents in a sticky left column, the
+     title and the text to its right. Narrower: title, then the contents
+     collapsed into a "Contents" disclosure, then the text. */
   .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "hero" "toc" "body";
     max-width: var(--measure);
     margin: 0 auto;
-    padding: 0 24px 80px;
+    padding: 28px 24px 80px;
+  }
+  .hero { grid-area: hero; }
+  .toc { grid-area: toc; }
+  .spec-body { grid-area: body; min-width: 0; }
+  @media (max-width: 700px) {
+    .layout { padding: 20px 16px 64px; }
   }
   @media (min-width: 1100px) {
     .layout {
       max-width: 1280px;
       grid-template-columns: 260px minmax(0, 1fr);
-      gap: 36px;
+      grid-template-areas: "toc hero" "toc body";
+      column-gap: 36px;
     }
   }
 
@@ -198,26 +191,61 @@ const html = `<!doctype html>
     font-size: 13.5px;
     color: var(--fg-2);
     line-height: 1.5;
+    margin: 0 0 var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
   }
+  .toc > summary {
+    cursor: pointer;
+    padding: 10px 14px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--fg-1);
+  }
+  .toc > summary::-webkit-details-marker { display: none; }
+  .toc > summary::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    margin: -3px 2px 0 auto;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+  .toc[open] > summary::after { margin-top: 3px; transform: rotate(-135deg); }
+  .toc[open] > summary { border-bottom: 1px solid var(--border); }
+  .toc > ul { padding: 8px 14px 4px 4px; }
   @media (min-width: 1100px) {
     .toc {
       position: sticky;
-      top: 12px;
+      top: 72px;
       align-self: start;
-      max-height: calc(100vh - 32px);
+      max-height: calc(100vh - 88px);
       overflow-y: auto;
-      padding-top: 28px;
+      margin: 0;
+      padding: 0 16px 0 0;
+      border: 0;
       border-right: 1px solid var(--border);
-      padding-right: 16px;
+      border-radius: 0;
     }
-  }
-  .toc h2 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-caps);
-    color: var(--fg-mark);
-    font-weight: 700;
-    margin: 0 0 var(--space-3);
+    /* Always open here; the label is a heading, not a control. */
+    .toc > summary {
+      list-style: none;
+      pointer-events: none;
+      min-height: 0;
+      padding: 0;
+      margin: 0 0 var(--space-3);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--fg-mark);
+    }
+    .toc > summary::after { display: none; }
+    .toc[open] > summary { border-bottom: 0; }
+    .toc > ul { padding: 0; }
   }
   .toc ul { list-style: none; padding: 0; margin: 0 0 var(--space-4); }
   .toc li { margin: 2px 0; }
@@ -235,11 +263,10 @@ const html = `<!doctype html>
   .toc-l3 { padding-left: 14px; font-size: 12.5px; color: var(--fg-3); }
   .toc-l3 a { color: var(--fg-3); }
 
-  main { min-width: 0; padding-top: 28px; }
   .hero {
     border-bottom: 1px solid var(--border);
-    padding-bottom: var(--space-5);
-    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
   }
   .hero .eyebrow {
     font-size: var(--fs-xs);
@@ -247,17 +274,21 @@ const html = `<!doctype html>
     letter-spacing: var(--tracking-caps);
     color: var(--brand);
     font-weight: 700;
-    margin-bottom: var(--space-2);
+    margin: 0 0 var(--space-2);
   }
   .hero h1 {
     font-size: clamp(2rem, 3.8vw, 3rem);
     line-height: var(--lh-tight);
     letter-spacing: var(--tracking-tight);
-    margin: 0 0 var(--space-2);
+    margin: 0;
     color: var(--fg-1);
     font-weight: 800;
+    text-wrap: balance;
   }
-  .hero p { color: var(--fg-2); margin: 0; max-width: 680px; font-size: var(--fs-md); line-height: var(--lh-relaxed); }
+  .nowrap { white-space: nowrap; }
+  /* Prose keeps a readable measure; code, tables, and diagrams use the full width. */
+  .spec-body > :is(p, ul, ol, blockquote),
+  .spec-body > :is(ul, ol) p { max-width: 38em; }
 
   h1, h2, h3, h4, h5, h6 { line-height: 1.22; color: var(--fg-1); }
   h1 { margin: 0 0 var(--space-3); font-weight: 800; letter-spacing: var(--tracking-tight); }
@@ -273,10 +304,15 @@ const html = `<!doctype html>
   h4 { font-size: var(--fs-md); margin: var(--space-5) 0 var(--space-2); color: var(--gray-800); font-weight: 600; }
   h5, h6 { font-size: var(--fs-base); margin: var(--space-4) 0 var(--space-2); color: var(--gray-800); font-weight: 600; }
 
+  h2, h3, h4 { position: relative; }
+  /* A "#" link in the left margin on hover. */
   h2 .anchor, h3 .anchor, h4 .anchor {
+    position: absolute;
+    right: 100%;
+    padding-right: 6px;
     color: var(--border-strong);
     text-decoration: none;
-    margin-right: 8px;
+    margin-right: 0;
     font-weight: 400;
     opacity: 0;
     transition: opacity 80ms ease;
@@ -298,6 +334,8 @@ const html = `<!doctype html>
   }
   blockquote p:last-child { margin-bottom: 0; }
 
+  /* A rule right before a section heading would double its top border. */
+  .spec-body > hr + h2 { border-top: 0; }
   hr {
     border: none;
     border-top: 1px solid var(--border);
@@ -335,6 +373,7 @@ const html = `<!doctype html>
     padding: 1px 6px;
     font-size: 0.92em;
     color: var(--gray-800);
+    overflow-wrap: anywhere;
   }
   pre {
     background: var(--bg-alt);
@@ -367,36 +406,43 @@ const html = `<!doctype html>
     text-align: center;
   }
 
-  /* Smooth scrolling without the topbar covering targets. */
+  /* Jump targets land below the sticky bar. */
   :target { scroll-margin-top: 80px; }
 </style>
 </head>
 <body>
 <div data-smart-topbar></div>
 
-<div class="layout">
-  <aside class="toc" aria-label="Spec contents">
-    <h2>Contents</h2>
+<main id="main" class="layout">
+  <div class="hero">
+    <p class="eyebrow">${escapeHtml(heroEyebrow)}</p>
+    <h1 id="${docH1.id}">${docH1.html}</h1>
+  </div>
+
+  <details class="toc" id="toc">
+    <summary>Contents</summary>
     <ul>
 ${tocItems}
     </ul>
-  </aside>
+  </details>
+  <script>
+    // Wide screens show the contents as an open sidebar; narrower ones start collapsed.
+    (() => {
+      const toc = document.getElementById("toc");
+      const wide = matchMedia("(min-width: 1100px)");
+      const sync = () => { toc.open = wide.matches; };
+      sync();
+      wide.addEventListener("change", sync);
+      toc.addEventListener("click", (e) => { if (!wide.matches && e.target.closest("a")) toc.open = false; });
+    })();
+  </script>
 
-  <main>
-    <section class="hero">
-      <div class="eyebrow">SMART Health Check-in</div>
-      <h1>${escapeHtml(heroTitle)}</h1>
-      <p>${escapeHtml(docDescription)}</p>
-    </section>
-
-    <article class="spec-body">
+  <article class="spec-body">
 ${body}
-    </article>
-  </main>
-</div>
+  </article>
+</main>
 
 <div data-smart-footer></div>
-<script src="/assets/site-chrome.js" defer></script>
 
 <script type="module">
   // Syntax highlighting via highlight.js (CDN, ESM build)

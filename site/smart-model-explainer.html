@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SMART Health Check-in Model Explainer</title>
+  <title>Request and response · SMART Health Check-in spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
+  <script src="/assets/site-chrome.js" defer></script>
   <style>
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -23,14 +26,6 @@
     .page { max-width: 960px; margin: 0 auto; padding: 36px 24px 56px; }
     .page > header { padding-bottom: 28px; border-bottom: 1px solid var(--border); }
 
-    .eyebrow {
-      margin: 0 0 var(--space-4);
-      color: var(--brand);
-      font-size: var(--fs-xs);
-      font-weight: 700;
-      letter-spacing: var(--tracking-caps);
-      text-transform: uppercase;
-    }
 
     h1, h2, h3 {
       margin: 0;
@@ -43,11 +38,11 @@
     h2 { margin-bottom: var(--space-3); font-size: clamp(1.55rem, 2.8vw, 2rem); font-weight: 700; letter-spacing: var(--tracking-snug); line-height: var(--lh-snug); }
     h3 { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; letter-spacing: 0; line-height: var(--lh-snug); }
 
-    p { max-width: 74ch; margin: 0 0 var(--space-4); text-wrap: pretty; }
+    p { max-width: 38em; margin: 0 0 var(--space-4); text-wrap: pretty; }
     .lede { margin-top: var(--space-5); color: var(--fg-2); font-size: var(--fs-md); }
 
-    a { color: var(--brand); font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; }
-    a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
+    :where(main) a { color: var(--brand); font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; }
+    :where(main) a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
 
     .toc { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
     .toc a { color: var(--fg-2); font-size: var(--fs-sm); }
@@ -226,11 +221,11 @@
 </head>
 <body>
   <div data-smart-topbar></div>
+  <nav data-smart-breadcrumb></nav>
 
-  <main class="page">
+  <main class="page" id="main">
     <header>
-      <p class="eyebrow">Model explainer</p>
-      <h1>The check-in request and response</h1>
+      <h1>Request and response</h1>
       <p class="lede">
         A clinic app sends a list of items it would like. The patient's health
         app shows the list, the patient decides what to share, and the health
@@ -773,12 +768,12 @@
     <section id="next">
       <h2>Where next</h2>
       <ul class="next">
-        <li><a href="./wire-protocol-explainer.html">Wire protocol explainer</a><span>How this JSON travels: mdoc, CBOR, HPKE, and signatures.</span></li>
+        <li><a href="./wire-protocol-explainer.html">Wire protocol</a><span>How this JSON travels: mdoc, CBOR, HPKE, and signatures.</span></li>
         <li><a href="/client/docs/tutorial.html">Developer tutorial</a><span>Build a check-in page with the client library.</span></li>
         <li><a href="/connectathon/testing-ehr/">SMART Testing EHR</a><span>Send these requests to your wallet and see what fails.</span></li>
         <li><a href="./trust-and-limits.html">Trust and limits</a><span>What the signatures prove, warnings, response size, and cancel.</span></li>
         <li><a href="./platform-notes.html">Platform notes</a><span>Android, iOS, browsers, and native-app origins.</span></li>
-        <li><a href="./spec.html">Draft spec 1.0</a><span>The normative text. Sections 5 and 6 cover this page.</span></li>
+        <li><a href="./spec.html">SMART Health Check-in 1.0</a><span>The normative text. Sections 5 and 6 cover this page.</span></li>
       </ul>
     </section>
   </main>
@@ -833,6 +828,5 @@
       select(tabs[0]);
     })();
   </script>
-  <script src="/assets/site-chrome.js" defer></script>
 </body>
 </html>

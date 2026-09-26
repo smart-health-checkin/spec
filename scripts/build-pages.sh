@@ -33,7 +33,8 @@ cp "$ROOT/site/nav.json" "$SITE_DIR/nav.json"
 bun "$ROOT/scripts/render-spec.ts" "$ROOT/spec.md" "$SITE_DIR/spec.html"
 # Links from other sites into the spec keep resolving.
 bun "$ROOT/scripts/check-spec-anchors.ts" "$SITE_DIR/spec.html"
-# Every link from the explainers into the spec or between pages resolves.
+# Every link from the explainers into the spec or between pages resolves, and
+# no page shows an unfilled {{…}} marker.
 bun "$ROOT/scripts/check-site-links.ts" "$SITE_DIR"
 cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
 # This repo deploys to smart-health-checkin.org/spec/. The org site

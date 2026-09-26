@@ -31,5 +31,11 @@ for (const page of pages) {
     if (frag && !idsOf(target).has(frag)) { console.error(`${page}: ${href} — no id "${frag}" in ${target}`); bad++; }
   }
 }
-if (bad) { console.error(`${bad} broken site link(s)`); process.exit(1); }
-console.log(`Site links resolve in ${pages.length} pages`);
+// No unfilled template markers ({{…}}) in any published page, the spec included.
+for (const page of readdirSync(site).filter((f) => f.endsWith(".html"))) {
+  const markup = readFileSync(join(site, page), "utf8").replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "");
+  const at = markup.indexOf("{{");
+  if (at >= 0) { console.error(`${page}: unfilled template marker near "${markup.slice(at, at + 40)}"`); bad++; }
+}
+if (bad) { console.error(`${bad} problem(s) in site pages`); process.exit(1); }
+console.log(`Site links resolve in ${pages.length} pages; no {{ markers`);

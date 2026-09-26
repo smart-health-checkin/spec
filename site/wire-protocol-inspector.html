@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SMART Health Check-in Capture Inspector</title>
+  <title>Capture inspector · SMART Health Check-in spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
+  <script src="/assets/site-chrome.js" defer></script>
   <style>
     :root {
       color-scheme: light;
@@ -33,7 +36,7 @@
     code, pre, .mono, .byte-offset, .byte-hex, .byte-ascii {
       font-family: var(--font-mono);
     }
-    header {
+    .page-head {
       background: #ffffff;
       border-bottom: 1px solid var(--line);
     }
@@ -51,7 +54,7 @@
     h3 { font-size: 1.18rem; margin-bottom: 8px; }
     h4 { font-size: 1rem; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
     p { margin: 0 0 12px; }
-    a { color: var(--blue); }
+    :where(main) a { color: var(--blue); }
     .lede {
       color: var(--muted);
       font-size: 1.13rem;
@@ -81,6 +84,8 @@
       font-weight: 700;
       white-space: nowrap;
     }
+    /* The capture renders after load; keep the footer below the fold until it does. */
+    #inspect { min-height: 100vh; padding-top: 0; }
     .advanced-loader {
       max-width: 760px;
       margin-top: 22px;
@@ -91,7 +96,7 @@
       flex-wrap: wrap;
       margin: 12px 0;
     }
-    button {
+    :where(main) button {
       border: 1px solid #006fb7;
       background: var(--blue);
       color: #ffffff;
@@ -101,7 +106,7 @@
       font-weight: 800;
       cursor: pointer;
     }
-    button.secondary {
+    :where(main) button.secondary {
       background: #ffffff;
       color: var(--blue);
     }
@@ -111,13 +116,13 @@
       gap: 22px;
       align-items: start;
     }
-    nav {
+    .sections-nav {
       position: sticky;
       top: 12px;
       border-left: 3px solid var(--line);
       padding: 4px 0 4px 12px;
     }
-    nav a {
+    .sections-nav a {
       display: block;
       padding: 8px 10px;
       border-radius: 0;
@@ -125,7 +130,7 @@
       color: var(--ink);
       font-weight: 650;
     }
-    nav a:hover { background: var(--soft); }
+    .sections-nav a:hover { background: var(--soft); }
     section {
       padding: 30px 0;
       margin-bottom: 0;
@@ -519,24 +524,24 @@
       border-radius: 0;
       background: #f8fbff;
     }
-    details {
+    :where(main) details {
       border: 1px solid var(--line);
       border-radius: 0;
       padding: 0;
       margin: 10px 0;
       background: #ffffff;
     }
-    summary {
+    :where(main) summary {
       cursor: pointer;
       padding: 12px 14px;
       font-weight: 800;
     }
-    details > div { padding: 0 14px 14px; }
+    :where(main) details > div { padding: 0 14px 14px; }
     .small { color: var(--muted); font-size: 0.92rem; }
     .nowrap { white-space: nowrap; }
     @media (max-width: 980px) {
       .main-grid { grid-template-columns: 1fr; }
-      nav { position: static; }
+      .sections-nav { position: static; }
       .wrap { padding: 18px; }
     }
 
@@ -553,13 +558,13 @@
     .table-wrap > table { margin: 0; }
 
     /* ----- Hero typography (override earlier h1 sizing) ----- */
-    header h1 {
+    .page-head h1 {
       font-size: clamp(1.6rem, 2.6vw, 2.4rem);
       letter-spacing: -0.02em;
       max-width: none;
       margin: 4px 0 0;
     }
-    header .lede {
+    .page-head .lede {
       font-size: 1.04rem;
       margin-top: 14px;
       max-width: 760px;
@@ -630,23 +635,24 @@
 </head>
 <body>
   <div data-smart-topbar></div>
-  <header>
+  <nav data-smart-breadcrumb></nav>
+  <main id="main">
+  <div class="page-head">
     <div class="wrap hero">
-      <a class="back-link" href="./wire-protocol-explainer.html">← Wire protocol explainer</a>
       <h1>Capture inspector</h1>
       <p class="lede">
         Loads a checked-in Chrome + Android capture and walks the actual fixture bytes for every artifact in the
-        wire protocol explainer &mdash; useful for byte-for-byte comparison against your own implementation.
+        <a href="./wire-protocol-explainer.html">Wire protocol</a> explainer &mdash; useful for byte-for-byte comparison against your own implementation.
       </p>
     </div>
-  </header>
+  </div>
 
-  <main class="wrap">
+  <div class="wrap">
     <section id="inspect">
       <details class="advanced-loader">
         <summary>Load a different capture</summary>
         <div>
-          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>android-chrome-capture</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/android-chrome-capture</code> and <code>fixtures/responses/android-chrome-capture</code>. The Testing EHR can also open a run here directly.</p>
+          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>android-chrome-capture</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/android-chrome-capture</code> and <code>fixtures/responses/android-chrome-capture</code>. The <a href="/connectathon/testing-ehr/">Testing EHR</a> can also open a run here directly.</p>
           <div class="button-row">
             <button id="loadExample" type="button">Reload checked-in capture</button>
             <button id="clearRun" class="secondary" type="button">Clear loaded run</button>
@@ -682,6 +688,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       <div id="drillOutput"></div>
       <div id="artifactOutput"></div>
     </section>
+  </div>
   </main>
 
   <script>
@@ -2357,6 +2364,5 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
   </script>
 
   <div data-smart-footer></div>
-  <script src="/assets/site-chrome.js" defer></script>
 </body>
 </html>

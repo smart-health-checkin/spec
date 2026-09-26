@@ -10,9 +10,16 @@ smart-health-checkin.org/spec/ on every push to `main`.
   (`scripts/spec-requirements.ts`), if a JSON example in the spec or the model
   explainer stops validating (`check-spec-examples.ts`, `check-explainer.ts`),
   if the CDDL no longer matches the real capture (`check-spec-cddl.ts`), if
-  Appendix A doesn't recompute from the capture (`worked-example.ts`), or if a
+  Appendix A doesn't recompute from the capture (`worked-example.ts`), if a
   heading anchor or site link breaks (`check-spec-anchors.ts`,
-  `check-site-links.ts`). A PR runs the same build (`check.yml`).
+  `check-site-links.ts`), or if a page shows a `{{…}}` marker. A PR runs the
+  same build (`check.yml`).
+- Pages use the shared page template ([The shared site](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#the-shared-site)):
+  `data-smart-topbar`, a `data-smart-breadcrumb` on every page but the spec,
+  `<main id="main">`, one H1 worded as in `site/nav.json`, and
+  `data-smart-footer`. Page CSS never styles bare `header`, `nav`, `a`, or
+  `button` (scope it with a class or `:where(main)`), and sets widths in
+  `em`/`rem`, not `ch`, so the webfont swap doesn't move text.
 - Every normative sentence carries a requirement ID (`[XV-2]`). IDs never
   change meaning and are never reused; conformance cases cite them.
 - Producers strict, receivers permissive (§2 RCV-0..2): §8 marks each receiver

@@ -5,9 +5,9 @@
     {
       "title": "Explainers",
       "items": [
-        { "title": "Model", "href": "smart-model-explainer.html", "note": "Request and response JSON" },
+        { "title": "Request and response", "href": "smart-model-explainer.html", "note": "The JSON model, one running example" },
         { "title": "Wire protocol", "href": "wire-protocol-explainer.html", "note": "CBOR, COSE, HPKE" },
-        { "title": "Kiosk flow", "href": "kiosk-flow-explainer.html", "note": "Front-desk handoff" }
+        { "title": "Front-desk handoff", "href": "kiosk-flow-explainer.html", "note": "Start at the clinic, finish on the phone" }
       ]
     },
     {
@@ -21,7 +21,7 @@
     {
       "title": "Specification",
       "items": [
-        { "title": "Draft spec 1.0", "href": "./", "note": "Normative reference" },
+        { "title": "SMART Health Check-in 1.0", "href": "./", "note": "The draft specification (normative)" },
         { "title": "Conformance cases", "href": "https://github.com/smart-health-checkin/spec/tree/main/conformance", "note": "The tests every implementation runs" }
       ]
     }
