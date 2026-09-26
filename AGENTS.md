@@ -1,0 +1,21 @@
+# Agent notes: spec
+
+The draft spec (`spec.md`), its explainers and capture inspector (`site/`),
+and the conformance fixtures (`fixtures/`). Deploys to
+smart-health-checkin.org/spec/ on every push to `main`.
+[MAINTAINING.md](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md) maps every repo, what triggers what, and how to release.
+
+- Build: `bun install && scripts/build-pages.sh`. It fails if any JSON example
+  in `site/smart-model-explainer.html` stops validating against the client
+  library (`scripts/check-explainer.ts`).
+- **Fixtures are published by tag.** client, android-wallet, and swift pin a
+  `fixtures-vN` tag. Never move a tag: change `fixtures/`, tag
+  `fixtures-v(N+1)`, then bump `SPEC_FIXTURES_REF` in each consumer's
+  `scripts/fetch-fixtures.sh`.
+- The client library is pinned to a release tarball in `package.json`.
+  Bump the URL to upgrade.
+- Section headings in `spec.md` become anchors that other sites link to
+  (`#6-4-verifier-cross-validation`). Renaming a heading breaks those links.
+- This section's menu is `site/nav.json`.
+- The `wallet-v*` tags here are historical; the Android wallet is released
+  from its own repo.
