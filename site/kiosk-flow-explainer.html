@@ -280,6 +280,54 @@
         grid-template-columns: 34px minmax(0, 1fr);
       }
     }
+  
+    /* Explainer diagrams (inline SVG). Colors are scoped to the figures. */
+    .xd-figure { margin: var(--space-4) 0; border: 1px solid var(--gray-200); border-radius: var(--radius-md); overflow-x: auto; background: #fff; }
+    .xd { display: block; width: 100%; min-width: 640px; height: auto;
+      --fg: #1f2933; --fg-2: #4b5563; --fg-3: #5b6675; --line: #e4e7eb; --line-2: #cbd2d9; --bg-alt: #f6f8fa; --card: #fff;
+      --brand: #0e6fb8; --brand-wash: #d6eaf7; --ok: #1b7f4b; --ok-wash: #ddf4e6; --warn: #8a5a00; --warn-wash: #fdf0d2;
+      --off: #6f7178; --off-wash: #eef1f4; --key: #b8860b;
+      --font: var(--font-sans, "Inter", system-ui, sans-serif); --mono: var(--font-mono, ui-monospace, monospace); }
+    #match [data-ids]:focus { outline: none; }
+    #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
+    .map-figure { display: none; }
+    @media (min-width: 44rem) { .map-figure { display: block; } .map { display: none !important; } }
+    /* SVG styling, all from tokens */
+    .xd text { font-family: var(--font); fill: var(--fg); }
+    .xd .mono { font-family: var(--mono); font-size: 12px; fill: var(--fg-3); }
+    .xd .head { font-size: 13px; font-weight: 700; fill: var(--fg); }
+    .xd .sub { font-size: 12px; fill: var(--fg-3); }
+    .xd .t { font-size: 14px; font-weight: 600; }
+    .xd .s { font-size: 12.5px; fill: var(--fg-2); }
+    .xd .box { fill: var(--card); stroke: var(--line-2); stroke-width: 1.2; }
+    .xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
+    .xd .off-t { fill: var(--fg-3); }
+    .xd .pill-ok { fill: var(--ok-wash); } .xd .pill-ok-t { fill: var(--ok); font-size: 12px; font-weight: 600; }
+    .xd .pill-warn { fill: var(--warn-wash); } .xd .pill-warn-t { fill: var(--warn); font-size: 12px; font-weight: 600; }
+    .xd .pill-off { fill: var(--off-wash); } .xd .pill-off-t { fill: var(--off); font-size: 12px; font-weight: 600; }
+    .xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
+    .xd .dot { fill: var(--brand); }
+    .xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
+    .xd .rule { stroke: var(--line); stroke-width: 1; }
+    .xd .band { fill: var(--bg-alt); }
+    .xd .lane { fill: none; stroke: var(--line); stroke-dasharray: 3 5; }
+    .xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
+    .xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
+    .xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
+    .xd .num { fill: var(--brand); } .xd .num-t { fill: #fff; font-size: 12px; font-weight: 700; }
+    .xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
+    .xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .xd .key { fill: none; stroke: var(--key); stroke-width: 2.2; stroke-linecap: round; }
+    .xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
+    .xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand); font-size: 11.5px; font-weight: 600; }
+    .xd .qr { fill: var(--fg); }
+    
+    /* Follow an id across: hover an item or a record */
+    #match.hot .link { opacity: .12; }
+    #match.hot .link.on { opacity: 1; stroke-width: 2.6; }
+    #match.hot [data-ids] { opacity: .45; transition: opacity .15s; }
+    #match.hot [data-ids].on { opacity: 1; }
+    #match [data-ids] { cursor: default; }
   </style>
 </head>
 <body>
@@ -349,6 +397,95 @@
 
     <section id="flow">
       <h2>Step by step</h2>
+      <div class="xd-figure">
+<svg class="xd" viewBox="0 0 880 520" role="img" aria-labelledby="k-title k-desc">
+      <title id="k-title">Front-desk handoff, step by step</title>
+      <desc id="k-desc">Three columns: the clinic kiosk, the connection between devices, and the patient's phone. Step 1, start: the kiosk builds the request and a one-time key, keeps the private key, and shows a code. Step 2, join: the patient scans the code and the request travels to the phone's check-in page. Step 3, share: the patient reviews in their wallet and shares some or all items; private information stays on the phone. Step 4, return: the encrypted response travels back; the connection cannot read it; the kiosk opens it with its key, checks it against the request, and shows staff that check-in was received.</desc>
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+        <marker id="ahs" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah-soft" d="M0 0 L10 5 L0 10 z"/></marker>
+      </defs>
+
+      <!-- step bands -->
+      <rect class="band" x="0" y="78"  width="880" height="100"/>
+      <rect class="band" x="0" y="290" width="880" height="100"/>
+
+      <!-- column heads with icons -->
+      <g transform="translate(96 18)">
+        <rect class="ico" x="0" y="0" width="34" height="24" rx="3"/><path class="ico" d="M17 24 v10 M8 38 h18"/>
+      </g>
+      <text x="140" y="36" class="head">Clinic kiosk</text>
+      <text x="140" y="53" class="sub">or front-desk screen</text>
+
+      <g transform="translate(398 22)">
+        <path class="ico" d="M0 14 h16 M24 14 h16 M8 6 l-8 8 8 8 M32 6 l8 8 -8 8"/>
+      </g>
+      <text x="446" y="36" class="head">The connection</text>
+      <text x="446" y="53" class="sub">sees only public material</text>
+
+      <g transform="translate(656 14)">
+        <rect class="ico" x="0" y="0" width="22" height="38" rx="4"/><path class="ico" d="M8 33 h6"/>
+      </g>
+      <text x="688" y="36" class="head">Patient's phone</text>
+      <text x="688" y="53" class="sub">check-in page and wallet</text>
+
+      <line class="lane" x1="330" y1="70" x2="330" y2="500"/>
+      <line class="lane" x1="580" y1="70" x2="580" y2="500"/>
+
+      <!-- step labels -->
+      <g><circle class="num" cx="30" cy="103" r="12"/><text x="30" y="107.5" text-anchor="middle" class="num-t">1</text><text x="30" y="132" text-anchor="middle" class="step">START</text></g>
+      <g><circle class="num" cx="30" cy="209" r="12"/><text x="30" y="213.5" text-anchor="middle" class="num-t">2</text><text x="30" y="238" text-anchor="middle" class="step">JOIN</text></g>
+      <g><circle class="num" cx="30" cy="315" r="12"/><text x="30" y="319.5" text-anchor="middle" class="num-t">3</text><text x="30" y="344" text-anchor="middle" class="step">SHARE</text></g>
+      <g><circle class="num" cx="30" cy="421" r="12"/><text x="30" y="425.5" text-anchor="middle" class="num-t">4</text><text x="30" y="450" text-anchor="middle" class="step">RETURN</text></g>
+
+      <!-- 1 START: kiosk -->
+      <rect class="box" x="70" y="90" width="240" height="76" rx="8"/>
+      <text x="86" y="113" class="t">Builds the request</text>
+      <text x="86" y="132" class="s">and a one-time key pair.</text>
+      <g transform="translate(86 142)">
+        <circle class="key" cx="6" cy="6" r="5"/><path class="key" d="M11 6 h14 M21 6 v5 M25 6 v4"/>
+      </g>
+      <text x="118" y="153" class="s">Private key stays here</text>
+      <!-- QR -->
+      <g transform="translate(268 100)">
+        <rect class="qr" x="0" y="0" width="8" height="8"/><rect class="qr" x="14" y="0" width="4" height="4"/><rect class="qr" x="22" y="0" width="8" height="8"/>
+        <rect class="qr" x="10" y="8" width="4" height="4"/><rect class="qr" x="18" y="12" width="4" height="4"/>
+        <rect class="qr" x="0" y="22" width="8" height="8"/><rect class="qr" x="12" y="18" width="4" height="4"/><rect class="qr" x="22" y="22" width="4" height="4"/><rect class="qr" x="26" y="16" width="4" height="4"/>
+      </g>
+
+      <!-- 2 JOIN -->
+      <path class="arrow-soft" d="M300 136 C 420 150, 560 180, 598 196" marker-end="url(#ahs)"/>
+      <text x="446" y="138" class="sub">patient scans the code</text>
+      <path class="arrow" d="M200 170 C 200 205, 260 212, 340 212 H 590" marker-end="url(#ah)"/>
+      <rect class="chip" x="368" y="221" width="184" height="22" rx="11"/>
+      <text x="460" y="236" text-anchor="middle" class="chip-t">request + public key</text>
+      <rect class="box" x="600" y="186" width="260" height="60" rx="8"/>
+      <text x="616" y="209" class="t">Opens the check-in page</text>
+      <text x="616" y="228" class="s">for this visit, on the phone.</text>
+
+      <!-- 3 SHARE -->
+      <rect class="box" x="600" y="300" width="260" height="80" rx="8"/>
+      <text x="616" y="323" class="t">Reviews in their wallet</text>
+      <text x="616" y="342" class="s">Shares all, some, or none.</text>
+      <text x="616" y="364" class="s" style="font-weight:600;fill:var(--ok)">Private details stay on the phone</text>
+      <path class="arrow" d="M730 246 V 296" marker-end="url(#ah)"/>
+
+      <!-- 4 RETURN -->
+      <path class="arrow" d="M730 380 V 410 C 730 422, 720 426, 700 426 H 320" marker-end="url(#ah)"/>
+      <g transform="translate(402 404)">
+        <rect class="lock" x="0" y="10" width="26" height="20" rx="3"/><path class="lock" style="fill:none" d="M6 10 v-4 a7 7 0 0 1 14 0 v4"/>
+      </g>
+      <text x="436" y="418" class="t" style="font-size:13px">Encrypted response</text>
+      <text x="436" y="452" class="sub">can't be read or changed on the way</text>
+      <rect class="box" x="70" y="398" width="240" height="98" rx="8"/>
+      <text x="86" y="421" class="t">Opens it with its key</text>
+      <text x="86" y="440" class="s">Checks it against the request,</text>
+      <text x="86" y="457" class="s">then shows staff:</text>
+      <rect class="pill-ok" x="86" y="467" width="150" height="22" rx="11"/>
+      <text x="161" y="482" text-anchor="middle" class="pill-ok-t">Check-in received</text>
+    </svg>
+      </div>
+
       <ol class="steps">
         <li>
           <div>

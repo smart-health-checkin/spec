@@ -217,6 +217,54 @@
       pre { font-size: 13px; }
       td:first-child { white-space: normal; }
     }
+  
+    /* Explainer diagrams (inline SVG). Colors are scoped to the figures. */
+    .xd-figure { margin: var(--space-4) 0; border: 1px solid var(--gray-200); border-radius: var(--radius-md); overflow-x: auto; background: #fff; }
+    .xd { display: block; width: 100%; min-width: 640px; height: auto;
+      --fg: #1f2933; --fg-2: #4b5563; --fg-3: #5b6675; --line: #e4e7eb; --line-2: #cbd2d9; --bg-alt: #f6f8fa; --card: #fff;
+      --brand: #0e6fb8; --brand-wash: #d6eaf7; --ok: #1b7f4b; --ok-wash: #ddf4e6; --warn: #8a5a00; --warn-wash: #fdf0d2;
+      --off: #6f7178; --off-wash: #eef1f4; --key: #b8860b;
+      --font: var(--font-sans, "Inter", system-ui, sans-serif); --mono: var(--font-mono, ui-monospace, monospace); }
+    #match [data-ids]:focus { outline: none; }
+    #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
+    .map-figure { display: none; }
+    @media (min-width: 44rem) { .map-figure { display: block; } .map { display: none !important; } }
+    /* SVG styling, all from tokens */
+    .xd text { font-family: var(--font); fill: var(--fg); }
+    .xd .mono { font-family: var(--mono); font-size: 12px; fill: var(--fg-3); }
+    .xd .head { font-size: 13px; font-weight: 700; fill: var(--fg); }
+    .xd .sub { font-size: 12px; fill: var(--fg-3); }
+    .xd .t { font-size: 14px; font-weight: 600; }
+    .xd .s { font-size: 12.5px; fill: var(--fg-2); }
+    .xd .box { fill: var(--card); stroke: var(--line-2); stroke-width: 1.2; }
+    .xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
+    .xd .off-t { fill: var(--fg-3); }
+    .xd .pill-ok { fill: var(--ok-wash); } .xd .pill-ok-t { fill: var(--ok); font-size: 12px; font-weight: 600; }
+    .xd .pill-warn { fill: var(--warn-wash); } .xd .pill-warn-t { fill: var(--warn); font-size: 12px; font-weight: 600; }
+    .xd .pill-off { fill: var(--off-wash); } .xd .pill-off-t { fill: var(--off); font-size: 12px; font-weight: 600; }
+    .xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
+    .xd .dot { fill: var(--brand); }
+    .xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
+    .xd .rule { stroke: var(--line); stroke-width: 1; }
+    .xd .band { fill: var(--bg-alt); }
+    .xd .lane { fill: none; stroke: var(--line); stroke-dasharray: 3 5; }
+    .xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
+    .xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
+    .xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
+    .xd .num { fill: var(--brand); } .xd .num-t { fill: #fff; font-size: 12px; font-weight: 700; }
+    .xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
+    .xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+    .xd .key { fill: none; stroke: var(--key); stroke-width: 2.2; stroke-linecap: round; }
+    .xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
+    .xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand); font-size: 11.5px; font-weight: 600; }
+    .xd .qr { fill: var(--fg); }
+    
+    /* Follow an id across: hover an item or a record */
+    #match.hot .link { opacity: .12; }
+    #match.hot .link.on { opacity: 1; stroke-width: 2.6; }
+    #match.hot [data-ids] { opacity: .45; transition: opacity .15s; }
+    #match.hot [data-ids].on { opacity: 1; }
+    #match [data-ids] { cursor: default; }
   </style>
 </head>
 <body>
@@ -262,6 +310,94 @@
         declines insurance. Every item id appears once in the outcomes. Records
         name the items they answer. Point at an id to follow it across.
       </p>
+
+      <div class="xd-figure map-figure">
+<svg id="match" class="xd" viewBox="0 0 880 404" role="img" aria-labelledby="m-title m-desc">
+      <title id="m-title">How request items, outcomes and records connect</title>
+      <desc id="m-desc">Five request items, each with one outcome: patient fulfilled, insurance declined, medications partial, immunizations fulfilled, intake fulfilled. Four records: a FHIR Bundle fulfills patient and medications; a SMART Health Card and a second FHIR Bundle both fulfill immunizations; a QuestionnaireResponse fulfills intake. Insurance has no record.</desc>
+
+      <!-- column heads -->
+      <text x="20" y="30" class="head">The request · <tspan class="mono">items[]</tspan></text>
+      <text x="20" y="47" class="sub">What the clinic asks for</text>
+      <text x="262" y="30" class="head">Outcome</text>
+      <text x="262" y="47" class="sub">One per item</text>
+      <text x="560" y="30" class="head">The response · <tspan class="mono">artifacts[]</tspan></text>
+      <text x="560" y="47" class="sub">Each record names the items it <tspan class="mono">fulfills[]</tspan></text>
+
+      <!-- links (drawn first, under the boxes) -->
+      <path class="link" data-l="patient"       d="M360 94  C 460 94,  460 100, 560 100"/>
+      <path class="link" data-l="medications"   d="M360 222 C 460 222, 460 112, 560 112"/>
+      <path class="link" data-l="immunizations" d="M360 286 C 460 286, 460 198, 560 198"/>
+      <path class="link" data-l="immunizations" d="M360 286 C 460 286, 460 280, 560 280"/>
+      <path class="link" data-l="intake"        d="M360 350 C 460 350, 460 360, 560 360"/>
+
+      <!-- items -->
+      <g data-ids="patient" tabindex="0">
+        <rect class="box" x="20" y="68" width="340" height="52" rx="8"/>
+        <text x="36" y="91" class="t">Patient demographics</text>
+        <text x="36" y="109" class="mono">patient</text>
+        <rect class="pill-ok" x="262" y="82" width="80" height="24" rx="12"/><text x="302" y="98.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+        <circle class="dot" cx="360" cy="94" r="4"/>
+      </g>
+      <g data-ids="insurance" tabindex="0">
+        <rect class="box off" x="20" y="132" width="340" height="52" rx="8"/>
+        <text x="36" y="155" class="t off-t">Insurance card</text>
+        <text x="36" y="173" class="mono">insurance · no record returned</text>
+        <rect class="pill-off" x="262" y="146" width="80" height="24" rx="12"/><text x="302" y="162.5" text-anchor="middle" class="pill-off-t">declined</text>
+      </g>
+      <g data-ids="medications" tabindex="0">
+        <rect class="box" x="20" y="196" width="340" height="52" rx="8"/>
+        <text x="36" y="219" class="t">Medications</text>
+        <text x="36" y="237" class="mono">medications · one kept private</text>
+        <rect class="pill-warn" x="262" y="210" width="80" height="24" rx="12"/><text x="302" y="226.5" text-anchor="middle" class="pill-warn-t">partial</text>
+        <circle class="dot" cx="360" cy="222" r="4"/>
+      </g>
+      <g data-ids="immunizations" tabindex="0">
+        <rect class="box" x="20" y="260" width="340" height="52" rx="8"/>
+        <text x="36" y="283" class="t">Immunizations</text>
+        <text x="36" y="301" class="mono">immunizations</text>
+        <rect class="pill-ok" x="262" y="274" width="80" height="24" rx="12"/><text x="302" y="290.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+        <circle class="dot" cx="360" cy="286" r="4"/>
+      </g>
+      <g data-ids="intake" tabindex="0">
+        <rect class="box" x="20" y="324" width="340" height="52" rx="8"/>
+        <text x="36" y="347" class="t">Depression screening form</text>
+        <text x="36" y="365" class="mono">intake</text>
+        <rect class="pill-ok" x="262" y="338" width="80" height="24" rx="12"/><text x="302" y="354.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+        <circle class="dot" cx="360" cy="350" r="4"/>
+      </g>
+
+      <!-- records -->
+      <g data-ids="patient medications" tabindex="0">
+        <rect class="box" x="560" y="68" width="300" height="76" rx="8"/>
+        <text x="576" y="89" class="rec-kind">FHIR BUNDLE</text>
+        <text x="576" y="108" class="t">Patient and two MedicationRequests</text>
+        <text x="576" y="128" class="mono">fulfills: patient, medications</text>
+        <circle class="dot" cx="560" cy="100" r="4"/><circle class="dot" cx="560" cy="112" r="4"/>
+      </g>
+      <g data-ids="immunizations" tabindex="0">
+        <rect class="box" x="560" y="164" width="300" height="68" rx="8"/>
+        <text x="576" y="185" class="rec-kind">SMART HEALTH CARD</text>
+        <text x="576" y="204" class="t">Signed immunization record</text>
+        <text x="576" y="222" class="mono">fulfills: immunizations</text>
+        <circle class="dot" cx="560" cy="198" r="4"/>
+      </g>
+      <g data-ids="immunizations" tabindex="0">
+        <rect class="box" x="560" y="246" width="300" height="68" rx="8"/>
+        <text x="576" y="267" class="rec-kind">FHIR BUNDLE</text>
+        <text x="576" y="286" class="t">One Immunization not on the card</text>
+        <text x="576" y="304" class="mono">fulfills: immunizations</text>
+        <circle class="dot" cx="560" cy="280" r="4"/>
+      </g>
+      <g data-ids="intake" tabindex="0">
+        <rect class="box" x="560" y="326" width="300" height="68" rx="8"/>
+        <text x="576" y="347" class="rec-kind">QUESTIONNAIRE RESPONSE</text>
+        <text x="576" y="366" class="t">The patient's answers</text>
+        <text x="576" y="384" class="mono">fulfills: intake</text>
+        <circle class="dot" cx="560" cy="360" r="4"/>
+      </g>
+    </svg>
+      </div>
 
       <div class="map" id="map">
         <div>
@@ -780,7 +916,27 @@
 
   <div data-smart-footer></div>
   <script>
-    // Follow an item id across the three columns.
+    // Follow an id across the diagram: point at, tap, or tab to an item or a record.
+    (function () {
+      var svg = document.getElementById('match');
+      if (!svg) return;
+      var groups = Array.prototype.slice.call(svg.querySelectorAll('[data-ids]'));
+      var links = Array.prototype.slice.call(svg.querySelectorAll('.link'));
+      function clear() { svg.classList.remove('hot'); groups.concat(links).forEach(function (e) { e.classList.remove('on'); }); }
+      groups.forEach(function (g) {
+        var ids = g.dataset.ids.split(' ');
+        function on() {
+          svg.classList.add('hot');
+          groups.forEach(function (o) { o.classList.toggle('on', o.dataset.ids.split(' ').some(function (i) { return ids.indexOf(i) >= 0; })); });
+          links.forEach(function (l) { l.classList.toggle('on', ids.indexOf(l.dataset.l) >= 0); });
+        }
+        g.addEventListener('mouseenter', on); g.addEventListener('focus', on);
+        g.addEventListener('mouseleave', clear); g.addEventListener('blur', clear);
+        g.addEventListener('touchstart', on, { passive: true });
+      });
+    })();
+
+    // Follow an item id across the three columns (phone layout).
     (function () {
       var map = document.getElementById('map');
       if (!map) return;
