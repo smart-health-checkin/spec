@@ -16,7 +16,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | --- | --- |
 | [`spec.md`](spec.md) | The draft spec. §§5–6 define the request and response model; §8 the `org-iso-mdoc` flow; Appendix A a byte-level bridge. |
 | [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow. |
-| [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The Android wallet and the client library test against copies of them. |
+| [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
 | [`tools/fixtures-tool/`](tools/fixtures-tool/) | Python fixture checks with pyMDOC. |
 | [`tools/capture/`](tools/capture/README.md) | Browser capture and probing scripts. |
@@ -46,6 +46,12 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./fixtures/` | The fixtures |
 
 ## Tests and fixtures
+
+Other repos use the fixtures by tag, not by copy. Each fixture set is tagged
+`fixtures-vN` (currently `fixtures-v1`), and a consumer's
+`scripts/fetch-fixtures.sh` clones that tag's `fixtures/` into a gitignored
+folder before its tests run. Tags never move: when fixtures are added or
+changed, tag a new `fixtures-vN` and bump `SPEC_FIXTURES_REF` in each consumer.
 
 ```sh
 vendor/scripts/regenerate-local-fixtures.sh    # regenerate fixtures and run the Python checks
