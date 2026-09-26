@@ -37,7 +37,7 @@ The mdoc layer is an envelope. It carries the response encrypted to the Verifier
 
 - The Digital Credentials API with `org-iso-mdoc` is what browsers and phone platforms support today, so it is the interoperability surface.
 - Disclosure choices live in the JSON (items, statuses, `fulfills[]`), not in mdoc element names, so FHIR stays in FHIR-aware software.
-- The design history and the alternatives considered are in [docs/rationale.md](docs/rationale.md).
+- The design history and the alternatives considered are in [docs/rationale.md](https://github.com/smart-health-checkin/spec/blob/main/docs/rationale.md).
 
 ### 1.3 Handoffs as on-ramps
 

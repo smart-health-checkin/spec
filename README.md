@@ -6,7 +6,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 - **Spec:** <https://smart-health-checkin.org/spec/>
 - **Client library** (EHR pages, web wallets, testing): [smart-health-checkin/client](https://github.com/smart-health-checkin/client), docs at <https://smart-health-checkin.org/client/>
-- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet-debug.apk)). It moved out of this repo with its history; releases up to wallet-v0.3.2 remain here.
+- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet-debug.apk)). It moved out of this repo with its history.
 - **Also moved out:** the exploratory Swift package ([smart-health-checkin/swift](https://github.com/smart-health-checkin/swift)) and archived planning notes ([smart-health-checkin/notes](https://github.com/smart-health-checkin/notes)).
 - **Connectathon:** [smart-health-checkin/connectathon](https://github.com/smart-health-checkin/connectathon), at <https://smart-health-checkin.org/connectathon/>
 
@@ -14,8 +14,9 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 | Path | What it is |
 | --- | --- |
-| [`spec.md`](spec.md) | The draft spec. §§5–6 define the request and response model; §8 the `org-iso-mdoc` flow; Appendix A a byte-level bridge. |
-| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow. |
+| [`spec.md`](spec.md) | The draft spec. §§5–6 define the request and response model; §8 the `org-iso-mdoc` flow; Appendix A a worked example computed from a real capture. |
+| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow, trust and limits, and platform notes. |
+| [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see below). |
 | [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
 | [`tools/fixtures-tool/`](tools/fixtures-tool/) | Python fixture checks with pyMDOC. |
@@ -42,6 +43,8 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./wire-protocol-explainer.html` | The wire protocol, byte by byte |
 | `./wire-protocol-inspector.html` | Inspect the checked-in captures |
 | `./kiosk-flow-explainer.html` | The kiosk hand-off flow |
+| `./trust-and-limits.html` | What signatures prove, warnings, reader authentication, response size |
+| `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
 | `./llms.txt` | The spec and explainers in one file |
 | `./fixtures/` | The fixtures |
 
