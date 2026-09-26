@@ -94,22 +94,15 @@
       </p>
       <p>
         The transcript needs an origin string, and for an app caller Android's <code>getOrigin</code> returns none.
-        Wallet and app must therefore agree on a string, and today two are in use:
+        The Wallet still knows who called: Android gives it the calling app's package name and signing certificates.
+        <a href="./spec.html#TR-2">TR-2</a> says how to turn them into the origin string: <code>android:apk-key-hash:</code>
+        followed by the base64url SHA-256 of the app's signing certificate. This is the format Android's holder documentation,
+        Multipaz, and Google Wallet use. The calling app computes the same string for its own transcript.
       </p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>String</th><th>Used by</th></tr></thead>
-          <tbody>
-            <tr><td><code>android:apk-key-hash:&lt;base64url SHA-256 of the app's signing certificate&gt;</code></td><td>Android's holder documentation, Multipaz, Google Wallet</td></tr>
-            <tr><td><code>android-app:&lt;package name&gt;</code></td><td>The reference Android wallet today</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="note warning">
-        These don't match, and the spec doesn't yet say which one a wallet uses when the platform reports no origin
-        (<a href="./spec.html#TR-2">TR-2</a> asks for "exactly the origin string its platform reports"). Until that is
-        settled, a native Verifier has to try each string when opening the response, as the
-        <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a> does.
+      <p class="note">
+        The reference Android wallet used <code>android-app:&lt;package name&gt;</code> before this was settled, and is
+        moving to <code>android:apk-key-hash:</code>. Until that release, the
+        <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a> tries both strings.
       </p>
     </section>
 
