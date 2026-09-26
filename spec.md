@@ -592,8 +592,8 @@ sequenceDiagram
     V->>B: navigator.credentials.get (org-iso-mdoc)
     B->>W: Request, with the caller's origin
     W->>W: Validate request, compute SessionTranscript
-    W->>W: Holder chooses; build SMART response
-    W->>W: Sign MSO and session; build DeviceResponse
+    W->>W: Holder chooses, then build SMART response
+    W->>W: Sign MSO and session, then build DeviceResponse
     W->>W: HPKE-encrypt to the Verifier's key
     W-->>B: dcapiResponse
     B-->>V: DigitalCredential
