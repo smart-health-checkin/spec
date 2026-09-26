@@ -25,8 +25,8 @@ negative case is one deliberate mutation of a positive one.
       "description": "requestId differs from the request id.",
       "inputs": { "request": "cross-validation/request-id-mismatch/request.json", … },
       "expected": { "valid": false, "reason": "request-id" },
-      "rule": "§6.4 requestId",      // where the rule comes from today
-      "requirement": null,           // the spec's requirement id, once assigned
+      "rule": "XV-2",                // requirement ids and plan decisions (D1–D15) the expectation follows
+      "requirements": ["XV-2"],      // just the requirement ids (the spec's requirements.json)
       "status": "active"             // or "pending": expected result waits on a spec decision
     }
   ]
@@ -43,11 +43,17 @@ are raw bytes.
 - `expected.outputs` names files an implementation must reproduce byte for
   byte (a transcript, an opened DeviceResponse, a recovered SMART request —
   compared as parsed JSON).
-- `expected.artifacts` (cross-validation only) gives a per-Artifact outcome.
-  A response can be valid while one Artifact is unusable (decision D6): a bad
-  Artifact affects only itself and the items it fulfills. A runner whose
-  implementation can report per-Artifact results compares them; otherwise it
-  compares only `valid`.
+- `expected.artifacts` gives a per-Artifact outcome (`accepted` or
+  `rejected`) when some Artifacts are disregarded but the response stands
+  (XV-4: an Artifact that fails a check affects only itself and the items it
+  lists).
+- `expected.items` gives a per-item outcome when an item is affected but the
+  request or response stands: `unsupported` for a request item with a
+  malformed or unknown selector (SEL-8, SEL-9, SEL-10, FORM-1), or `unknown`
+  for a response item whose status row is missing, duplicated, or has an
+  unknown code (D14).
+- A runner whose implementation reports per-Artifact or per-item results
+  compares them; otherwise it compares only `valid`.
 - `status: "pending"` cases are skipped until the spec decides them;
   `pendingOn` says what's undecided.
 
@@ -79,13 +85,26 @@ Runners fetch this folder at a pinned spec ref with
 `scripts/fetch-conformance.sh` (`SPEC_CONFORMANCE_REF`; set
 `SPEC_CONFORMANCE_DIR=../spec/conformance` to use a local checkout).
 
-## Decisions the expectations follow
+## What the expectations follow
 
-From the spec and implementation alignment plan: D1–D2 (signatures are real
-and ISO-conformant; device signature detached, MSO has `validityInfo`, an
-attached device payload must equal the rebuilt one), D5 (unknown selector kind
-is valid, answered `unsupported` per item), D6 (`fhirVersion` problems affect
-one Artifact), D7 (the request travels only in `requestInfo`), D9 (versioned
-canonical echoed exactly), D10 (all-declined response), D11 (reject unknown
-values only in security labels; ignore other unknown keys), D13 (legacy
-selector members ignored).
+The requirement ids of the rewritten spec (`requirements.json`), and these
+decisions from the spec and implementation alignment plan where the spec text
+doesn't settle a case yet:
+
+- D2: an attached device-signature payload is accepted only if it equals the
+  rebuilt `DeviceAuthentication` (VRS-7).
+- D5: an unknown selector kind is `unsupported` for that item (SEL-9).
+- D6: a `fhirVersion` problem affects only that Artifact (XV-8).
+- D7: the request travels only in `requestInfo` (WRQ-6).
+- D9: a versioned canonical is echoed exactly (FORM-5, XV-10).
+- D10: a patient who declines everything gets an all-`declined` response.
+- D11: unknown values of security labels are rejected; other unknown keys are
+  ignored (ALG-2).
+- D13: old selector members `canonical` and `resource` are ignored (JSON-3).
+- D14: only a §5.1 failure, a `type`, `version`, or `requestId` mismatch, or
+  non-array `artifacts`/`requestStatus` rejects a whole response. A missing,
+  duplicated, or unknown-code status row makes only that item's outcome
+  unknown, and a status row for an id not in the request is ignored. This
+  supersedes XV-3 as currently written.
+- D15: a CBOR map with a duplicate key makes the structure invalid. No
+  requirement id covers this yet.

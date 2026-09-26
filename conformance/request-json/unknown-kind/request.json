@@ -19,7 +19,7 @@
       ]
     },
     {
-      "id": "patient",
+      "id": "patient2",
       "title": "Patient demographics",
       "content": {
         "kind": "selection.fhir",

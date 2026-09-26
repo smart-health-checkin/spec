@@ -17,6 +17,19 @@
       "accept": [
         "application/fhir+json"
       ]
+    },
+    {
+      "id": "patient2",
+      "title": "Patient demographics",
+      "content": {
+        "kind": "selection.fhir",
+        "profiles": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+      },
+      "accept": [
+        "application/fhir+json"
+      ]
     }
   ]
 }
