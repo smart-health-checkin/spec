@@ -6,6 +6,13 @@ SITE_DIR="${1:-"$ROOT/_site"}"
 
 # Every JSON example in the model explainer must pass the client validators.
 bun "$ROOT/scripts/check-explainer.ts"
+# The spec's requirement IDs are unique and current in requirements.json, its
+# JSON examples validate, and Appendix A matches the captured fixture.
+bun "$ROOT/scripts/spec-requirements.ts" --check
+bun "$ROOT/scripts/check-spec-examples.ts"
+bun "$ROOT/scripts/worked-example.ts" --check
+# The real capture matches the normative CDDL (needs `gem install cddl`).
+bun "$ROOT/scripts/check-spec-cddl.ts"
 
 rm -rf "$SITE_DIR"
 mkdir -p "$SITE_DIR"
@@ -22,6 +29,9 @@ cp "$ROOT/spec.md" "$SITE_DIR/spec.md"
 # This section's menu, read by the site chrome.
 cp "$ROOT/site/nav.json" "$SITE_DIR/nav.json"
 bun "$ROOT/scripts/render-spec.ts" "$ROOT/spec.md" "$SITE_DIR/spec.html"
+# Links from other sites into the spec keep resolving.
+bun "$ROOT/scripts/check-spec-anchors.ts" "$SITE_DIR/spec.html"
+cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
 # The web-wallet hand-off is now documented by the client library.
 HANDOFF="https://smart-health-checkin.org/client/docs/web-wallet-handoff.html"
 printf '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=%s"><link rel="canonical" href="%s"><title>Moved</title><p>Moved to <a href="%s">%s</a>.</p>\n' "$HANDOFF" "$HANDOFF" "$HANDOFF" "$HANDOFF" > "$SITE_DIR/web-wallet-protocol.html"

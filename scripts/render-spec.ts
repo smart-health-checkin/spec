@@ -82,7 +82,12 @@ renderer.code = function ({ text, lang }) {
 };
 
 const marked = new Marked({ gfm: true, breaks: false });
-const body = await marked.parse(md, { renderer });
+const REQ_ID = "[A-Z]+(?:[0-9]+[A-Z]+)?-\\d+";
+// Requirement IDs: each definition (**[XV-2]**) becomes a link target, and
+// each plain reference ([XV-2]) links to it.
+const body = (await marked.parse(md, { renderer }))
+  .replace(new RegExp(`<strong>\\[(${REQ_ID})\\]</strong>`, "g"), '<strong class="req-id" id="$1"><a href="#$1">[$1]</a></strong>')
+  .replace(new RegExp(`(?<!["#>])\\[(${REQ_ID})\\](?!</a>)`, "g"), '<a class="req-ref" href="#$1">[$1]</a>');
 
 const docTitle = titleArg ?? "SMART Health Check-in 1.0 — Draft Spec";
 const docDescription =

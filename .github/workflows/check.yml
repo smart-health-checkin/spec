@@ -1,0 +1,22 @@
+name: Check
+
+# Builds the site on every pull request, running every check in
+# scripts/build-pages.sh (requirement IDs, spec examples, Appendix A, CDDL,
+# anchors), without deploying.
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Install the CDDL tool
+        run: sudo gem install cddl --no-document
+      - run: scripts/build-pages.sh
