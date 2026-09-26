@@ -1,0 +1,37 @@
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "conformance-request",
+  "purpose": "Clinic check-in",
+  "fhirVersions": [
+    "4.0.1"
+  ],
+  "items": [
+    {
+      "id": "patient",
+      "title": "Patient demographics",
+      "content": {
+        "kind": "selection.fhir",
+        "profiles": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+      },
+      "accept": [
+        "application/fhir+json"
+      ]
+    },
+    {
+      "id": "patient",
+      "title": "Patient demographics",
+      "content": {
+        "kind": "selection.fhir",
+        "profiles": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
+      },
+      "accept": [
+        "application/fhir+json"
+      ]
+    }
+  ]
+}

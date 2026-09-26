@@ -1,0 +1,21 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [
+    {
+      "id": "u1",
+      "mediaType": "application/x-unknown",
+      "fulfills": [
+        "patient"
+      ],
+      "value": {}
+    }
+  ],
+  "requestStatus": [
+    {
+      "item": "patient",
+      "status": "fulfilled"
+    }
+  ]
+}

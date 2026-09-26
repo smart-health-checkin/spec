@@ -1,0 +1,32 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [],
+  "requestStatus": [
+    {
+      "item": "i0",
+      "status": "fulfilled"
+    },
+    {
+      "item": "i1",
+      "status": "partial"
+    },
+    {
+      "item": "i2",
+      "status": "unavailable"
+    },
+    {
+      "item": "i3",
+      "status": "declined"
+    },
+    {
+      "item": "i4",
+      "status": "unsupported"
+    },
+    {
+      "item": "i5",
+      "status": "error"
+    }
+  ]
+}

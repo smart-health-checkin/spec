@@ -1,0 +1,12 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [],
+  "requestStatus": [
+    {
+      "item": "patient",
+      "status": "declined"
+    }
+  ]
+}

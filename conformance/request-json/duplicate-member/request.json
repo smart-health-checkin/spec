@@ -1,0 +1,7 @@
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "first",
+  "id": "second",
+  "items": [{"id":"patient","title":"Patient demographics","content":{"kind":"selection.fhir","profiles":["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]},"accept":["application/fhir+json"]}]
+}

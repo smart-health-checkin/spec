@@ -1,0 +1,22 @@
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "conformance-request",
+  "purpose": "Clinic check-in",
+  "fhirVersions": [
+    "4.0.1"
+  ],
+  "items": [
+    {
+      "id": "intake",
+      "title": "Intake form",
+      "content": {
+        "kind": "form.fhir",
+        "questionnaireCanonical": 7
+      },
+      "accept": [
+        "application/fhir+json"
+      ]
+    }
+  ]
+}

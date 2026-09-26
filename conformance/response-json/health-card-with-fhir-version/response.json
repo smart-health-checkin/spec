@@ -1,0 +1,26 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [
+    {
+      "id": "c1",
+      "mediaType": "application/smart-health-card",
+      "fhirVersion": "4.0.1",
+      "fulfills": [
+        "patient"
+      ],
+      "value": {
+        "verifiableCredential": [
+          "eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6ImsifQ.eyJ4IjoxfQ.c2ln"
+        ]
+      }
+    }
+  ],
+  "requestStatus": [
+    {
+      "item": "patient",
+      "status": "fulfilled"
+    }
+  ]
+}

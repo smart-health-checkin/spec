@@ -1,0 +1,1746 @@
+{
+  "formatVersion": 1,
+  "capabilities": {
+    "request-json": "Validate a SMART request (JSON text). Valid or not.",
+    "response-json": "Validate a SMART response's shape on its own. Valid or not.",
+    "cross-validation": "Validate a SMART response against the request it answers (§6.4). Valid or not; some cases also give a per-Artifact outcome.",
+    "request-cbor": "Wallet side: read a navigator.credentials.get argument; recover the SMART request, or reject.",
+    "transcript": "Build SessionTranscript bytes from an origin and the encryptionInfo base64url string.",
+    "hpke-open": "Verifier side: open a credential with the recipient private key and the transcript; recover the DeviceResponse bytes, or reject.",
+    "mdoc-verify": "Verifier side: check a DeviceResponse against the session transcript: version, status, docType, issuer signature, digests, validityInfo, device signature, the response element. Valid or not.",
+    "wallet-response": "Wallet side: answer a request with a given SMART response. The reference verifier opens and checks the result."
+  },
+  "cases": [
+    {
+      "id": "request-json/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "The request from the real Chrome/Android capture.",
+      "rule": "§5.2",
+      "inputs": {
+        "request": "request-json/capture-v2/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/minimal",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "One selection.fhir item with an exact profile.",
+      "rule": "§5.2",
+      "inputs": {
+        "request": "request-json/minimal/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/no-filters",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "selection.fhir with no filter arrays: the wallet decides.",
+      "rule": "§5.4.1",
+      "inputs": {
+        "request": "request-json/no-filters/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/empty-items",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "An empty items array is valid (items SHOULD be non-empty).",
+      "rule": "§5.2 items",
+      "inputs": {
+        "request": "request-json/empty-items/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/no-fhir-versions",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "fhirVersions is optional.",
+      "rule": "§5.2 fhirVersions",
+      "inputs": {
+        "request": "request-json/no-fhir-versions/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/empty-fhir-versions",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "fhirVersions may be an empty array.",
+      "rule": "§5.2 fhirVersions",
+      "inputs": {
+        "request": "request-json/empty-fhir-versions/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/form-canonical",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "form.fhir by questionnaireCanonical.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/form-canonical/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/form-versioned-canonical",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "form.fhir by a versioned canonical (url|version).",
+      "rule": "§5.4.2, §5.5",
+      "inputs": {
+        "request": "request-json/form-versioned-canonical/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/form-inline",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "form.fhir with an inline Questionnaire.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/form-inline/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/profiles-from",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "selection.fhir by profile family narrowed by resourceTypes.",
+      "rule": "§5.4.1",
+      "inputs": {
+        "request": "request-json/profiles-from/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/unknown-kind",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "An unknown content.kind is a valid request; the wallet answers unsupported for that item (D5).",
+      "rule": "D5, §5.4.3",
+      "inputs": {
+        "request": "request-json/unknown-kind/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/legacy-members-ignored",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "Old selector members canonical and resource are ignored like any unknown member (D13).",
+      "rule": "D13, §5.2 unknown members",
+      "inputs": {
+        "request": "request-json/legacy-members-ignored/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/unknown-top-member",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "Unknown top-level members may be ignored.",
+      "rule": "§5.2 unknown members",
+      "inputs": {
+        "request": "request-json/unknown-top-member/request.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "request-json/wrong-type",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "type is not smart-health-checkin-request.",
+      "rule": "§5.2 type",
+      "inputs": {
+        "request": "request-json/wrong-type/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "request-type"
+      }
+    },
+    {
+      "id": "request-json/version-number",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "version is the number 1, not the string \"1\".",
+      "rule": "§5.1, §5.2 version",
+      "inputs": {
+        "request": "request-json/version-number/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "request-version"
+      }
+    },
+    {
+      "id": "request-json/missing-id",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "No request id.",
+      "rule": "§5.2 id",
+      "inputs": {
+        "request": "request-json/missing-id/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "request-id"
+      }
+    },
+    {
+      "id": "request-json/duplicate-item-ids",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "Two items share an id.",
+      "rule": "§5.3",
+      "inputs": {
+        "request": "request-json/duplicate-item-ids/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "item-id-duplicate"
+      }
+    },
+    {
+      "id": "request-json/missing-title",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "An item without a title.",
+      "rule": "§5.3",
+      "inputs": {
+        "request": "request-json/missing-title/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "item-title"
+      }
+    },
+    {
+      "id": "request-json/empty-accept",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "An item with an empty accept list.",
+      "rule": "§5.3, §5.6",
+      "inputs": {
+        "request": "request-json/empty-accept/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "item-accept"
+      }
+    },
+    {
+      "id": "request-json/mixed-form-with-profiles",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "form.fhir that also carries profiles.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/mixed-form-with-profiles/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "selector-mixed"
+      }
+    },
+    {
+      "id": "request-json/mixed-selection-with-questionnaire",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "selection.fhir that also carries questionnaireCanonical.",
+      "rule": "§5.2 SelectionFhirSelector",
+      "inputs": {
+        "request": "request-json/mixed-selection-with-questionnaire/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "selector-mixed"
+      }
+    },
+    {
+      "id": "request-json/form-no-source",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "form.fhir with neither questionnaire nor questionnaireCanonical.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/form-no-source/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "form-source"
+      }
+    },
+    {
+      "id": "request-json/blank-canonical",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "questionnaireCanonical is an empty string.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/blank-canonical/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "form-canonical-blank"
+      }
+    },
+    {
+      "id": "request-json/canonical-not-string",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "questionnaireCanonical is a number.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/canonical-not-string/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "form-canonical-type"
+      }
+    },
+    {
+      "id": "request-json/questionnaire-wrong-type",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "The inline questionnaire is a Patient.",
+      "rule": "§5.4.2",
+      "inputs": {
+        "request": "request-json/questionnaire-wrong-type/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "form-questionnaire-type"
+      }
+    },
+    {
+      "id": "request-json/profiles-from-string",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "profilesFrom is a string, not an array.",
+      "rule": "§5.2 profilesFrom",
+      "inputs": {
+        "request": "request-json/profiles-from-string/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "selector-profiles-from"
+      }
+    },
+    {
+      "id": "request-json/empty-profiles",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "profiles is an empty array (NonEmptyArray).",
+      "rule": "§5.2 profiles",
+      "inputs": {
+        "request": "request-json/empty-profiles/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "selector-profiles-empty"
+      }
+    },
+    {
+      "id": "request-json/empty-resource-types",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "resourceTypes is an empty array (NonEmptyArray).",
+      "rule": "§5.2 resourceTypes",
+      "inputs": {
+        "request": "request-json/empty-resource-types/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "selector-resource-types-empty"
+      }
+    },
+    {
+      "id": "request-json/duplicate-member",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-json",
+      "description": "The JSON text has the member id twice.",
+      "rule": "§5.1",
+      "inputs": {
+        "request": "request-json/duplicate-member/request.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "json-duplicate-member"
+      }
+    },
+    {
+      "id": "response-json/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "The response from the real capture.",
+      "rule": "§6.1",
+      "inputs": {
+        "response": "response-json/capture-v2/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "response-json/minimal",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "One FHIR Patient Artifact.",
+      "rule": "§6.1",
+      "inputs": {
+        "response": "response-json/minimal/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "response-json/declined-no-artifacts",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "Everything declined, no Artifacts (D10).",
+      "rule": "§6.1, D10",
+      "inputs": {
+        "response": "response-json/declined-no-artifacts/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "response-json/health-card",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "A SMART Health Card Artifact.",
+      "rule": "§6.1 SmartHealthCardArtifact",
+      "inputs": {
+        "response": "response-json/health-card/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "response-json/all-statuses",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "Each of the six status codes once.",
+      "rule": "§6.1 RequestItemStatusCode",
+      "inputs": {
+        "response": "response-json/all-statuses/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "response-json/wrong-type",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "type is not smart-health-checkin-response.",
+      "rule": "§6.1 type",
+      "inputs": {
+        "response": "response-json/wrong-type/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "response-type"
+      }
+    },
+    {
+      "id": "response-json/missing-request-status",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "No requestStatus array.",
+      "rule": "§6.1",
+      "inputs": {
+        "response": "response-json/missing-request-status/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "response-status-missing"
+      }
+    },
+    {
+      "id": "response-json/empty-fulfills",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "An Artifact with an empty fulfills list.",
+      "rule": "§6.1 fulfills",
+      "inputs": {
+        "response": "response-json/empty-fulfills/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "artifact-fulfills"
+      }
+    },
+    {
+      "id": "response-json/fhir-missing-fhir-version",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "FHIR JSON Artifact without fhirVersion.",
+      "rule": "§6.1 RawFhirJsonArtifact",
+      "inputs": {
+        "response": "response-json/fhir-missing-fhir-version/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "artifact-fhir-version"
+      }
+    },
+    {
+      "id": "response-json/health-card-with-fhir-version",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "A SMART Health Card Artifact with an outer fhirVersion.",
+      "rule": "§6.1, §6.4",
+      "inputs": {
+        "response": "response-json/health-card-with-fhir-version/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "artifact-shc-fhir-version"
+      }
+    },
+    {
+      "id": "response-json/fhir-value-not-resource",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "FHIR JSON Artifact whose value has no resourceType.",
+      "rule": "§6.1 FhirResource",
+      "inputs": {
+        "response": "response-json/fhir-value-not-resource/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "artifact-value"
+      }
+    },
+    {
+      "id": "response-json/unknown-status-code",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "A status code outside the six.",
+      "rule": "§6.1",
+      "inputs": {
+        "response": "response-json/unknown-status-code/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "status-code"
+      }
+    },
+    {
+      "id": "response-json/duplicate-artifact-ids",
+      "requirement": null,
+      "status": "active",
+      "capability": "response-json",
+      "description": "Two Artifacts share an id.",
+      "rule": "§6.1 id",
+      "inputs": {
+        "response": "response-json/duplicate-artifact-ids/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "artifact-id-duplicate"
+      }
+    },
+    {
+      "id": "cross-validation/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "cross-validation",
+      "description": "The real capture's request and response.",
+      "rule": "§6.4",
+      "inputs": {
+        "request": "cross-validation/capture-v2/request.json",
+        "response": "cross-validation/capture-v2/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/baseline",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "Three items, three Artifacts, three fulfilled.",
+      "rule": "§6.4",
+      "inputs": {
+        "request": "cross-validation/baseline/request.json",
+        "response": "cross-validation/baseline/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/one-artifact-two-items",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "One Bundle fulfills two items.",
+      "rule": "§6.3",
+      "inputs": {
+        "request": "cross-validation/one-artifact-two-items/request.json",
+        "response": "cross-validation/one-artifact-two-items/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/two-artifacts-one-item",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "Two Artifacts fulfill the same item.",
+      "rule": "§6.3",
+      "inputs": {
+        "request": "cross-validation/two-artifacts-one-item/request.json",
+        "response": "cross-validation/two-artifacts-one-item/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/declined-no-artifact",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "A declined item has no Artifact.",
+      "rule": "§6.2",
+      "inputs": {
+        "request": "cross-validation/declined-no-artifact/request.json",
+        "response": "cross-validation/declined-no-artifact/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/all-declined",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "The patient declined everything: all declined, no Artifacts (D10).",
+      "rule": "D10",
+      "inputs": {
+        "request": "cross-validation/all-declined/request.json",
+        "response": "cross-validation/all-declined/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/fulfilled-without-artifact",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "A fulfilled item with no Artifact is a SHOULD, not a failure.",
+      "rule": "§6.2 SHOULD",
+      "inputs": {
+        "request": "cross-validation/fulfilled-without-artifact/request.json",
+        "response": "cross-validation/fulfilled-without-artifact/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/versioned-canonical-echo",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "A versioned questionnaireCanonical is echoed exactly in QuestionnaireResponse.questionnaire.",
+      "rule": "§5.5, D9",
+      "inputs": {
+        "request": "cross-validation/versioned-canonical-echo/request.json",
+        "response": "cross-validation/versioned-canonical-echo/response.json"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "cross-validation/request-id-mismatch",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "requestId differs from the request id.",
+      "rule": "§6.4 requestId",
+      "inputs": {
+        "request": "cross-validation/request-id-mismatch/request.json",
+        "response": "cross-validation/request-id-mismatch/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "request-id"
+      }
+    },
+    {
+      "id": "cross-validation/missing-status-row",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "An item has no status row.",
+      "rule": "§6.4 status coverage",
+      "inputs": {
+        "request": "cross-validation/missing-status-row/request.json",
+        "response": "cross-validation/missing-status-row/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "status-missing"
+      }
+    },
+    {
+      "id": "cross-validation/duplicate-status-row",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "An item has two status rows.",
+      "rule": "§6.4 status coverage",
+      "inputs": {
+        "request": "cross-validation/duplicate-status-row/request.json",
+        "response": "cross-validation/duplicate-status-row/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "status-duplicate"
+      }
+    },
+    {
+      "id": "cross-validation/unknown-status-row",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "A status row names an item the request doesn't have.",
+      "rule": "§6.4 status coverage",
+      "inputs": {
+        "request": "cross-validation/unknown-status-row/request.json",
+        "response": "cross-validation/unknown-status-row/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "status-unknown-item"
+      }
+    },
+    {
+      "id": "cross-validation/fulfills-unknown-item",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "An Artifact fulfills an item the request doesn't have.",
+      "rule": "§6.4 fulfills",
+      "inputs": {
+        "request": "cross-validation/fulfills-unknown-item/request.json",
+        "response": "cross-validation/fulfills-unknown-item/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "fulfills-unknown-item"
+      }
+    },
+    {
+      "id": "cross-validation/unaccepted-media-type",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "A SMART Health Card for an item that accepts only FHIR JSON.",
+      "rule": "§5.6, §6.4",
+      "inputs": {
+        "request": "cross-validation/unaccepted-media-type/request.json",
+        "response": "cross-validation/unaccepted-media-type/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "media-type-not-accepted"
+      }
+    },
+    {
+      "id": "cross-validation/unknown-media-type",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "An Artifact with a media type that is neither core nor a supported extension.",
+      "rule": "§6.4",
+      "inputs": {
+        "request": "cross-validation/unknown-media-type/request.json",
+        "response": "cross-validation/unknown-media-type/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "media-type-unknown"
+      }
+    },
+    {
+      "id": "cross-validation/questionnaire-echo-mismatch",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "QuestionnaireResponse.questionnaire differs from the requested canonical.",
+      "rule": "§5.5",
+      "inputs": {
+        "request": "cross-validation/questionnaire-echo-mismatch/request.json",
+        "response": "cross-validation/questionnaire-echo-mismatch/response.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "questionnaire-echo"
+      }
+    },
+    {
+      "id": "cross-validation/fhir-version-not-requested",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "One Artifact uses a FHIR release the request didn't list: only that Artifact is unusable (D6).",
+      "rule": "D6, §6.1 fhirVersion",
+      "inputs": {
+        "request": "cross-validation/fhir-version-not-requested/request.json",
+        "response": "cross-validation/fhir-version-not-requested/response.json"
+      },
+      "expected": {
+        "valid": true,
+        "artifacts": {
+          "a1": "rejected",
+          "a2": "accepted",
+          "a3": "accepted"
+        }
+      }
+    },
+    {
+      "id": "cross-validation/fhir-version-bad-format",
+      "requirement": null,
+      "capability": "cross-validation",
+      "description": "One Artifact's fhirVersion is \"R4\", not a release version: only that Artifact is unusable (D6).",
+      "rule": "D6",
+      "inputs": {
+        "request": "cross-validation/fhir-version-bad-format/request.json",
+        "response": "cross-validation/fhir-version-bad-format/response.json"
+      },
+      "expected": {
+        "valid": true,
+        "artifacts": {
+          "a1": "rejected",
+          "a2": "accepted",
+          "a3": "accepted"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-cbor",
+      "description": "The navigator argument from the real capture.",
+      "rule": "§8.2, A.3",
+      "inputs": {
+        "navigatorArgument": "request-cbor/capture-v2/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/capture-v2/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/synthetic-reader-auth",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-cbor",
+      "description": "A request built by the reference builder, with readerAuth.",
+      "rule": "§8.2",
+      "inputs": {
+        "navigatorArgument": "request-cbor/synthetic-reader-auth/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/synthetic-reader-auth/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/no-reader-auth",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-cbor",
+      "description": "No readerAuth in the DocRequest.",
+      "rule": "§8.2 readerAuth optional",
+      "inputs": {
+        "navigatorArgument": "request-cbor/no-reader-auth/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/no-reader-auth/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/unknown-docrequest-key",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-cbor",
+      "description": "An unknown key in the DocRequest is ignored (D11).",
+      "rule": "D11",
+      "inputs": {
+        "navigatorArgument": "request-cbor/unknown-docrequest-key/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/unknown-docrequest-key/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/unknown-itemsrequest-key",
+      "requirement": null,
+      "status": "active",
+      "capability": "request-cbor",
+      "description": "An unknown key in the ItemsRequest is ignored (D11).",
+      "rule": "D11",
+      "inputs": {
+        "navigatorArgument": "request-cbor/unknown-itemsrequest-key/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/unknown-itemsrequest-key/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "request-cbor/wrong-protocol",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "The request's protocol is org.iso.mdoc, not org-iso-mdoc.",
+      "rule": "§8.1",
+      "inputs": {
+        "navigatorArgument": "request-cbor/wrong-protocol/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "protocol"
+      }
+    },
+    {
+      "id": "request-cbor/padded-base64url",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "deviceRequest is padded base64url.",
+      "rule": "§2, §8.2",
+      "inputs": {
+        "navigatorArgument": "request-cbor/padded-base64url/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "base64url-padding"
+      }
+    },
+    {
+      "id": "request-cbor/wrong-doc-type",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "The ItemsRequest asks for another docType.",
+      "rule": "§8.1, §8.4",
+      "inputs": {
+        "navigatorArgument": "request-cbor/wrong-doc-type/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "doc-type"
+      }
+    },
+    {
+      "id": "request-cbor/intent-not-bool",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "intentToRetain is a string.",
+      "rule": "§8.4",
+      "inputs": {
+        "navigatorArgument": "request-cbor/intent-not-bool/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "intent-to-retain"
+      }
+    },
+    {
+      "id": "request-cbor/missing-request-info",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "No requestInfo carrier (the request travels only there, D7).",
+      "rule": "D7, §8.2",
+      "inputs": {
+        "navigatorArgument": "request-cbor/missing-request-info/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "request-info-missing"
+      }
+    },
+    {
+      "id": "request-cbor/request-info-invalid",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "requestInfo holds JSON that isn't a valid SMART request.",
+      "rule": "§8.4, §5",
+      "inputs": {
+        "navigatorArgument": "request-cbor/request-info-invalid/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "smart-request-invalid"
+      }
+    },
+    {
+      "id": "request-cbor/unknown-version",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "DeviceRequest version 9.0.",
+      "rule": "§8.4",
+      "inputs": {
+        "navigatorArgument": "request-cbor/unknown-version/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "device-request-version"
+      }
+    },
+    {
+      "id": "request-cbor/encryption-key-wrong-curve",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "encryptionInfo's recipient key has an unsupported crv (D11: security label).",
+      "rule": "D11, §8.1",
+      "inputs": {
+        "navigatorArgument": "request-cbor/encryption-key-wrong-curve/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "encryption-key"
+      }
+    },
+    {
+      "id": "request-cbor/encryption-info-wrong-tag",
+      "requirement": null,
+      "capability": "request-cbor",
+      "description": "encryptionInfo's first entry is not \"dcapi\".",
+      "rule": "A.5",
+      "inputs": {
+        "navigatorArgument": "request-cbor/encryption-info-wrong-tag/navigator-argument.json"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "encryption-info"
+      }
+    },
+    {
+      "id": "request-cbor/companion-element-present",
+      "requirement": null,
+      "status": "pending",
+      "capability": "request-cbor",
+      "pendingOn": "D7 follow-up: must a wallet ignore, or reject, a request that still requests a smart_request_b64u.* element?",
+      "description": "The ItemsRequest also requests the removed companion element (D7).",
+      "rule": "D7",
+      "inputs": {
+        "navigatorArgument": "request-cbor/companion-element-present/navigator-argument.json"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "smartRequest": "request-cbor/companion-element-present/expected-smart-request.json"
+        }
+      }
+    },
+    {
+      "id": "transcript/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "transcript",
+      "description": "The real capture's origin (http, non-default port) and encryptionInfo.",
+      "rule": "§8.3",
+      "inputs": {
+        "origin": "transcript/capture-v2/origin.txt",
+        "encryptionInfo": "transcript/capture-v2/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "sessionTranscript": "transcript/capture-v2/expected-session-transcript.cbor"
+        }
+      }
+    },
+    {
+      "id": "transcript/https-default-port",
+      "requirement": null,
+      "status": "active",
+      "capability": "transcript",
+      "description": "An https origin with no port.",
+      "rule": "§8.3",
+      "inputs": {
+        "origin": "transcript/https-default-port/origin.txt",
+        "encryptionInfo": "transcript/https-default-port/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "sessionTranscript": "transcript/https-default-port/expected-session-transcript.cbor"
+        }
+      }
+    },
+    {
+      "id": "transcript/https-explicit-port",
+      "requirement": null,
+      "status": "active",
+      "capability": "transcript",
+      "description": "An https origin with a non-default port.",
+      "rule": "§8.3",
+      "inputs": {
+        "origin": "transcript/https-explicit-port/origin.txt",
+        "encryptionInfo": "transcript/https-explicit-port/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "sessionTranscript": "transcript/https-explicit-port/expected-session-transcript.cbor"
+        }
+      }
+    },
+    {
+      "id": "hpke-open/capture-v2",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "Open the real capture's response.",
+      "rule": "§8.5, A.5",
+      "inputs": {
+        "credential": "hpke-open/capture-v2/credential.json",
+        "recipientPrivateJwk": "hpke-open/capture-v2/recipient-private.jwk.json",
+        "origin": "hpke-open/capture-v2/origin.txt",
+        "encryptionInfo": "hpke-open/capture-v2/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "deviceResponse": "hpke-open/capture-v2/expected-device-response.cbor"
+        }
+      }
+    },
+    {
+      "id": "hpke-open/synthetic",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "Open a response sealed by the reference code.",
+      "rule": "§8.5",
+      "inputs": {
+        "credential": "hpke-open/synthetic/credential.json",
+        "recipientPrivateJwk": "hpke-open/synthetic/recipient-private.jwk.json",
+        "origin": "hpke-open/synthetic/origin.txt",
+        "encryptionInfo": "hpke-open/synthetic/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true,
+        "outputs": {
+          "deviceResponse": "hpke-open/synthetic/expected-device-response.cbor"
+        }
+      }
+    },
+    {
+      "id": "hpke-open/wrong-origin",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "Sealed with the transcript for another origin: must not open.",
+      "rule": "§8.3, §8.5",
+      "inputs": {
+        "credential": "hpke-open/wrong-origin/credential.json",
+        "recipientPrivateJwk": "hpke-open/wrong-origin/recipient-private.jwk.json",
+        "origin": "hpke-open/wrong-origin/origin.txt",
+        "encryptionInfo": "hpke-open/wrong-origin/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "hpke-open"
+      }
+    },
+    {
+      "id": "hpke-open/tampered-ciphertext",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "One ciphertext bit flipped.",
+      "rule": "§8.5",
+      "inputs": {
+        "credential": "hpke-open/tampered-ciphertext/credential.json",
+        "recipientPrivateJwk": "hpke-open/tampered-ciphertext/recipient-private.jwk.json",
+        "origin": "hpke-open/tampered-ciphertext/origin.txt",
+        "encryptionInfo": "hpke-open/tampered-ciphertext/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "hpke-open"
+      }
+    },
+    {
+      "id": "hpke-open/wrong-response-tag",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "The response's first entry is not \"dcapi\".",
+      "rule": "A.6",
+      "inputs": {
+        "credential": "hpke-open/wrong-response-tag/credential.json",
+        "recipientPrivateJwk": "hpke-open/wrong-response-tag/recipient-private.jwk.json",
+        "origin": "hpke-open/wrong-response-tag/origin.txt",
+        "encryptionInfo": "hpke-open/wrong-response-tag/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "dcapi-response"
+      }
+    },
+    {
+      "id": "hpke-open/padded-base64url",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "data.response is padded base64url.",
+      "rule": "§8.5",
+      "inputs": {
+        "credential": "hpke-open/padded-base64url/credential.json",
+        "recipientPrivateJwk": "hpke-open/padded-base64url/recipient-private.jwk.json",
+        "origin": "hpke-open/padded-base64url/origin.txt",
+        "encryptionInfo": "hpke-open/padded-base64url/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "base64url-padding"
+      }
+    },
+    {
+      "id": "hpke-open/wrong-protocol",
+      "requirement": null,
+      "status": "active",
+      "capability": "hpke-open",
+      "description": "The credential's protocol is not org-iso-mdoc.",
+      "rule": "§8.5",
+      "inputs": {
+        "credential": "hpke-open/wrong-protocol/credential.json",
+        "recipientPrivateJwk": "hpke-open/wrong-protocol/recipient-private.jwk.json",
+        "origin": "hpke-open/wrong-protocol/origin.txt",
+        "encryptionInfo": "hpke-open/wrong-protocol/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "protocol"
+      }
+    },
+    {
+      "id": "mdoc-verify/capture-v2",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The real capture's DeviceResponse (detached device signature).",
+      "rule": "§8.4, §8.5, D2",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/capture-v2/device-response.cbor",
+        "credential": "mdoc-verify/capture-v2/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/capture-v2/recipient-private.jwk.json",
+        "origin": "mdoc-verify/capture-v2/origin.txt",
+        "encryptionInfo": "mdoc-verify/capture-v2/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/capture-v2/session-transcript.cbor",
+        "now": "mdoc-verify/capture-v2/now.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "mdoc-verify/capture-v1-attached-equal",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The pre-fix capture: device signature payload attached but equal to the rebuilt DeviceAuthentication. Accepted (D2).",
+      "rule": "D2",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/capture-v1-attached-equal/device-response.cbor",
+        "credential": "mdoc-verify/capture-v1-attached-equal/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/capture-v1-attached-equal/recipient-private.jwk.json",
+        "origin": "mdoc-verify/capture-v1-attached-equal/origin.txt",
+        "encryptionInfo": "mdoc-verify/capture-v1-attached-equal/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/capture-v1-attached-equal/session-transcript.cbor",
+        "now": "mdoc-verify/capture-v1-attached-equal/now.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "mdoc-verify/synthetic",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "A reference-built DeviceResponse with a detached device signature.",
+      "rule": "§8.4, D2",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/synthetic/device-response.cbor",
+        "credential": "mdoc-verify/synthetic/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/synthetic/recipient-private.jwk.json",
+        "origin": "mdoc-verify/synthetic/origin.txt",
+        "encryptionInfo": "mdoc-verify/synthetic/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/synthetic/session-transcript.cbor",
+        "now": "mdoc-verify/synthetic/now.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "mdoc-verify/unknown-top-level-key",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "An unknown top-level DeviceResponse key is ignored (D11).",
+      "rule": "D11",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/unknown-top-level-key/device-response.cbor",
+        "credential": "mdoc-verify/unknown-top-level-key/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/unknown-top-level-key/recipient-private.jwk.json",
+        "origin": "mdoc-verify/unknown-top-level-key/origin.txt",
+        "encryptionInfo": "mdoc-verify/unknown-top-level-key/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/unknown-top-level-key/session-transcript.cbor",
+        "now": "mdoc-verify/unknown-top-level-key/now.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "mdoc-verify/unknown-unprotected-header",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "An unknown unprotected header label in issuerAuth is ignored (D11).",
+      "rule": "D11",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/unknown-unprotected-header/device-response.cbor",
+        "credential": "mdoc-verify/unknown-unprotected-header/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/unknown-unprotected-header/recipient-private.jwk.json",
+        "origin": "mdoc-verify/unknown-unprotected-header/origin.txt",
+        "encryptionInfo": "mdoc-verify/unknown-unprotected-header/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/unknown-unprotected-header/session-transcript.cbor",
+        "now": "mdoc-verify/unknown-unprotected-header/now.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "mdoc-verify/attached-payload-other-session",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "Device signature carries an attached payload built for another origin's transcript.",
+      "rule": "D2, §8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/attached-payload-other-session/device-response.cbor",
+        "credential": "mdoc-verify/attached-payload-other-session/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/attached-payload-other-session/recipient-private.jwk.json",
+        "origin": "mdoc-verify/attached-payload-other-session/origin.txt",
+        "encryptionInfo": "mdoc-verify/attached-payload-other-session/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/attached-payload-other-session/session-transcript.cbor",
+        "now": "mdoc-verify/attached-payload-other-session/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "device-signature"
+      }
+    },
+    {
+      "id": "mdoc-verify/tampered-device-signature",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "One bit of the device signature flipped.",
+      "rule": "§8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/tampered-device-signature/device-response.cbor",
+        "credential": "mdoc-verify/tampered-device-signature/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/tampered-device-signature/recipient-private.jwk.json",
+        "origin": "mdoc-verify/tampered-device-signature/origin.txt",
+        "encryptionInfo": "mdoc-verify/tampered-device-signature/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/tampered-device-signature/session-transcript.cbor",
+        "now": "mdoc-verify/tampered-device-signature/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "device-signature"
+      }
+    },
+    {
+      "id": "mdoc-verify/tampered-issuer-signature",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "One bit of the issuer signature flipped.",
+      "rule": "§8.5, D1",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/tampered-issuer-signature/device-response.cbor",
+        "credential": "mdoc-verify/tampered-issuer-signature/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/tampered-issuer-signature/recipient-private.jwk.json",
+        "origin": "mdoc-verify/tampered-issuer-signature/origin.txt",
+        "encryptionInfo": "mdoc-verify/tampered-issuer-signature/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/tampered-issuer-signature/session-transcript.cbor",
+        "now": "mdoc-verify/tampered-issuer-signature/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "issuer-signature"
+      }
+    },
+    {
+      "id": "mdoc-verify/missing-validity-info",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The MSO has no validityInfo.",
+      "rule": "D2, ISO 18013-5 MSO",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/missing-validity-info/device-response.cbor",
+        "credential": "mdoc-verify/missing-validity-info/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/missing-validity-info/recipient-private.jwk.json",
+        "origin": "mdoc-verify/missing-validity-info/origin.txt",
+        "encryptionInfo": "mdoc-verify/missing-validity-info/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/missing-validity-info/session-transcript.cbor",
+        "now": "mdoc-verify/missing-validity-info/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "mso-validity-info"
+      }
+    },
+    {
+      "id": "mdoc-verify/digest-mismatch",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The issuer-signed item changed after the MSO was signed.",
+      "rule": "§8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/digest-mismatch/device-response.cbor",
+        "credential": "mdoc-verify/digest-mismatch/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/digest-mismatch/recipient-private.jwk.json",
+        "origin": "mdoc-verify/digest-mismatch/origin.txt",
+        "encryptionInfo": "mdoc-verify/digest-mismatch/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/digest-mismatch/session-transcript.cbor",
+        "now": "mdoc-verify/digest-mismatch/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "digest"
+      }
+    },
+    {
+      "id": "mdoc-verify/digest-missing",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The MSO has no digest for the item's digestID.",
+      "rule": "§8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/digest-missing/device-response.cbor",
+        "credential": "mdoc-verify/digest-missing/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/digest-missing/recipient-private.jwk.json",
+        "origin": "mdoc-verify/digest-missing/origin.txt",
+        "encryptionInfo": "mdoc-verify/digest-missing/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/digest-missing/session-transcript.cbor",
+        "now": "mdoc-verify/digest-missing/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "digest"
+      }
+    },
+    {
+      "id": "mdoc-verify/document-doc-type",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The document's docType isn't org.smarthealthit.checkin.1.",
+      "rule": "§8.1, §8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/document-doc-type/device-response.cbor",
+        "credential": "mdoc-verify/document-doc-type/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/document-doc-type/recipient-private.jwk.json",
+        "origin": "mdoc-verify/document-doc-type/origin.txt",
+        "encryptionInfo": "mdoc-verify/document-doc-type/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/document-doc-type/session-transcript.cbor",
+        "now": "mdoc-verify/document-doc-type/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "doc-type"
+      }
+    },
+    {
+      "id": "mdoc-verify/mso-doc-type-mismatch",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The MSO's docType differs from the document's.",
+      "rule": "ISO 18013-5, §8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/mso-doc-type-mismatch/device-response.cbor",
+        "credential": "mdoc-verify/mso-doc-type-mismatch/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/mso-doc-type-mismatch/recipient-private.jwk.json",
+        "origin": "mdoc-verify/mso-doc-type-mismatch/origin.txt",
+        "encryptionInfo": "mdoc-verify/mso-doc-type-mismatch/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/mso-doc-type-mismatch/session-transcript.cbor",
+        "now": "mdoc-verify/mso-doc-type-mismatch/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "doc-type"
+      }
+    },
+    {
+      "id": "mdoc-verify/status-not-ok",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "DeviceResponse status is 10.",
+      "rule": "§8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/status-not-ok/device-response.cbor",
+        "credential": "mdoc-verify/status-not-ok/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/status-not-ok/recipient-private.jwk.json",
+        "origin": "mdoc-verify/status-not-ok/origin.txt",
+        "encryptionInfo": "mdoc-verify/status-not-ok/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/status-not-ok/session-transcript.cbor",
+        "now": "mdoc-verify/status-not-ok/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "device-response-status"
+      }
+    },
+    {
+      "id": "mdoc-verify/version-unknown",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "DeviceResponse version is 9.0.",
+      "rule": "§8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/version-unknown/device-response.cbor",
+        "credential": "mdoc-verify/version-unknown/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/version-unknown/recipient-private.jwk.json",
+        "origin": "mdoc-verify/version-unknown/origin.txt",
+        "encryptionInfo": "mdoc-verify/version-unknown/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/version-unknown/session-transcript.cbor",
+        "now": "mdoc-verify/version-unknown/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "device-response-version"
+      }
+    },
+    {
+      "id": "mdoc-verify/unknown-alg",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "issuerAuth's protected alg is an unknown value (D11: security label).",
+      "rule": "D11, §8.1",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/unknown-alg/device-response.cbor",
+        "credential": "mdoc-verify/unknown-alg/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/unknown-alg/recipient-private.jwk.json",
+        "origin": "mdoc-verify/unknown-alg/origin.txt",
+        "encryptionInfo": "mdoc-verify/unknown-alg/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/unknown-alg/session-transcript.cbor",
+        "now": "mdoc-verify/unknown-alg/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "alg"
+      }
+    },
+    {
+      "id": "mdoc-verify/unsupported-digest-algorithm",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The MSO's digestAlgorithm is SHA-512 (D11: security label; 1.0 uses SHA-256).",
+      "rule": "D11, §8.1",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/unsupported-digest-algorithm/device-response.cbor",
+        "credential": "mdoc-verify/unsupported-digest-algorithm/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/unsupported-digest-algorithm/recipient-private.jwk.json",
+        "origin": "mdoc-verify/unsupported-digest-algorithm/origin.txt",
+        "encryptionInfo": "mdoc-verify/unsupported-digest-algorithm/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/unsupported-digest-algorithm/session-transcript.cbor",
+        "now": "mdoc-verify/unsupported-digest-algorithm/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "digest-algorithm"
+      }
+    },
+    {
+      "id": "mdoc-verify/missing-response-element",
+      "requirement": null,
+      "capability": "mdoc-verify",
+      "description": "The document carries another element instead of smart_health_checkin_response.",
+      "rule": "§8.1, §8.5",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/missing-response-element/device-response.cbor",
+        "credential": "mdoc-verify/missing-response-element/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/missing-response-element/recipient-private.jwk.json",
+        "origin": "mdoc-verify/missing-response-element/origin.txt",
+        "encryptionInfo": "mdoc-verify/missing-response-element/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/missing-response-element/session-transcript.cbor",
+        "now": "mdoc-verify/missing-response-element/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "response-element"
+      }
+    },
+    {
+      "id": "mdoc-verify/two-documents",
+      "requirement": null,
+      "status": "pending",
+      "capability": "mdoc-verify",
+      "description": "Two documents in the DeviceResponse.",
+      "rule": "A.7",
+      "pendingOn": "Exactly one document: the rewritten §8 has to say so.",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/two-documents/device-response.cbor",
+        "credential": "mdoc-verify/two-documents/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/two-documents/recipient-private.jwk.json",
+        "origin": "mdoc-verify/two-documents/origin.txt",
+        "encryptionInfo": "mdoc-verify/two-documents/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/two-documents/session-transcript.cbor",
+        "now": "mdoc-verify/two-documents/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "documents"
+      }
+    },
+    {
+      "id": "mdoc-verify/expired",
+      "requirement": null,
+      "status": "pending",
+      "capability": "mdoc-verify",
+      "description": "Checked after the MSO's validUntil.",
+      "rule": "ISO 18013-5 validityInfo",
+      "pendingOn": "Whether verifiers check the validity window.",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/expired/device-response.cbor",
+        "credential": "mdoc-verify/expired/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/expired/recipient-private.jwk.json",
+        "origin": "mdoc-verify/expired/origin.txt",
+        "encryptionInfo": "mdoc-verify/expired/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/expired/session-transcript.cbor",
+        "now": "mdoc-verify/expired/now.txt"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "mso-expired"
+      }
+    },
+    {
+      "id": "wallet-response/capture-v2-request",
+      "requirement": null,
+      "status": "active",
+      "capability": "wallet-response",
+      "description": "Answer the real capture's request; the reference verifier must accept the result.",
+      "rule": "§8.4",
+      "inputs": {
+        "navigatorArgument": "wallet-response/capture-v2-request/navigator-argument.json",
+        "smartResponse": "wallet-response/capture-v2-request/smart-response.json",
+        "recipientPrivateJwk": "wallet-response/capture-v2-request/recipient-private.jwk.json",
+        "origin": "wallet-response/capture-v2-request/origin.txt",
+        "encryptionInfo": "wallet-response/capture-v2-request/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    },
+    {
+      "id": "wallet-response/synthetic-request",
+      "requirement": null,
+      "status": "active",
+      "capability": "wallet-response",
+      "description": "Answer a reference-built request.",
+      "rule": "§8.4",
+      "inputs": {
+        "navigatorArgument": "wallet-response/synthetic-request/navigator-argument.json",
+        "smartResponse": "wallet-response/synthetic-request/smart-response.json",
+        "recipientPrivateJwk": "wallet-response/synthetic-request/recipient-private.jwk.json",
+        "origin": "wallet-response/synthetic-request/origin.txt",
+        "encryptionInfo": "wallet-response/synthetic-request/encryption-info.b64u.txt"
+      },
+      "expected": {
+        "valid": true
+      }
+    }
+  ]
+}

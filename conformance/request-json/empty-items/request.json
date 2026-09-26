@@ -1,0 +1,10 @@
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "conformance-request",
+  "purpose": "Clinic check-in",
+  "fhirVersions": [
+    "4.0.1"
+  ],
+  "items": []
+}

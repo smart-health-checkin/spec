@@ -1,0 +1,58 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [
+    {
+      "id": "c1",
+      "mediaType": "application/smart-health-card",
+      "fulfills": [
+        "patient"
+      ],
+      "value": {
+        "verifiableCredential": [
+          "eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZCI6ImsifQ.eyJ4IjoxfQ.c2ln"
+        ]
+      }
+    },
+    {
+      "id": "a2",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": [
+        "insurance"
+      ],
+      "value": {
+        "resourceType": "Coverage",
+        "status": "active"
+      }
+    },
+    {
+      "id": "a3",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": [
+        "intake"
+      ],
+      "value": {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json",
+        "status": "completed"
+      }
+    }
+  ],
+  "requestStatus": [
+    {
+      "item": "patient",
+      "status": "fulfilled"
+    },
+    {
+      "item": "insurance",
+      "status": "fulfilled"
+    },
+    {
+      "item": "intake",
+      "status": "fulfilled"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "mediation": "required",
+  "digital": {
+    "requests": [
+      {
+        "protocol": "org-iso-mdoc",
+        "data": {
+          "deviceRequest": "omd2ZXJzaW9uYzEuMGtkb2NSZXF1ZXN0c4GhbGl0ZW1zUmVxdWVzdNgYWG6iZ2RvY1R5cGV4G29yZy5zbWFydGhlYWx0aGl0LmNoZWNraW4uMWpuYW1lU3BhY2VzoXgZb3JnLnNtYXJ0aGVhbHRoaXQuY2hlY2tpbqF4HXNtYXJ0X2hlYWx0aF9jaGVja2luX3Jlc3BvbnNl9Q",
+          "encryptionInfo": "gmVkY2FwaaJlbm9uY2VYIBhln6WgBnjUwEjPPcc9NHxsUaEVRRDvcbOSnpqzZlYBcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVggSsmEHp4CGE-c1BFSB2x6GRTIvgcnkPuSfGORaWGO-m4iWCAfgqGl9Xv0eW7Nffei5pPhgdku4SHS5tcKE35MoyWkEA"
+        }
+      }
+    ]
+  }
+}

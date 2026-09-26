@@ -1,0 +1,55 @@
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "conformance-request",
+  "artifacts": [
+    {
+      "id": "a1",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": [
+        "patient"
+      ],
+      "value": {
+        "resourceType": "Patient",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+          ]
+        },
+        "name": [
+          {
+            "family": "Okafor"
+          }
+        ]
+      }
+    },
+    {
+      "id": "a3",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": [
+        "intake"
+      ],
+      "value": {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json",
+        "status": "completed"
+      }
+    }
+  ],
+  "requestStatus": [
+    {
+      "item": "patient",
+      "status": "fulfilled"
+    },
+    {
+      "item": "insurance",
+      "status": "fulfilled"
+    },
+    {
+      "item": "intake",
+      "status": "fulfilled"
+    }
+  ]
+}
