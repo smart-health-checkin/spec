@@ -21,7 +21,14 @@ Current fixture roots:
 
 Notable checked-in fixtures:
 
-- `dcapi-requests/real-chrome-android-smart-checkin/` - real Chrome/Android
+- `dcapi-requests/real-chrome-android-smart-checkin-v2/` and
+    `responses/real-chrome-android-smart-checkin-v2/` - the current real
+    Chrome/Android capture (wallet-v0.3.6, 2026-09-26): the same request shape
+    as below, with the ISO 18013-5 detached `deviceSignature` payload and MSO
+    `validityInfo`. Includes an intentionally public test-only HPKE private JWK.
+    `pymdoc-byte-check.json` checks it independently with pyMDOC/cryptography.
+- `dcapi-requests/real-chrome-android-smart-checkin/` - (pre-fix; superseded by
+    `-v2`, its response attaches the `deviceSignature` payload) real Chrome/Android
     Credential Manager SMART Health Check-in request from a local handler run, with
     decoded `DeviceRequest`, `ItemsRequest`, `EncryptionInfo`, and
     `SessionTranscript` sidecars. Includes an intentionally public test-only RP

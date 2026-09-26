@@ -1,0 +1,1381 @@
+{
+  "cose": {
+    "deviceAuthenticationSessionTranscriptHex": "83f6f68265646361706958205d373e34bbc5306ff28c944c2a1af663af3d503e179ed3ce9df0aa610a7ffe72",
+    "deviceSignature": {
+      "alg": "ES256",
+      "payload": "detached",
+      "payloadSha256": "8362d5bacbdfbfd7cbfa8e607faa15b0f901272c0b28a4bb7531f241c2480816",
+      "sigStructureSha256": "72c2c9846a71923b13a1dceffbf3b70019c67d236120f4a6328687ad35d5e6e1",
+      "verified": true
+    },
+    "issuerAuth": {
+      "alg": "ES256",
+      "payload": "attached",
+      "payloadSha256": "871c64e464f6fd0855f578324a566096219b3fc2a48aeabd657602b72fc609f6",
+      "sigStructureSha256": "5f1d617f115728122957cb677e338efabdaad0bb8df632b35b95b873221f89f9",
+      "verified": true
+    }
+  },
+  "documentSha256": "26ebf942bcdf9031605fbf98177799efee1147245bee4047bdaf4033f0e5d30a",
+  "issuerCertificateSubject": "CN=SMART Health Check-in Demo",
+  "issuerSignedItemTag24Sha256": "635c38c6b0909ef9ac74210fe95e58b7ef40692e9b88cc30a9dcb68fe45aa207",
+  "msoSha256": "1850006f991e141db56bffde324734e240b5d131419e37f65495ceb858ef6f61",
+  "ok": true,
+  "walk": {
+    "digestID": 0,
+    "digestMatches": true,
+    "docType": "org.smarthealthit.checkin.1",
+    "elementIdentifier": "smart_health_checkin_response",
+    "mso": {
+      "digestAlgorithm": "SHA-256",
+      "docType": "org.smarthealthit.checkin.1",
+      "version": "1.0"
+    },
+    "msoDigestSha256": "635c38c6b0909ef9ac74210fe95e58b7ef40692e9b88cc30a9dcb68fe45aa207",
+    "namespace": "org.smarthealthit.checkin",
+    "recomputedDigestSha256": "635c38c6b0909ef9ac74210fe95e58b7ef40692e9b88cc30a9dcb68fe45aa207",
+    "smartResponse": {
+      "artifacts": [
+        {
+          "fhirVersion": "4.0.1",
+          "fulfills": [
+            "patient"
+          ],
+          "id": "artifact-patient",
+          "mediaType": "application/fhir+json",
+          "value": {
+            "entry": [
+              {
+                "fullUrl": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f",
+                "resource": {
+                  "address": [
+                    {
+                      "city": "Madison",
+                      "country": "US",
+                      "line": [
+                        "100 Example Street"
+                      ],
+                      "postalCode": "53703",
+                      "state": "WI",
+                      "use": "home"
+                    }
+                  ],
+                  "birthDate": "1981-04-12",
+                  "communication": [
+                    {
+                      "language": {
+                        "coding": [
+                          {
+                            "code": "en",
+                            "display": "English",
+                            "system": "urn:ietf:bcp:47"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "extension": [
+                    {
+                      "extension": [
+                        {
+                          "url": "ombCategory",
+                          "valueCoding": {
+                            "code": "2106-3",
+                            "display": "White",
+                            "system": "urn:oid:2.16.840.1.113883.6.238"
+                          }
+                        },
+                        {
+                          "url": "text",
+                          "valueString": "White"
+                        }
+                      ],
+                      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                    },
+                    {
+                      "extension": [
+                        {
+                          "url": "ombCategory",
+                          "valueCoding": {
+                            "code": "2186-5",
+                            "display": "Not Hispanic or Latino",
+                            "system": "urn:oid:2.16.840.1.113883.6.238"
+                          }
+                        },
+                        {
+                          "url": "text",
+                          "valueString": "Not Hispanic or Latino"
+                        }
+                      ],
+                      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                    }
+                  ],
+                  "gender": "female",
+                  "id": "1e4be02a-300c-5ba6-8497-e81042d8d61f",
+                  "identifier": [
+                    {
+                      "system": "https://smart-health-checkin.org/connectathon/patient-id",
+                      "value": "aria-test-1981"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Patient"
+                    ]
+                  },
+                  "name": [
+                    {
+                      "family": "Test",
+                      "given": [
+                        "Aria"
+                      ],
+                      "use": "official"
+                    }
+                  ],
+                  "resourceType": "Patient",
+                  "telecom": [
+                    {
+                      "system": "phone",
+                      "use": "mobile",
+                      "value": "555-0100"
+                    },
+                    {
+                      "system": "email",
+                      "value": "aria.test@example.org"
+                    }
+                  ]
+                }
+              }
+            ],
+            "resourceType": "Bundle",
+            "type": "collection"
+          }
+        },
+        {
+          "fhirVersion": "4.0.1",
+          "fulfills": [
+            "insurance"
+          ],
+          "id": "artifact-insurance",
+          "mediaType": "application/fhir+json",
+          "value": {
+            "entry": [
+              {
+                "fullUrl": "urn:uuid:1f363074-5dcc-5d07-b257-685edfbb4003",
+                "resource": {
+                  "beneficiary": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "class": [
+                    {
+                      "name": "Example Co. employees",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "group",
+                            "display": "Group",
+                            "system": "http://terminology.hl7.org/CodeSystem/coverage-class"
+                          }
+                        ]
+                      },
+                      "value": "GRP-4400"
+                    },
+                    {
+                      "name": "Gold PPO",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "plan",
+                            "display": "Plan",
+                            "system": "http://terminology.hl7.org/CodeSystem/coverage-class"
+                          }
+                        ]
+                      },
+                      "value": "PPO-GOLD"
+                    }
+                  ],
+                  "id": "1f363074-5dcc-5d07-b257-685edfbb4003",
+                  "identifier": [
+                    {
+                      "assigner": {
+                        "reference": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79"
+                      },
+                      "system": "https://smart-health-checkin.org/connectathon/member-id",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "MB",
+                            "display": "Member Number",
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                          }
+                        ]
+                      },
+                      "value": "EHP123456789"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-coverage",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage"
+                    ]
+                  },
+                  "payor": [
+                    {
+                      "reference": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79"
+                    }
+                  ],
+                  "period": {
+                    "end": "2026-12-31",
+                    "start": "2026-01-01"
+                  },
+                  "relationship": {
+                    "coding": [
+                      {
+                        "code": "self",
+                        "display": "Self",
+                        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship"
+                      }
+                    ]
+                  },
+                  "resourceType": "Coverage",
+                  "status": "active",
+                  "subscriber": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "subscriberId": "EHP123456789",
+                  "type": {
+                    "coding": [
+                      {
+                        "code": "512",
+                        "display": "Commercial Managed Care - PPO",
+                        "system": "https://nahdo.org/sopt"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79",
+                "resource": {
+                  "active": true,
+                  "address": [
+                    {
+                      "city": "Chicago",
+                      "country": "US",
+                      "line": [
+                        "1 Plan Way"
+                      ],
+                      "postalCode": "60601",
+                      "state": "IL"
+                    }
+                  ],
+                  "id": "ab459f8e-87b8-5548-a654-f40396aa9e79",
+                  "identifier": [
+                    {
+                      "system": "http://hl7.org/fhir/sid/us-npi",
+                      "value": "1234567893"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Organization"
+                    ]
+                  },
+                  "name": "Example Health Plan",
+                  "resourceType": "Organization",
+                  "telecom": [
+                    {
+                      "system": "phone",
+                      "use": "work",
+                      "value": "800-555-0199"
+                    }
+                  ]
+                }
+              }
+            ],
+            "resourceType": "Bundle",
+            "type": "collection"
+          }
+        },
+        {
+          "fhirVersion": "4.0.1",
+          "fulfills": [
+            "clinical-history"
+          ],
+          "id": "artifact-clinical-history",
+          "mediaType": "application/fhir+json",
+          "value": {
+            "entry": [
+              {
+                "fullUrl": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f",
+                "resource": {
+                  "address": [
+                    {
+                      "city": "Madison",
+                      "country": "US",
+                      "line": [
+                        "100 Example Street"
+                      ],
+                      "postalCode": "53703",
+                      "state": "WI",
+                      "use": "home"
+                    }
+                  ],
+                  "birthDate": "1981-04-12",
+                  "communication": [
+                    {
+                      "language": {
+                        "coding": [
+                          {
+                            "code": "en",
+                            "display": "English",
+                            "system": "urn:ietf:bcp:47"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "extension": [
+                    {
+                      "extension": [
+                        {
+                          "url": "ombCategory",
+                          "valueCoding": {
+                            "code": "2106-3",
+                            "display": "White",
+                            "system": "urn:oid:2.16.840.1.113883.6.238"
+                          }
+                        },
+                        {
+                          "url": "text",
+                          "valueString": "White"
+                        }
+                      ],
+                      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                    },
+                    {
+                      "extension": [
+                        {
+                          "url": "ombCategory",
+                          "valueCoding": {
+                            "code": "2186-5",
+                            "display": "Not Hispanic or Latino",
+                            "system": "urn:oid:2.16.840.1.113883.6.238"
+                          }
+                        },
+                        {
+                          "url": "text",
+                          "valueString": "Not Hispanic or Latino"
+                        }
+                      ],
+                      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                    }
+                  ],
+                  "gender": "female",
+                  "id": "1e4be02a-300c-5ba6-8497-e81042d8d61f",
+                  "identifier": [
+                    {
+                      "system": "https://smart-health-checkin.org/connectathon/patient-id",
+                      "value": "aria-test-1981"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Patient"
+                    ]
+                  },
+                  "name": [
+                    {
+                      "family": "Test",
+                      "given": [
+                        "Aria"
+                      ],
+                      "use": "official"
+                    }
+                  ],
+                  "resourceType": "Patient",
+                  "telecom": [
+                    {
+                      "system": "phone",
+                      "use": "mobile",
+                      "value": "555-0100"
+                    },
+                    {
+                      "system": "email",
+                      "value": "aria.test@example.org"
+                    }
+                  ]
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:d05fb767-ac71-5b5f-be30-caf3e400ac33",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "problem-list-item",
+                          "display": "Problem List Item",
+                          "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "clinicalStatus": {
+                    "coding": [
+                      {
+                        "code": "active",
+                        "display": "Active",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "44054006",
+                        "display": "Diabetes mellitus type 2",
+                        "system": "http://snomed.info/sct"
+                      }
+                    ],
+                    "text": "Type 2 diabetes"
+                  },
+                  "id": "d05fb767-ac71-5b5f-be30-caf3e400ac33",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns"
+                    ]
+                  },
+                  "onsetDateTime": "2019-03-02",
+                  "recordedDate": "2019-03-02",
+                  "resourceType": "Condition",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "verificationStatus": {
+                    "coding": [
+                      {
+                        "code": "confirmed",
+                        "display": "Confirmed",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:b5f35b47-826b-59ae-9d96-c133e4e775d3",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "problem-list-item",
+                          "display": "Problem List Item",
+                          "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "clinicalStatus": {
+                    "coding": [
+                      {
+                        "code": "active",
+                        "display": "Active",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "414916001",
+                        "display": "Obesity",
+                        "system": "http://snomed.info/sct"
+                      }
+                    ],
+                    "text": "Obesity"
+                  },
+                  "id": "b5f35b47-826b-59ae-9d96-c133e4e775d3",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns"
+                    ]
+                  },
+                  "onsetDateTime": "2017-06-20",
+                  "recordedDate": "2017-06-20",
+                  "resourceType": "Condition",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "verificationStatus": {
+                    "coding": [
+                      {
+                        "code": "confirmed",
+                        "display": "Confirmed",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:05d29730-7926-53f6-8a86-ca631e0bf29b",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "problem-list-item",
+                          "display": "Problem List Item",
+                          "system": "http://terminology.hl7.org/CodeSystem/condition-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "clinicalStatus": {
+                    "coding": [
+                      {
+                        "code": "active",
+                        "display": "Active",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-clinical"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "59621000",
+                        "display": "Essential hypertension",
+                        "system": "http://snomed.info/sct"
+                      }
+                    ],
+                    "text": "High blood pressure"
+                  },
+                  "id": "05d29730-7926-53f6-8a86-ca631e0bf29b",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns"
+                    ]
+                  },
+                  "onsetDateTime": "2020-09-14",
+                  "recordedDate": "2020-09-14",
+                  "resourceType": "Condition",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "verificationStatus": {
+                    "coding": [
+                      {
+                        "code": "confirmed",
+                        "display": "Confirmed",
+                        "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:b6f1654d-34d2-503d-bd41-1eb6e5dd3d45",
+                "resource": {
+                  "clinicalStatus": {
+                    "coding": [
+                      {
+                        "code": "active",
+                        "display": "Active",
+                        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "7980",
+                        "display": "penicillin G",
+                        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+                      }
+                    ],
+                    "text": "Penicillin"
+                  },
+                  "criticality": "low",
+                  "id": "b6f1654d-34d2-503d-bd41-1eb6e5dd3d45",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance"
+                    ]
+                  },
+                  "patient": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "reaction": [
+                    {
+                      "manifestation": [
+                        {
+                          "coding": [
+                            {
+                              "code": "126485001",
+                              "display": "Urticaria",
+                              "system": "http://snomed.info/sct"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "resourceType": "AllergyIntolerance",
+                  "verificationStatus": {
+                    "coding": [
+                      {
+                        "code": "confirmed",
+                        "display": "Confirmed",
+                        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:8b328004-d794-5d70-a717-384e337004ab",
+                "resource": {
+                  "clinicalStatus": {
+                    "coding": [
+                      {
+                        "code": "active",
+                        "display": "Active",
+                        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical"
+                      }
+                    ]
+                  },
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "762952008",
+                        "display": "Peanut",
+                        "system": "http://snomed.info/sct"
+                      }
+                    ],
+                    "text": "Peanuts"
+                  },
+                  "criticality": "high",
+                  "id": "8b328004-d794-5d70-a717-384e337004ab",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance"
+                    ]
+                  },
+                  "patient": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "reaction": [
+                    {
+                      "manifestation": [
+                        {
+                          "coding": [
+                            {
+                              "code": "39579001",
+                              "display": "Anaphylaxis",
+                              "system": "http://snomed.info/sct"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "resourceType": "AllergyIntolerance",
+                  "verificationStatus": {
+                    "coding": [
+                      {
+                        "code": "confirmed",
+                        "display": "Confirmed",
+                        "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:bc44f838-aa8a-5ed5-adac-d1e460aa9ae3",
+                "resource": {
+                  "authoredOn": "2019-03-02",
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "community",
+                          "display": "Community",
+                          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "dosageInstruction": [
+                    {
+                      "text": "Take 2 tablets by mouth once daily with dinner."
+                    }
+                  ],
+                  "id": "bc44f838-aa8a-5ed5-adac-d1e460aa9ae3",
+                  "intent": "order",
+                  "medicationCodeableConcept": {
+                    "coding": [
+                      {
+                        "code": "860975",
+                        "display": "24 HR metformin hydrochloride 500 MG Extended Release Oral Tablet",
+                        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+                      }
+                    ],
+                    "text": "Metformin ER 500 mg"
+                  },
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                    ]
+                  },
+                  "requester": {
+                    "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                  },
+                  "resourceType": "MedicationRequest",
+                  "status": "active",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:505a0f40-65ec-52e1-83e4-b1a0351725cb",
+                "resource": {
+                  "authoredOn": "2020-09-14",
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "community",
+                          "display": "Community",
+                          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "dosageInstruction": [
+                    {
+                      "text": "Take 1 tablet by mouth once daily."
+                    }
+                  ],
+                  "id": "505a0f40-65ec-52e1-83e4-b1a0351725cb",
+                  "intent": "order",
+                  "medicationCodeableConcept": {
+                    "coding": [
+                      {
+                        "code": "314076",
+                        "display": "lisinopril 10 MG Oral Tablet",
+                        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+                      }
+                    ],
+                    "text": "Lisinopril 10 mg"
+                  },
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                    ]
+                  },
+                  "requester": {
+                    "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                  },
+                  "resourceType": "MedicationRequest",
+                  "status": "active",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:6dc0d6c8-67ea-5c88-8f91-0c9cda1cc5e9",
+                "resource": {
+                  "authoredOn": "2026-08-28",
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "community",
+                          "display": "Community",
+                          "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "dosageInstruction": [
+                    {
+                      "text": "Inject 0.25 mg under the skin once weekly for 4 weeks, then 0.5 mg weekly."
+                    }
+                  ],
+                  "id": "6dc0d6c8-67ea-5c88-8f91-0c9cda1cc5e9",
+                  "intent": "order",
+                  "medicationCodeableConcept": {
+                    "coding": [
+                      {
+                        "code": "1991302",
+                        "display": "semaglutide",
+                        "system": "http://www.nlm.nih.gov/research/umls/rxnorm"
+                      }
+                    ],
+                    "text": "Semaglutide (Ozempic) 0.25 mg weekly"
+                  },
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                    ]
+                  },
+                  "requester": {
+                    "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                  },
+                  "resourceType": "MedicationRequest",
+                  "status": "active",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:1f363074-5dcc-5d07-b257-685edfbb4003",
+                "resource": {
+                  "beneficiary": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "class": [
+                    {
+                      "name": "Example Co. employees",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "group",
+                            "display": "Group",
+                            "system": "http://terminology.hl7.org/CodeSystem/coverage-class"
+                          }
+                        ]
+                      },
+                      "value": "GRP-4400"
+                    },
+                    {
+                      "name": "Gold PPO",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "plan",
+                            "display": "Plan",
+                            "system": "http://terminology.hl7.org/CodeSystem/coverage-class"
+                          }
+                        ]
+                      },
+                      "value": "PPO-GOLD"
+                    }
+                  ],
+                  "id": "1f363074-5dcc-5d07-b257-685edfbb4003",
+                  "identifier": [
+                    {
+                      "assigner": {
+                        "reference": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79"
+                      },
+                      "system": "https://smart-health-checkin.org/connectathon/member-id",
+                      "type": {
+                        "coding": [
+                          {
+                            "code": "MB",
+                            "display": "Member Number",
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                          }
+                        ]
+                      },
+                      "value": "EHP123456789"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-coverage",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage"
+                    ]
+                  },
+                  "payor": [
+                    {
+                      "reference": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79"
+                    }
+                  ],
+                  "period": {
+                    "end": "2026-12-31",
+                    "start": "2026-01-01"
+                  },
+                  "relationship": {
+                    "coding": [
+                      {
+                        "code": "self",
+                        "display": "Self",
+                        "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship"
+                      }
+                    ]
+                  },
+                  "resourceType": "Coverage",
+                  "status": "active",
+                  "subscriber": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "subscriberId": "EHP123456789",
+                  "type": {
+                    "coding": [
+                      {
+                        "code": "512",
+                        "display": "Commercial Managed Care - PPO",
+                        "system": "https://nahdo.org/sopt"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:004f681a-be8f-5dac-a5a6-ba7b6e939eec",
+                "resource": {
+                  "id": "004f681a-be8f-5dac-a5a6-ba7b6e939eec",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization"
+                    ]
+                  },
+                  "occurrenceDateTime": "2025-10-03",
+                  "patient": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "primarySource": true,
+                  "resourceType": "Immunization",
+                  "status": "completed",
+                  "vaccineCode": {
+                    "coding": [
+                      {
+                        "code": "140",
+                        "display": "Influenza, split virus, trivalent, PF",
+                        "system": "http://hl7.org/fhir/sid/cvx"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:1761be54-ec56-58bc-b01b-be6c7fdf5576",
+                "resource": {
+                  "id": "1761be54-ec56-58bc-b01b-be6c7fdf5576",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization"
+                    ]
+                  },
+                  "occurrenceDateTime": "2025-10-03",
+                  "patient": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "primarySource": true,
+                  "resourceType": "Immunization",
+                  "status": "completed",
+                  "vaccineCode": {
+                    "coding": [
+                      {
+                        "code": "213",
+                        "display": "SARS-COV-2 (COVID-19) vaccine, UNSPECIFIED",
+                        "system": "http://hl7.org/fhir/sid/cvx"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:1d867ed1-1971-5fe8-bff2-835471300c8a",
+                "resource": {
+                  "id": "1d867ed1-1971-5fe8-bff2-835471300c8a",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-immunization"
+                    ]
+                  },
+                  "occurrenceDateTime": "2021-05-18",
+                  "patient": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "primarySource": true,
+                  "resourceType": "Immunization",
+                  "status": "completed",
+                  "vaccineCode": {
+                    "coding": [
+                      {
+                        "code": "115",
+                        "display": "Tdap",
+                        "system": "http://hl7.org/fhir/sid/cvx"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:b5c19ba5-6786-58a7-ada7-73ec7e63211d",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "laboratory",
+                          "display": "Laboratory",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "4548-4",
+                        "display": "Hemoglobin A1c/Hemoglobin.total in Blood",
+                        "system": "http://loinc.org"
+                      }
+                    ]
+                  },
+                  "effectiveDateTime": "2026-08-20",
+                  "id": "b5c19ba5-6786-58a7-ada7-73ec7e63211d",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-observation-lab"
+                    ]
+                  },
+                  "performer": [
+                    {
+                      "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "status": "final",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "valueQuantity": {
+                    "code": "%",
+                    "system": "http://unitsofmeasure.org",
+                    "unit": "%",
+                    "value": 7.8
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:745df6c7-35f6-52be-be7d-046e3d1cd0a3",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "vital-signs",
+                          "display": "Vital Signs",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "29463-7",
+                        "display": "Body weight",
+                        "system": "http://loinc.org"
+                      }
+                    ]
+                  },
+                  "effectiveDateTime": "2026-08-28",
+                  "id": "745df6c7-35f6-52be-be7d-046e3d1cd0a3",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-body-weight"
+                    ]
+                  },
+                  "performer": [
+                    {
+                      "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "status": "final",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "valueQuantity": {
+                    "code": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "unit": "kg",
+                    "value": 104.3
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:3c68b746-1c60-5d8f-82a5-ea4695411977",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "vital-signs",
+                          "display": "Vital Signs",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "39156-5",
+                        "display": "Body mass index (BMI) [Ratio]",
+                        "system": "http://loinc.org"
+                      }
+                    ]
+                  },
+                  "effectiveDateTime": "2026-08-28",
+                  "id": "3c68b746-1c60-5d8f-82a5-ea4695411977",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-bmi"
+                    ]
+                  },
+                  "performer": [
+                    {
+                      "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "status": "final",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  },
+                  "valueQuantity": {
+                    "code": "kg/m2",
+                    "system": "http://unitsofmeasure.org",
+                    "unit": "kg/m2",
+                    "value": 37.2
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:5f8e3d26-7c77-513f-b2c7-debb0d6984f5",
+                "resource": {
+                  "category": [
+                    {
+                      "coding": [
+                        {
+                          "code": "vital-signs",
+                          "display": "Vital Signs",
+                          "system": "http://terminology.hl7.org/CodeSystem/observation-category"
+                        }
+                      ]
+                    }
+                  ],
+                  "code": {
+                    "coding": [
+                      {
+                        "code": "85354-9",
+                        "display": "Blood pressure panel with all children optional",
+                        "system": "http://loinc.org"
+                      }
+                    ]
+                  },
+                  "component": [
+                    {
+                      "code": {
+                        "coding": [
+                          {
+                            "code": "8480-6",
+                            "display": "Systolic blood pressure",
+                            "system": "http://loinc.org"
+                          }
+                        ]
+                      },
+                      "valueQuantity": {
+                        "code": "mm[Hg]",
+                        "system": "http://unitsofmeasure.org",
+                        "unit": "mm[Hg]",
+                        "value": 134
+                      }
+                    },
+                    {
+                      "code": {
+                        "coding": [
+                          {
+                            "code": "8462-4",
+                            "display": "Diastolic blood pressure",
+                            "system": "http://loinc.org"
+                          }
+                        ]
+                      },
+                      "valueQuantity": {
+                        "code": "mm[Hg]",
+                        "system": "http://unitsofmeasure.org",
+                        "unit": "mm[Hg]",
+                        "value": 84
+                      }
+                    }
+                  ],
+                  "effectiveDateTime": "2026-08-28",
+                  "id": "5f8e3d26-7c77-513f-b2c7-debb0d6984f5",
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-blood-pressure"
+                    ]
+                  },
+                  "performer": [
+                    {
+                      "reference": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570"
+                    }
+                  ],
+                  "resourceType": "Observation",
+                  "status": "final",
+                  "subject": {
+                    "reference": "urn:uuid:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+                  }
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:4b4182ad-77a0-5fa3-aecf-32109d079570",
+                "resource": {
+                  "id": "4b4182ad-77a0-5fa3-aecf-32109d079570",
+                  "identifier": [
+                    {
+                      "system": "http://hl7.org/fhir/sid/us-npi",
+                      "value": "1144221847"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-practitioner"
+                    ]
+                  },
+                  "name": [
+                    {
+                      "family": "Rivera",
+                      "given": [
+                        "Dana"
+                      ],
+                      "prefix": [
+                        "Dr."
+                      ]
+                    }
+                  ],
+                  "resourceType": "Practitioner"
+                }
+              },
+              {
+                "fullUrl": "urn:uuid:ab459f8e-87b8-5548-a654-f40396aa9e79",
+                "resource": {
+                  "active": true,
+                  "address": [
+                    {
+                      "city": "Chicago",
+                      "country": "US",
+                      "line": [
+                        "1 Plan Way"
+                      ],
+                      "postalCode": "60601",
+                      "state": "IL"
+                    }
+                  ],
+                  "id": "ab459f8e-87b8-5548-a654-f40396aa9e79",
+                  "identifier": [
+                    {
+                      "system": "http://hl7.org/fhir/sid/us-npi",
+                      "value": "1234567893"
+                    }
+                  ],
+                  "meta": {
+                    "lastUpdated": "2026-09-25T12:00:00Z",
+                    "profile": [
+                      "http://hl7.org/fhir/us/core/StructureDefinition/us-core-organization",
+                      "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Organization"
+                    ]
+                  },
+                  "name": "Example Health Plan",
+                  "resourceType": "Organization",
+                  "telecom": [
+                    {
+                      "system": "phone",
+                      "use": "work",
+                      "value": "800-555-0199"
+                    }
+                  ]
+                }
+              }
+            ],
+            "resourceType": "Bundle",
+            "type": "collection"
+          }
+        },
+        {
+          "fhirVersion": "4.0.1",
+          "fulfills": [
+            "intake"
+          ],
+          "id": "artifact-intake",
+          "mediaType": "application/fhir+json",
+          "value": {
+            "authored": "2026-09-26T13:14:53.240907Z",
+            "id": "intake-response",
+            "item": [
+              {
+                "answer": [
+                  {
+                    "valueBoolean": true
+                  }
+                ],
+                "linkId": "headache",
+                "text": "Are you experiencing a headache today?"
+              }
+            ],
+            "resourceType": "QuestionnaireResponse",
+            "status": "completed"
+          }
+        }
+      ],
+      "requestId": "demo-us-core-checkin",
+      "requestStatus": [
+        {
+          "item": "patient",
+          "status": "fulfilled"
+        },
+        {
+          "item": "insurance",
+          "status": "fulfilled"
+        },
+        {
+          "item": "clinical-history",
+          "status": "fulfilled"
+        },
+        {
+          "item": "intake",
+          "status": "fulfilled"
+        }
+      ],
+      "type": "smart-health-checkin-response",
+      "version": "1"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "real-chrome-android-smart-checkin-v2",
+  "kind": "positive-smart-health-checkin-real-platform-response",
+  "source": "android handler run-1790428465319",
+  "capturedAt": "2026-09-26T13:14:25.404098Z",
+  "origin": "http://127.0.0.1:3010",
+  "protocol": "org-iso-mdoc",
+  "packageName": "org.smarthealthit.checkin.wallet",
+  "containsPhi": false,
+  "note": "Matching real Android wallet response captured alongside dcapi-requests/real-chrome-android-smart-checkin-v2/. Demo data only. deviceSignature has a detached (null) payload per ISO 18013-5; the MSO carries validityInfo.",
+  "deviceResponse": {
+    "version": "1.0",
+    "status": 0
+  },
+  "deviceSignaturePayload": "detached",
+  "sourceRequestFixture": "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2",
+  "sha256": {
+    "credential.json": "7ee42cfdc2d5f0fb0071e57e83c8d9fce4a2f9e5f995333532aa91d7e0def2c9",
+    "dcapi-response.cbor": "876a72790df5638fdfe7f184a9966d5452f7dba8756fac089edb7a37cf9ac2fc",
+    "device-response.cbor": "26ebf942bcdf9031605fbf98177799efee1147245bee4047bdaf4033f0e5d30a",
+    "wallet-response.digital-credential.json": "7ee42cfdc2d5f0fb0071e57e83c8d9fce4a2f9e5f995333532aa91d7e0def2c9",
+    "smart-response.expected.json": "39fb9df8a0bd4892c563e6493643550c7a7cecf5912b56b51a20dd60def12d16",
+    "session-transcript.cbor": "70840a6bb718c1bcb229b7cb702233269f272a21fa64814ae374b14ae05954ea"
+  }
+}

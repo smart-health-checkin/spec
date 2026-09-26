@@ -9,7 +9,7 @@
   "packageName": "com.android.chrome",
   "protocol": "org-iso-mdoc",
   "containsPhi": false,
-  "note": "Real Chrome/Android Credential Manager SMART Health Check-in request using demo wallet data only.",
+  "note": "Real Chrome/Android Credential Manager SMART Health Check-in request using demo wallet data only. Its matching response is a pre-fix capture (attached device-signature payload); see real-chrome-android-smart-checkin-v2.",
   "readerAuth": {
     "present": true,
     "signatureValid": true,
@@ -44,5 +44,6 @@
     "reader-auth.cbor": "f297bc8171f44c6f5211a29ec930cdd7b364b549600b30568117eeca5d1b16f9",
     "reader-auth-detached-payload.cbor": "e6eb5ac9a40edf72cec11f26b34257bf1b45c88401f95052593e8c4f8d0ceb26",
     "credential-manager-request.json": "2c07331e19bd583bed71bcd58ec46ad2f62142bf2be1b9c7c1fc5e978ff64c26"
-  }
+  },
+  "supersededBy": "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2"
 }

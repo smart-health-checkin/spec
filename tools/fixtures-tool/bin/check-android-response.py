@@ -77,16 +77,17 @@ def check_generated_dir(generated_dir: Path) -> dict[str, Any]:
     device_signed = doc["deviceSigned"]
     device_signature = device_signed["deviceAuth"]["deviceSignature"]
     device_public_key = public_key_from_cose_key(parsed.mso_map["deviceKeyInfo"]["deviceKey"])
+    # ISO 18013-5 detaches the deviceSignature payload (null on the wire); the
+    # verifier supplies DeviceAuthenticationBytes. Older captures attached it,
+    # in which case it must equal those bytes.
+    device_auth_payload = (generated_dir / "device-authentication.cbor").read_bytes()
     device_signature_summary = verify_cose_sign1(
         cose_sign1=device_signature,
         public_key=device_public_key,
         label="deviceSignature",
+        detached_payload=device_auth_payload,
     )
-    require(
-        device_signature[2] == (generated_dir / "device-authentication.cbor").read_bytes(),
-        "deviceSignature payload does not match generated device-authentication.cbor",
-    )
-    device_auth_tag = cbor2.loads(device_signature[2])
+    device_auth_tag = cbor2.loads(device_auth_payload)
     require(
         isinstance(device_auth_tag, cbor2.CBORTag) and device_auth_tag.tag == 24,
         "deviceSignature payload must be tag 24",
@@ -147,11 +148,22 @@ def check_generated_dir(generated_dir: Path) -> dict[str, Any]:
     }
 
 
-def verify_cose_sign1(cose_sign1: list[Any], public_key: Any, label: str) -> dict[str, Any]:
+def verify_cose_sign1(
+    cose_sign1: list[Any], public_key: Any, label: str, detached_payload: bytes | None = None
+) -> dict[str, Any]:
     require(isinstance(cose_sign1, list) and len(cose_sign1) == 4, f"{label} must be a COSE_Sign1 array")
     protected_bytes, _unprotected, payload, signature = cose_sign1
     require(isinstance(protected_bytes, bytes), f"{label} protected header must be bytes")
-    require(isinstance(payload, bytes), f"{label} payload must be bytes")
+    payload_mode = "attached"
+    if payload is None:
+        require(detached_payload is not None, f"{label} payload is detached but no detached payload was supplied")
+        payload, payload_mode = detached_payload, "detached"
+    else:
+        require(isinstance(payload, bytes), f"{label} payload must be bytes or null")
+        require(
+            detached_payload is None or payload == detached_payload,
+            f"{label} attached payload does not match the expected detached payload",
+        )
     require(isinstance(signature, bytes) and len(signature) == 64, f"{label} signature must be raw P-256 r||s")
     protected = cbor2.loads(protected_bytes)
     require(protected.get(1) == -7, f"{label} protected alg must be ES256 (-7)")
@@ -163,6 +175,7 @@ def verify_cose_sign1(cose_sign1: list[Any], public_key: Any, label: str) -> dic
     public_key.verify(der_signature, sig_structure, ec.ECDSA(hashes.SHA256()))
     return {
         "alg": "ES256",
+        "payload": payload_mode,
         "payloadSha256": sha256_hex(payload),
         "sigStructureSha256": sha256_hex(sig_structure),
         "verified": True,

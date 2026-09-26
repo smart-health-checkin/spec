@@ -1,0 +1,43 @@
+{
+  "declined": false,
+  "selectedItems": {
+    "patient": true,
+    "intake": true,
+    "insurance": true,
+    "clinical-history": true
+  },
+  "selectedCandidates": {
+    "patient": [
+      "p0:Patient:0:1e4be02a-300c-5ba6-8497-e81042d8d61f"
+    ],
+    "intake": [
+      "form-intake"
+    ],
+    "insurance": [
+      "p0:Coverage:0:1f363074-5dcc-5d07-b257-685edfbb4003"
+    ],
+    "clinical-history": [
+      "p0:Patient:0:1e4be02a-300c-5ba6-8497-e81042d8d61f",
+      "p0:Condition:0:d05fb767-ac71-5b5f-be30-caf3e400ac33",
+      "p0:Condition:1:b5f35b47-826b-59ae-9d96-c133e4e775d3",
+      "p0:Condition:2:05d29730-7926-53f6-8a86-ca631e0bf29b",
+      "p0:AllergyIntolerance:0:b6f1654d-34d2-503d-bd41-1eb6e5dd3d45",
+      "p0:AllergyIntolerance:1:8b328004-d794-5d70-a717-384e337004ab",
+      "p0:MedicationRequest:0:bc44f838-aa8a-5ed5-adac-d1e460aa9ae3",
+      "p0:MedicationRequest:1:505a0f40-65ec-52e1-83e4-b1a0351725cb",
+      "p0:MedicationRequest:2:6dc0d6c8-67ea-5c88-8f91-0c9cda1cc5e9",
+      "p0:Coverage:0:1f363074-5dcc-5d07-b257-685edfbb4003",
+      "p0:Immunization:0:004f681a-be8f-5dac-a5a6-ba7b6e939eec",
+      "p0:Immunization:1:1761be54-ec56-58bc-b01b-be6c7fdf5576",
+      "p0:Immunization:2:1d867ed1-1971-5fe8-bff2-835471300c8a",
+      "p0:Observation:0:b5c19ba5-6786-58a7-ada7-73ec7e63211d",
+      "p0:Observation:1:745df6c7-35f6-52be-be7d-046e3d1cd0a3",
+      "p0:Observation:2:3c68b746-1c60-5d8f-82a5-ea4695411977",
+      "p0:Observation:3:5f8e3d26-7c77-513f-b2c7-debb0d6984f5"
+    ]
+  },
+  "answerCount": 1,
+  "origin": "http:\/\/127.0.0.1:3010",
+  "itemCount": 4,
+  "walletStoreMode": "reference-patient-aria"
+}

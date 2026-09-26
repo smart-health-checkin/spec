@@ -1,0 +1,48 @@
+{
+  "id": "real-chrome-android-smart-checkin-v2",
+  "kind": "positive-smart-health-checkin-real-platform-request",
+  "source": "android handler run-1790428465319; verifier page on http://127.0.0.1:3010",
+  "capturedAt": "2026-09-26T13:14:25.404098Z",
+  "origin": "http://127.0.0.1:3010",
+  "originSource": "web-origin",
+  "originIsPopulated": true,
+  "packageName": "com.android.chrome",
+  "protocol": "org-iso-mdoc",
+  "containsPhi": false,
+  "note": "Real Chrome/Android Credential Manager SMART Health Check-in request using demo wallet data only. Captured with Android wallet wallet-v0.3.6 (detached device signature) on an Android 17 emulator (Chrome 145). Verifier side built by the client library's request builder.",
+  "wallet": {
+    "release": "wallet-v0.3.6",
+    "versionCode": 3006
+  },
+  "readerAuth": {
+    "present": true,
+    "signatureValid": true,
+    "certificateSubject": "CN=SMART Health Check-in Demo Verifier"
+  },
+  "hpkeRecipientPrivateJwk": {
+    "included": true,
+    "intentionallyPublicTestFixture": true,
+    "purpose": "Allows offline HPKE open of the matching checked-in encrypted dcapi-response.cbor. Never reuse this key outside this fixture."
+  },
+  "sizes": {
+    "deviceRequestB64u": 3466,
+    "deviceRequestBytes": 2599,
+    "encryptionInfoB64u": 190,
+    "encryptionInfoBytes": 142,
+    "sessionTranscriptBytes": 44
+  },
+  "sha256": {
+    "request.json": "4c4da3579778574475fcb5cdf714b38bb6a7aa5901b9d7fa7f927544c675942a",
+    "navigator-credentials-get.arg.json": "4c4da3579778574475fcb5cdf714b38bb6a7aa5901b9d7fa7f927544c675942a",
+    "device-request.b64u": "9ab7ca83dbd6ee78a5171327783f7e97cfc1b9f30c87bf1e3c67c9837f555fc9",
+    "device-request.cbor": "cf727c2a31ee64267c1c788ef691baf3e52706b0ffe94a96c67f775cd30825fe",
+    "items-request.cbor": "2374544464267d969fa69d46103a04dd7211c557d4f525cbc89a2dc1bd940007",
+    "items-request-tag24.cbor": "908fe3edb8ccfc9fd0ccc1d8999a60c71f83c80395ecd75e1aa55af92411bae5",
+    "encryption-info.b64u": "948e4c44b8bfa35470685ade02e349766754a07779243bc1f6be0fd1963892e8",
+    "encryption-info.cbor": "3a66ffc4e754bd171bc52038f9e69ede07a1f662044a05078320504496458792",
+    "session-transcript.cbor": "70840a6bb718c1bcb229b7cb702233269f272a21fa64814ae374b14ae05954ea",
+    "smart-request.expected.json": "27fc51b379e1807cdfd11d80b44b8ba0c5fb006d97506ce1f77d494df1e49b60",
+    "reader-auth.cbor": "b151333ddd02dd96981fbf558283fb8413af54afbc4ff4d1dcd547b006fc34f5",
+    "recipient-private.jwk.json": "93de876c2ab5d952bcf6ab85f80df5d8e06d526ba185fc66d7eba356a89bafc4"
+  }
+}

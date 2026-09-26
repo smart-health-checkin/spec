@@ -80,6 +80,27 @@ def test_intermediate_artifacts_exist(tmp_path):
     assert manifest["sha256"]["value-digest-input.cbor"]
 
 
+def test_checked_in_real_android_v2_response_fixture_verifies_detached():
+    parsed = subprocess.run(
+        [
+            sys.executable,
+            "bin/check-android-response.py",
+            str(REPO_ROOT / "fixtures/responses/real-chrome-android-smart-checkin-v2"),
+        ],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    summary = json.loads(parsed.stdout)
+
+    assert summary["ok"] is True
+    assert summary["walk"]["digestMatches"] is True
+    assert summary["cose"]["issuerAuth"]["verified"] is True
+    assert summary["cose"]["issuerAuth"]["payload"] == "attached"
+    assert summary["cose"]["deviceSignature"]["verified"] is True
+    assert summary["cose"]["deviceSignature"]["payload"] == "detached"
+
+
 def test_checked_in_real_android_response_fixture_verifies():
     parsed = subprocess.run(
         [
@@ -102,8 +123,8 @@ def test_checked_in_real_android_response_fixture_verifies():
     assert summary["cose"]["deviceSignature"]["verified"] is True
     assert summary["walk"]["smartResponse"]["type"] == "smart-health-checkin-response"
     assert sorted(status["item"] for status in summary["walk"]["smartResponse"]["requestStatus"]) == [
+        "clinical-history",
         "insurance",
         "intake",
-        "ips",
         "patient",
     ]

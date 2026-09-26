@@ -7,7 +7,7 @@
   "protocol": "org-iso-mdoc",
   "packageName": "org.smarthealthit.checkin.wallet",
   "containsPhi": false,
-  "note": "Matching real Android wallet response captured alongside dcapi-requests/real-chrome-android-smart-checkin/. Demo data only.",
+  "note": "Matching real Android wallet response captured alongside dcapi-requests/real-chrome-android-smart-checkin/. Demo data only. Pre-fix capture: deviceSignature carries an attached payload, which ISO 18013-5 requires to be detached (null). Kept for history; real-chrome-android-smart-checkin-v2 is the conformant capture.",
   "deviceResponse": {
     "version": "1.0",
     "status": 0
@@ -20,5 +20,7 @@
     "wallet-response.digital-credential.json": "7858a238e86aff4c544bb1e1d1ae9d31b5b94517b82dec75eea5927410c9b2f0",
     "smart-response.expected.json": "ef0bda778f342da05a884b27ff5f5fd17b14bfd9984a6552db8474fc68a56de7",
     "session-transcript.cbor": "335cbbc733124f9751edf3913dbc87b05842890727c8ed71e64f1d944d0d7219"
-  }
+  },
+  "deviceSignaturePayload": "attached",
+  "supersededBy": "fixtures/responses/real-chrome-android-smart-checkin-v2"
 }

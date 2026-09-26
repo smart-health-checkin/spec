@@ -1,0 +1,243 @@
+{
+  "protocol": "org-iso-mdoc",
+  "deviceRequest": {
+    "deviceRequestHex": "a26776657273696f6e63312e306b646f63526571756573747381a26a726561646572417574688443a10126a1182181590156308201523081f902101104d905e0513c58561421880c6d44c3300a06082a8648ce3d040302302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f205665726966696572301e170d3236303932363133313331395a170d3236313032363133313431395a302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f2056657269666965723059301306072a8648ce3d020106082a8648ce3d03010703420004e90325a848673c2ca85a96e4438fcdf99710b801258be5c09f6c5c225ba28868aebaa8f2e6d65ec45a922d8ccf6526486c44d1d6f486eb2fb5ac9660a1f0b00f300a06082a8648ce3d040302034800304502201c87f41f1e59b91d2ef7d1765834e203baf0c8cad7281cf5ff4a20e8846891be022100a144ef1fff1d0766e064af16e8617daec7b4bf1b37b618530cb671e3f0cb09aef65840c7177057c9268d44bc5f455b0052e6c13847156259701dee16d3a3ec13542b46570b2004a212d7d72786bdc6915e2f97020696ba82ecc09a19be760dc671c2f66c6974656d7352657175657374d81859084aa367646f6354797065781b6f72672e736d6172746865616c746869742e636865636b696e2e316a6e616d65537061636573a178196f72672e736d6172746865616c746869742e636865636b696ea1781d736d6172745f6865616c74685f636865636b696e5f726573706f6e7365f56b72657175657374496e666fa178216f72672e736d6172746865616c746869742e636865636b696e2e726571756573747907a97b2274797065223a22736d6172742d6865616c74682d636865636b696e2d72657175657374222c2276657273696f6e223a2231222c226964223a2264656d6f2d75732d636f72652d636865636b696e222c22707572706f7365223a22436c696e696320636865636b2d696e222c226668697256657273696f6e73223a5b22342e302e31225d2c226974656d73223a5b7b226964223a2270617469656e74222c227469746c65223a2250617469656e742064656d6f6772617068696373222c2273756d6d617279223a2244656d6f677261706869637320666f7220636865636b2d696e222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e737572616e6365222c227469746c65223a22496e737572616e63652063617264222c2273756d6d617279223a22496e737572616e6365206361726420666f722062696c6c696e67222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f696e737572616e63652d636172642f537472756374757265446566696e6974696f6e2f43344449432d436f766572616765225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22636c696e6963616c2d686973746f7279222c227469746c65223a22555320436f726520636c696e6963616c207265736f7572636573222c2273756d6d617279223a22555320436f7265207265736f75726365732c20696e636c7564696e672070617469656e742064656d6f67726170686963732c2070726f626c656d732c206d656469636174696f6e732c20616e6420616c6c6572676965732e222c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c657346726f6d223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f7265225d2c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d636f6e646974696f6e2d70726f626c656d732d6865616c74682d636f6e6365726e73222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d616c6c65726779696e746f6c6572616e6365222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d6d656469636174696f6e72657175657374225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e74616b65222c227469746c65223a22496e74616b6520666f726d222c22636f6e74656e74223a7b226b696e64223a22666f726d2e66686972222c227175657374696f6e6e61697265223a7b227265736f7572636554797065223a225175657374696f6e6e61697265222c227469746c65223a224d69677261696e6520436865636b2d696e222c22737461747573223a22616374697665222c226974656d223a5b7b226c696e6b4964223a2277656c6c6265696e67222c2274657874223a22486f77206861766520796f75206265656e206665656c696e672073696e636520796f7572206c6173742076697369743f222c2274797065223a2274657874227d2c7b226c696e6b4964223a226865616461636865222c2274657874223a2241726520796f7520657870657269656e63696e67206120686561646163686520746f6461793f222c2274797065223a22626f6f6c65616e227d2c7b226c696e6b4964223a227365766572697479222c2274657874223a225061696e2073657665726974792028302d313029222c2274797065223a22696e7465676572222c22657874656e73696f6e223a5b7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d696e56616c7565222c2276616c7565496e7465676572223a307d2c7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d617856616c7565222c2276616c7565496e7465676572223a31307d5d7d2c7b226c696e6b4964223a2273746172746564222c2274657874223a225768656e2064696420796f75722073796d70746f6d732073746172743f222c2274797065223a2264617465227d5d7d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d5d7d",
+    "deviceRequestDiagnostic": "{\"version\": \"1.0\", \"docRequests\": [{\"readerAuth\": [h'a10126', {33: [h'308201523081f902101104d905e0513c58561421880c6d44c3300a06082a8648ce3d040302302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f205665726966696572301e170d3236303932363133313331395a170d3236313032363133313431395a302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f2056657269666965723059301306072a8648ce3d020106082a8648ce3d03010703420004e90325a848673c2ca85a96e4438fcdf99710b801258be5c09f6c5c225ba28868aebaa8f2e6d65ec45a922d8ccf6526486c44d1d6f486eb2fb5ac9660a1f0b00f300a06082a8648ce3d040302034800304502201c87f41f1e59b91d2ef7d1765834e203baf0c8cad7281cf5ff4a20e8846891be022100a144ef1fff1d0766e064af16e8617daec7b4bf1b37b618530cb671e3f0cb09ae']}, null, h'c7177057c9268d44bc5f455b0052e6c13847156259701dee16d3a3ec13542b46570b2004a212d7d72786bdc6915e2f97020696ba82ecc09a19be760dc671c2f6'], \"itemsRequest\": 24(h'a367646f6354797065781b6f72672e736d6172746865616c746869742e636865636b696e2e316a6e616d65537061636573a178196f72672e736d6172746865616c746869742e636865636b696ea1781d736d6172745f6865616c74685f636865636b696e5f726573706f6e7365f56b72657175657374496e666fa178216f72672e736d6172746865616c746869742e636865636b696e2e726571756573747907a97b2274797065223a22736d6172742d6865616c74682d636865636b696e2d72657175657374222c2276657273696f6e223a2231222c226964223a2264656d6f2d75732d636f72652d636865636b696e222c22707572706f7365223a22436c696e696320636865636b2d696e222c226668697256657273696f6e73223a5b22342e302e31225d2c226974656d73223a5b7b226964223a2270617469656e74222c227469746c65223a2250617469656e742064656d6f6772617068696373222c2273756d6d617279223a2244656d6f677261706869637320666f7220636865636b2d696e222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e737572616e6365222c227469746c65223a22496e737572616e63652063617264222c2273756d6d617279223a22496e737572616e6365206361726420666f722062696c6c696e67222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f696e737572616e63652d636172642f537472756374757265446566696e6974696f6e2f43344449432d436f766572616765225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22636c696e6963616c2d686973746f7279222c227469746c65223a22555320436f726520636c696e6963616c207265736f7572636573222c2273756d6d617279223a22555320436f7265207265736f75726365732c20696e636c7564696e672070617469656e742064656d6f67726170686963732c2070726f626c656d732c206d656469636174696f6e732c20616e6420616c6c6572676965732e222c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c657346726f6d223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f7265225d2c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d636f6e646974696f6e2d70726f626c656d732d6865616c74682d636f6e6365726e73222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d616c6c65726779696e746f6c6572616e6365222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d6d656469636174696f6e72657175657374225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e74616b65222c227469746c65223a22496e74616b6520666f726d222c22636f6e74656e74223a7b226b696e64223a22666f726d2e66686972222c227175657374696f6e6e61697265223a7b227265736f7572636554797065223a225175657374696f6e6e61697265222c227469746c65223a224d69677261696e6520436865636b2d696e222c22737461747573223a22616374697665222c226974656d223a5b7b226c696e6b4964223a2277656c6c6265696e67222c2274657874223a22486f77206861766520796f75206265656e206665656c696e672073696e636520796f7572206c6173742076697369743f222c2274797065223a2274657874227d2c7b226c696e6b4964223a226865616461636865222c2274657874223a2241726520796f7520657870657269656e63696e67206120686561646163686520746f6461793f222c2274797065223a22626f6f6c65616e227d2c7b226c696e6b4964223a227365766572697479222c2274657874223a225061696e2073657665726974792028302d313029222c2274797065223a22696e7465676572222c22657874656e73696f6e223a5b7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d696e56616c7565222c2276616c7565496e7465676572223a307d2c7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d617856616c7565222c2276616c7565496e7465676572223a31307d5d7d2c7b226c696e6b4964223a2273746172746564222c2274657874223a225768656e2064696420796f75722073796d70746f6d732073746172743f222c2274797065223a2264617465227d5d7d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d5d7d')}]}",
+    "deviceRequest": {
+      "version": "1.0",
+      "docRequests": [
+        {
+          "readerAuth": [
+            {
+              "$bytes": "oQEm",
+              "hex": "a10126"
+            },
+            {
+              "33": [
+                {
+                  "$bytes": "MIIBUjCB-QIQEQTZBeBRPFhWFCGIDG1EwzAKBggqhkjOPQQDAjAuMSwwKgYDVQQDDCNTTUFSVCBIZWFsdGggQ2hlY2staW4gRGVtbyBWZXJpZmllcjAeFw0yNjA5MjYxMzEzMTlaFw0yNjEwMjYxMzE0MTlaMC4xLDAqBgNVBAMMI1NNQVJUIEhlYWx0aCBDaGVjay1pbiBEZW1vIFZlcmlmaWVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6QMlqEhnPCyoWpbkQ4_N-ZcQuAEli-XAn2xcIluiiGiuuqjy5tZexFqSLYzPZSZIbETR1vSG6y-1rJZgofCwDzAKBggqhkjOPQQDAgNIADBFAiAch_QfHlm5HS730XZYNOIDuvDIytcoHPX_SiDohGiRvgIhAKFE7x__HQdm4GSvFuhhfa7HtL8bN7YYUwy2cePwywmu",
+                  "hex": "308201523081f902101104d905e0513c58561421880c6d44c3300a06082a8648ce3d040302302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f205665726966696572301e170d3236303932363133313331395a170d3236313032363133313431395a302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f2056657269666965723059301306072a8648ce3d020106082a8648ce3d03010703420004e90325a848673c2ca85a96e4438fcdf99710b801258be5c09f6c5c225ba28868aebaa8f2e6d65ec45a922d8ccf6526486c44d1d6f486eb2fb5ac9660a1f0b00f300a06082a8648ce3d040302034800304502201c87f41f1e59b91d2ef7d1765834e203baf0c8cad7281cf5ff4a20e8846891be022100a144ef1fff1d0766e064af16e8617daec7b4bf1b37b618530cb671e3f0cb09ae"
+                }
+              ]
+            },
+            null,
+            {
+              "$bytes": "xxdwV8kmjUS8X0VbAFLmwThHFWJZcB3uFtOj7BNUK0ZXCyAEohLX1yeGvcaRXi-XAgaWuoLswJoZvnYNxnHC9g",
+              "hex": "c7177057c9268d44bc5f455b0052e6c13847156259701dee16d3a3ec13542b46570b2004a212d7d72786bdc6915e2f97020696ba82ecc09a19be760dc671c2f6"
+            }
+          ],
+          "itemsRequest": {
+            "$tag": 24,
+            "value": {
+              "$bytes": "o2dkb2NUeXBleBtvcmcuc21hcnRoZWFsdGhpdC5jaGVja2luLjFqbmFtZVNwYWNlc6F4GW9yZy5zbWFydGhlYWx0aGl0LmNoZWNraW6heB1zbWFydF9oZWFsdGhfY2hlY2tpbl9yZXNwb25zZfVrcmVxdWVzdEluZm-heCFvcmcuc21hcnRoZWFsdGhpdC5jaGVja2luLnJlcXVlc3R5B6l7InR5cGUiOiJzbWFydC1oZWFsdGgtY2hlY2tpbi1yZXF1ZXN0IiwidmVyc2lvbiI6IjEiLCJpZCI6ImRlbW8tdXMtY29yZS1jaGVja2luIiwicHVycG9zZSI6IkNsaW5pYyBjaGVjay1pbiIsImZoaXJWZXJzaW9ucyI6WyI0LjAuMSJdLCJpdGVtcyI6W3siaWQiOiJwYXRpZW50IiwidGl0bGUiOiJQYXRpZW50IGRlbW9ncmFwaGljcyIsInN1bW1hcnkiOiJEZW1vZ3JhcGhpY3MgZm9yIGNoZWNrLWluIiwicmVxdWlyZWQiOnRydWUsImNvbnRlbnQiOnsia2luZCI6InNlbGVjdGlvbi5maGlyIiwicHJvZmlsZXMiOlsiaHR0cDovL2hsNy5vcmcvZmhpci91cy9jb3JlL1N0cnVjdHVyZURlZmluaXRpb24vdXMtY29yZS1wYXRpZW50Il19LCJhY2NlcHQiOlsiYXBwbGljYXRpb24vZmhpcitqc29uIl19LHsiaWQiOiJpbnN1cmFuY2UiLCJ0aXRsZSI6Ikluc3VyYW5jZSBjYXJkIiwic3VtbWFyeSI6Ikluc3VyYW5jZSBjYXJkIGZvciBiaWxsaW5nIiwicmVxdWlyZWQiOnRydWUsImNvbnRlbnQiOnsia2luZCI6InNlbGVjdGlvbi5maGlyIiwicHJvZmlsZXMiOlsiaHR0cDovL2hsNy5vcmcvZmhpci91cy9pbnN1cmFuY2UtY2FyZC9TdHJ1Y3R1cmVEZWZpbml0aW9uL0M0RElDLUNvdmVyYWdlIl19LCJhY2NlcHQiOlsiYXBwbGljYXRpb24vZmhpcitqc29uIl19LHsiaWQiOiJjbGluaWNhbC1oaXN0b3J5IiwidGl0bGUiOiJVUyBDb3JlIGNsaW5pY2FsIHJlc291cmNlcyIsInN1bW1hcnkiOiJVUyBDb3JlIHJlc291cmNlcywgaW5jbHVkaW5nIHBhdGllbnQgZGVtb2dyYXBoaWNzLCBwcm9ibGVtcywgbWVkaWNhdGlvbnMsIGFuZCBhbGxlcmdpZXMuIiwiY29udGVudCI6eyJraW5kIjoic2VsZWN0aW9uLmZoaXIiLCJwcm9maWxlc0Zyb20iOlsiaHR0cDovL2hsNy5vcmcvZmhpci91cy9jb3JlIl0sInByb2ZpbGVzIjpbImh0dHA6Ly9obDcub3JnL2ZoaXIvdXMvY29yZS9TdHJ1Y3R1cmVEZWZpbml0aW9uL3VzLWNvcmUtcGF0aWVudCIsImh0dHA6Ly9obDcub3JnL2ZoaXIvdXMvY29yZS9TdHJ1Y3R1cmVEZWZpbml0aW9uL3VzLWNvcmUtY29uZGl0aW9uLXByb2JsZW1zLWhlYWx0aC1jb25jZXJucyIsImh0dHA6Ly9obDcub3JnL2ZoaXIvdXMvY29yZS9TdHJ1Y3R1cmVEZWZpbml0aW9uL3VzLWNvcmUtYWxsZXJneWludG9sZXJhbmNlIiwiaHR0cDovL2hsNy5vcmcvZmhpci91cy9jb3JlL1N0cnVjdHVyZURlZmluaXRpb24vdXMtY29yZS1tZWRpY2F0aW9ucmVxdWVzdCJdfSwiYWNjZXB0IjpbImFwcGxpY2F0aW9uL2ZoaXIranNvbiJdfSx7ImlkIjoiaW50YWtlIiwidGl0bGUiOiJJbnRha2UgZm9ybSIsImNvbnRlbnQiOnsia2luZCI6ImZvcm0uZmhpciIsInF1ZXN0aW9ubmFpcmUiOnsicmVzb3VyY2VUeXBlIjoiUXVlc3Rpb25uYWlyZSIsInRpdGxlIjoiTWlncmFpbmUgQ2hlY2staW4iLCJzdGF0dXMiOiJhY3RpdmUiLCJpdGVtIjpbeyJsaW5rSWQiOiJ3ZWxsYmVpbmciLCJ0ZXh0IjoiSG93IGhhdmUgeW91IGJlZW4gZmVlbGluZyBzaW5jZSB5b3VyIGxhc3QgdmlzaXQ_IiwidHlwZSI6InRleHQifSx7ImxpbmtJZCI6ImhlYWRhY2hlIiwidGV4dCI6IkFyZSB5b3UgZXhwZXJpZW5jaW5nIGEgaGVhZGFjaGUgdG9kYXk_IiwidHlwZSI6ImJvb2xlYW4ifSx7ImxpbmtJZCI6InNldmVyaXR5IiwidGV4dCI6IlBhaW4gc2V2ZXJpdHkgKDAtMTApIiwidHlwZSI6ImludGVnZXIiLCJleHRlbnNpb24iOlt7InVybCI6Imh0dHA6Ly9obDcub3JnL2ZoaXIvU3RydWN0dXJlRGVmaW5pdGlvbi9taW5WYWx1ZSIsInZhbHVlSW50ZWdlciI6MH0seyJ1cmwiOiJodHRwOi8vaGw3Lm9yZy9maGlyL1N0cnVjdHVyZURlZmluaXRpb24vbWF4VmFsdWUiLCJ2YWx1ZUludGVnZXIiOjEwfV19LHsibGlua0lkIjoic3RhcnRlZCIsInRleHQiOiJXaGVuIGRpZCB5b3VyIHN5bXB0b21zIHN0YXJ0PyIsInR5cGUiOiJkYXRlIn1dfX0sImFjY2VwdCI6WyJhcHBsaWNhdGlvbi9maGlyK2pzb24iXX1dfQ",
+              "hex": "a367646f6354797065781b6f72672e736d6172746865616c746869742e636865636b696e2e316a6e616d65537061636573a178196f72672e736d6172746865616c746869742e636865636b696ea1781d736d6172745f6865616c74685f636865636b696e5f726573706f6e7365f56b72657175657374496e666fa178216f72672e736d6172746865616c746869742e636865636b696e2e726571756573747907a97b2274797065223a22736d6172742d6865616c74682d636865636b696e2d72657175657374222c2276657273696f6e223a2231222c226964223a2264656d6f2d75732d636f72652d636865636b696e222c22707572706f7365223a22436c696e696320636865636b2d696e222c226668697256657273696f6e73223a5b22342e302e31225d2c226974656d73223a5b7b226964223a2270617469656e74222c227469746c65223a2250617469656e742064656d6f6772617068696373222c2273756d6d617279223a2244656d6f677261706869637320666f7220636865636b2d696e222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e737572616e6365222c227469746c65223a22496e737572616e63652063617264222c2273756d6d617279223a22496e737572616e6365206361726420666f722062696c6c696e67222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f696e737572616e63652d636172642f537472756374757265446566696e6974696f6e2f43344449432d436f766572616765225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22636c696e6963616c2d686973746f7279222c227469746c65223a22555320436f726520636c696e6963616c207265736f7572636573222c2273756d6d617279223a22555320436f7265207265736f75726365732c20696e636c7564696e672070617469656e742064656d6f67726170686963732c2070726f626c656d732c206d656469636174696f6e732c20616e6420616c6c6572676965732e222c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c657346726f6d223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f7265225d2c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d636f6e646974696f6e2d70726f626c656d732d6865616c74682d636f6e6365726e73222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d616c6c65726779696e746f6c6572616e6365222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d6d656469636174696f6e72657175657374225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e74616b65222c227469746c65223a22496e74616b6520666f726d222c22636f6e74656e74223a7b226b696e64223a22666f726d2e66686972222c227175657374696f6e6e61697265223a7b227265736f7572636554797065223a225175657374696f6e6e61697265222c227469746c65223a224d69677261696e6520436865636b2d696e222c22737461747573223a22616374697665222c226974656d223a5b7b226c696e6b4964223a2277656c6c6265696e67222c2274657874223a22486f77206861766520796f75206265656e206665656c696e672073696e636520796f7572206c6173742076697369743f222c2274797065223a2274657874227d2c7b226c696e6b4964223a226865616461636865222c2274657874223a2241726520796f7520657870657269656e63696e67206120686561646163686520746f6461793f222c2274797065223a22626f6f6c65616e227d2c7b226c696e6b4964223a227365766572697479222c2274657874223a225061696e2073657665726974792028302d313029222c2274797065223a22696e7465676572222c22657874656e73696f6e223a5b7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d696e56616c7565222c2276616c7565496e7465676572223a307d2c7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d617856616c7565222c2276616c7565496e7465676572223a31307d5d7d2c7b226c696e6b4964223a2273746172746564222c2274657874223a225768656e2064696420796f75722073796d70746f6d732073746172743f222c2274797065223a2264617465227d5d7d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d5d7d"
+            }
+          }
+        }
+      ]
+    },
+    "docRequests": [
+      {
+        "itemsRequestHex": "a367646f6354797065781b6f72672e736d6172746865616c746869742e636865636b696e2e316a6e616d65537061636573a178196f72672e736d6172746865616c746869742e636865636b696ea1781d736d6172745f6865616c74685f636865636b696e5f726573706f6e7365f56b72657175657374496e666fa178216f72672e736d6172746865616c746869742e636865636b696e2e726571756573747907a97b2274797065223a22736d6172742d6865616c74682d636865636b696e2d72657175657374222c2276657273696f6e223a2231222c226964223a2264656d6f2d75732d636f72652d636865636b696e222c22707572706f7365223a22436c696e696320636865636b2d696e222c226668697256657273696f6e73223a5b22342e302e31225d2c226974656d73223a5b7b226964223a2270617469656e74222c227469746c65223a2250617469656e742064656d6f6772617068696373222c2273756d6d617279223a2244656d6f677261706869637320666f7220636865636b2d696e222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e737572616e6365222c227469746c65223a22496e737572616e63652063617264222c2273756d6d617279223a22496e737572616e6365206361726420666f722062696c6c696e67222c227265717569726564223a747275652c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f696e737572616e63652d636172642f537472756374757265446566696e6974696f6e2f43344449432d436f766572616765225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22636c696e6963616c2d686973746f7279222c227469746c65223a22555320436f726520636c696e6963616c207265736f7572636573222c2273756d6d617279223a22555320436f7265207265736f75726365732c20696e636c7564696e672070617469656e742064656d6f67726170686963732c2070726f626c656d732c206d656469636174696f6e732c20616e6420616c6c6572676965732e222c22636f6e74656e74223a7b226b696e64223a2273656c656374696f6e2e66686972222c2270726f66696c657346726f6d223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f7265225d2c2270726f66696c6573223a5b22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d70617469656e74222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d636f6e646974696f6e2d70726f626c656d732d6865616c74682d636f6e6365726e73222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d616c6c65726779696e746f6c6572616e6365222c22687474703a2f2f686c372e6f72672f666869722f75732f636f72652f537472756374757265446566696e6974696f6e2f75732d636f72652d6d656469636174696f6e72657175657374225d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d2c7b226964223a22696e74616b65222c227469746c65223a22496e74616b6520666f726d222c22636f6e74656e74223a7b226b696e64223a22666f726d2e66686972222c227175657374696f6e6e61697265223a7b227265736f7572636554797065223a225175657374696f6e6e61697265222c227469746c65223a224d69677261696e6520436865636b2d696e222c22737461747573223a22616374697665222c226974656d223a5b7b226c696e6b4964223a2277656c6c6265696e67222c2274657874223a22486f77206861766520796f75206265656e206665656c696e672073696e636520796f7572206c6173742076697369743f222c2274797065223a2274657874227d2c7b226c696e6b4964223a226865616461636865222c2274657874223a2241726520796f7520657870657269656e63696e67206120686561646163686520746f6461793f222c2274797065223a22626f6f6c65616e227d2c7b226c696e6b4964223a227365766572697479222c2274657874223a225061696e2073657665726974792028302d313029222c2274797065223a22696e7465676572222c22657874656e73696f6e223a5b7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d696e56616c7565222c2276616c7565496e7465676572223a307d2c7b2275726c223a22687474703a2f2f686c372e6f72672f666869722f537472756374757265446566696e6974696f6e2f6d617856616c7565222c2276616c7565496e7465676572223a31307d5d7d2c7b226c696e6b4964223a2273746172746564222c2274657874223a225768656e2064696420796f75722073796d70746f6d732073746172743f222c2274797065223a2264617465227d5d7d7d2c22616363657074223a5b226170706c69636174696f6e2f666869722b6a736f6e225d7d5d7d",
+        "itemsRequestDiagnostic": "{\"docType\": \"org.smarthealthit.checkin.1\", \"nameSpaces\": {\"org.smarthealthit.checkin\": {\"smart_health_checkin_response\": true}}, \"requestInfo\": {\"org.smarthealthit.checkin.request\": \"{\\\"type\\\":\\\"smart-health-checkin-request\\\",\\\"version\\\":\\\"1\\\",\\\"id\\\":\\\"demo-us-core-checkin\\\",\\\"purpose\\\":\\\"Clinic check-in\\\",\\\"fhirVersions\\\":[\\\"4.0.1\\\"],\\\"items\\\":[{\\\"id\\\":\\\"patient\\\",\\\"title\\\":\\\"Patient demographics\\\",\\\"summary\\\":\\\"Demographics for check-in\\\",\\\"required\\\":true,\\\"content\\\":{\\\"kind\\\":\\\"selection.fhir\\\",\\\"profiles\\\":[\\\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\\\"]},\\\"accept\\\":[\\\"application/fhir+json\\\"]},{\\\"id\\\":\\\"insurance\\\",\\\"title\\\":\\\"Insurance card\\\",\\\"summary\\\":\\\"Insurance card for billing\\\",\\\"required\\\":true,\\\"content\\\":{\\\"kind\\\":\\\"selection.fhir\\\",\\\"profiles\\\":[\\\"http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage\\\"]},\\\"accept\\\":[\\\"application/fhir+json\\\"]},{\\\"id\\\":\\\"clinical-history\\\",\\\"title\\\":\\\"US Core clinical resources\\\",\\\"summary\\\":\\\"US Core resources, including patient demographics, problems, medications, and allergies.\\\",\\\"content\\\":{\\\"kind\\\":\\\"selection.fhir\\\",\\\"profilesFrom\\\":[\\\"http://hl7.org/fhir/us/core\\\"],\\\"profiles\\\":[\\\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\\\",\\\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns\\\",\\\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance\\\",\\\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest\\\"]},\\\"accept\\\":[\\\"application/fhir+json\\\"]},{\\\"id\\\":\\\"intake\\\",\\\"title\\\":\\\"Intake form\\\",\\\"content\\\":{\\\"kind\\\":\\\"form.fhir\\\",\\\"questionnaire\\\":{\\\"resourceType\\\":\\\"Questionnaire\\\",\\\"title\\\":\\\"Migraine Check-in\\\",\\\"status\\\":\\\"active\\\",\\\"item\\\":[{\\\"linkId\\\":\\\"wellbeing\\\",\\\"text\\\":\\\"How have you been feeling since your last visit?\\\",\\\"type\\\":\\\"text\\\"},{\\\"linkId\\\":\\\"headache\\\",\\\"text\\\":\\\"Are you experiencing a headache today?\\\",\\\"type\\\":\\\"boolean\\\"},{\\\"linkId\\\":\\\"severity\\\",\\\"text\\\":\\\"Pain severity (0-10)\\\",\\\"type\\\":\\\"integer\\\",\\\"extension\\\":[{\\\"url\\\":\\\"http://hl7.org/fhir/StructureDefinition/minValue\\\",\\\"valueInteger\\\":0},{\\\"url\\\":\\\"http://hl7.org/fhir/StructureDefinition/maxValue\\\",\\\"valueInteger\\\":10}]},{\\\"linkId\\\":\\\"started\\\",\\\"text\\\":\\\"When did your symptoms start?\\\",\\\"type\\\":\\\"date\\\"}]}},\\\"accept\\\":[\\\"application/fhir+json\\\"]}]}\"}}",
+        "itemsRequest": {
+          "docType": "org.smarthealthit.checkin.1",
+          "nameSpaces": {
+            "org.smarthealthit.checkin": {
+              "smart_health_checkin_response": true
+            }
+          },
+          "requestInfo": {
+            "org.smarthealthit.checkin.request": "{\"type\":\"smart-health-checkin-request\",\"version\":\"1\",\"id\":\"demo-us-core-checkin\",\"purpose\":\"Clinic check-in\",\"fhirVersions\":[\"4.0.1\"],\"items\":[{\"id\":\"patient\",\"title\":\"Patient demographics\",\"summary\":\"Demographics for check-in\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"insurance\",\"title\":\"Insurance card\",\"summary\":\"Insurance card for billing\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"clinical-history\",\"title\":\"US Core clinical resources\",\"summary\":\"US Core resources, including patient demographics, problems, medications, and allergies.\",\"content\":{\"kind\":\"selection.fhir\",\"profilesFrom\":[\"http://hl7.org/fhir/us/core\"],\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"intake\",\"title\":\"Intake form\",\"content\":{\"kind\":\"form.fhir\",\"questionnaire\":{\"resourceType\":\"Questionnaire\",\"title\":\"Migraine Check-in\",\"status\":\"active\",\"item\":[{\"linkId\":\"wellbeing\",\"text\":\"How have you been feeling since your last visit?\",\"type\":\"text\"},{\"linkId\":\"headache\",\"text\":\"Are you experiencing a headache today?\",\"type\":\"boolean\"},{\"linkId\":\"severity\",\"text\":\"Pain severity (0-10)\",\"type\":\"integer\",\"extension\":[{\"url\":\"http://hl7.org/fhir/StructureDefinition/minValue\",\"valueInteger\":0},{\"url\":\"http://hl7.org/fhir/StructureDefinition/maxValue\",\"valueInteger\":10}]},{\"linkId\":\"started\",\"text\":\"When did your symptoms start?\",\"type\":\"date\"}]}},\"accept\":[\"application/fhir+json\"]}]}"
+          }
+        },
+        "docType": "org.smarthealthit.checkin.1",
+        "requestedElements": [
+          {
+            "namespace": "org.smarthealthit.checkin",
+            "elementIdentifier": "smart_health_checkin_response",
+            "intentToRetain": true
+          }
+        ],
+        "requestInfo": {
+          "org.smarthealthit.checkin.request": "{\"type\":\"smart-health-checkin-request\",\"version\":\"1\",\"id\":\"demo-us-core-checkin\",\"purpose\":\"Clinic check-in\",\"fhirVersions\":[\"4.0.1\"],\"items\":[{\"id\":\"patient\",\"title\":\"Patient demographics\",\"summary\":\"Demographics for check-in\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"insurance\",\"title\":\"Insurance card\",\"summary\":\"Insurance card for billing\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"clinical-history\",\"title\":\"US Core clinical resources\",\"summary\":\"US Core resources, including patient demographics, problems, medications, and allergies.\",\"content\":{\"kind\":\"selection.fhir\",\"profilesFrom\":[\"http://hl7.org/fhir/us/core\"],\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"intake\",\"title\":\"Intake form\",\"content\":{\"kind\":\"form.fhir\",\"questionnaire\":{\"resourceType\":\"Questionnaire\",\"title\":\"Migraine Check-in\",\"status\":\"active\",\"item\":[{\"linkId\":\"wellbeing\",\"text\":\"How have you been feeling since your last visit?\",\"type\":\"text\"},{\"linkId\":\"headache\",\"text\":\"Are you experiencing a headache today?\",\"type\":\"boolean\"},{\"linkId\":\"severity\",\"text\":\"Pain severity (0-10)\",\"type\":\"integer\",\"extension\":[{\"url\":\"http://hl7.org/fhir/StructureDefinition/minValue\",\"valueInteger\":0},{\"url\":\"http://hl7.org/fhir/StructureDefinition/maxValue\",\"valueInteger\":10}]},{\"linkId\":\"started\",\"text\":\"When did your symptoms start?\",\"type\":\"date\"}]}},\"accept\":[\"application/fhir+json\"]}]}"
+        },
+        "smartHealthCheckin": {
+          "present": true,
+          "json": "{\"type\":\"smart-health-checkin-request\",\"version\":\"1\",\"id\":\"demo-us-core-checkin\",\"purpose\":\"Clinic check-in\",\"fhirVersions\":[\"4.0.1\"],\"items\":[{\"id\":\"patient\",\"title\":\"Patient demographics\",\"summary\":\"Demographics for check-in\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"insurance\",\"title\":\"Insurance card\",\"summary\":\"Insurance card for billing\",\"required\":true,\"content\":{\"kind\":\"selection.fhir\",\"profiles\":[\"http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"clinical-history\",\"title\":\"US Core clinical resources\",\"summary\":\"US Core resources, including patient demographics, problems, medications, and allergies.\",\"content\":{\"kind\":\"selection.fhir\",\"profilesFrom\":[\"http://hl7.org/fhir/us/core\"],\"profiles\":[\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance\",\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest\"]},\"accept\":[\"application/fhir+json\"]},{\"id\":\"intake\",\"title\":\"Intake form\",\"content\":{\"kind\":\"form.fhir\",\"questionnaire\":{\"resourceType\":\"Questionnaire\",\"title\":\"Migraine Check-in\",\"status\":\"active\",\"item\":[{\"linkId\":\"wellbeing\",\"text\":\"How have you been feeling since your last visit?\",\"type\":\"text\"},{\"linkId\":\"headache\",\"text\":\"Are you experiencing a headache today?\",\"type\":\"boolean\"},{\"linkId\":\"severity\",\"text\":\"Pain severity (0-10)\",\"type\":\"integer\",\"extension\":[{\"url\":\"http://hl7.org/fhir/StructureDefinition/minValue\",\"valueInteger\":0},{\"url\":\"http://hl7.org/fhir/StructureDefinition/maxValue\",\"valueInteger\":10}]},{\"linkId\":\"started\",\"text\":\"When did your symptoms start?\",\"type\":\"date\"}]}},\"accept\":[\"application/fhir+json\"]}]}",
+          "valid": true,
+          "value": {
+            "type": "smart-health-checkin-request",
+            "version": "1",
+            "id": "demo-us-core-checkin",
+            "purpose": "Clinic check-in",
+            "fhirVersions": [
+              "4.0.1"
+            ],
+            "items": [
+              {
+                "id": "patient",
+                "title": "Patient demographics",
+                "summary": "Demographics for check-in",
+                "required": true,
+                "content": {
+                  "kind": "selection.fhir",
+                  "profiles": [
+                    "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+                  ]
+                },
+                "accept": [
+                  "application/fhir+json"
+                ]
+              },
+              {
+                "id": "insurance",
+                "title": "Insurance card",
+                "summary": "Insurance card for billing",
+                "required": true,
+                "content": {
+                  "kind": "selection.fhir",
+                  "profiles": [
+                    "http://hl7.org/fhir/us/insurance-card/StructureDefinition/C4DIC-Coverage"
+                  ]
+                },
+                "accept": [
+                  "application/fhir+json"
+                ]
+              },
+              {
+                "id": "clinical-history",
+                "title": "US Core clinical resources",
+                "summary": "US Core resources, including patient demographics, problems, medications, and allergies.",
+                "content": {
+                  "kind": "selection.fhir",
+                  "profilesFrom": [
+                    "http://hl7.org/fhir/us/core"
+                  ],
+                  "profiles": [
+                    "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient",
+                    "http://hl7.org/fhir/us/core/StructureDefinition/us-core-condition-problems-health-concerns",
+                    "http://hl7.org/fhir/us/core/StructureDefinition/us-core-allergyintolerance",
+                    "http://hl7.org/fhir/us/core/StructureDefinition/us-core-medicationrequest"
+                  ]
+                },
+                "accept": [
+                  "application/fhir+json"
+                ]
+              },
+              {
+                "id": "intake",
+                "title": "Intake form",
+                "content": {
+                  "kind": "form.fhir",
+                  "questionnaire": {
+                    "resourceType": "Questionnaire",
+                    "title": "Migraine Check-in",
+                    "status": "active",
+                    "item": [
+                      {
+                        "linkId": "wellbeing",
+                        "text": "How have you been feeling since your last visit?",
+                        "type": "text"
+                      },
+                      {
+                        "linkId": "headache",
+                        "text": "Are you experiencing a headache today?",
+                        "type": "boolean"
+                      },
+                      {
+                        "linkId": "severity",
+                        "text": "Pain severity (0-10)",
+                        "type": "integer",
+                        "extension": [
+                          {
+                            "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+                            "valueInteger": 0
+                          },
+                          {
+                            "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+                            "valueInteger": 10
+                          }
+                        ]
+                      },
+                      {
+                        "linkId": "started",
+                        "text": "When did your symptoms start?",
+                        "type": "date"
+                      }
+                    ]
+                  }
+                },
+                "accept": [
+                  "application/fhir+json"
+                ]
+              }
+            ]
+          }
+        },
+        "readerAuth": {
+          "readerAuthHex": "8443a10126a1182181590156308201523081f902101104d905e0513c58561421880c6d44c3300a06082a8648ce3d040302302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f205665726966696572301e170d3236303932363133313331395a170d3236313032363133313431395a302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f2056657269666965723059301306072a8648ce3d020106082a8648ce3d03010703420004e90325a848673c2ca85a96e4438fcdf99710b801258be5c09f6c5c225ba28868aebaa8f2e6d65ec45a922d8ccf6526486c44d1d6f486eb2fb5ac9660a1f0b00f300a06082a8648ce3d040302034800304502201c87f41f1e59b91d2ef7d1765834e203baf0c8cad7281cf5ff4a20e8846891be022100a144ef1fff1d0766e064af16e8617daec7b4bf1b37b618530cb671e3f0cb09aef65840c7177057c9268d44bc5f455b0052e6c13847156259701dee16d3a3ec13542b46570b2004a212d7d72786bdc6915e2f97020696ba82ecc09a19be760dc671c2f6",
+          "payloadIsDetached": true,
+          "protectedHeaders": {
+            "1": -7
+          },
+          "unprotectedHeaders": {
+            "33": [
+              {
+                "$bytes": "MIIBUjCB-QIQEQTZBeBRPFhWFCGIDG1EwzAKBggqhkjOPQQDAjAuMSwwKgYDVQQDDCNTTUFSVCBIZWFsdGggQ2hlY2staW4gRGVtbyBWZXJpZmllcjAeFw0yNjA5MjYxMzEzMTlaFw0yNjEwMjYxMzE0MTlaMC4xLDAqBgNVBAMMI1NNQVJUIEhlYWx0aCBDaGVjay1pbiBEZW1vIFZlcmlmaWVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6QMlqEhnPCyoWpbkQ4_N-ZcQuAEli-XAn2xcIluiiGiuuqjy5tZexFqSLYzPZSZIbETR1vSG6y-1rJZgofCwDzAKBggqhkjOPQQDAgNIADBFAiAch_QfHlm5HS730XZYNOIDuvDIytcoHPX_SiDohGiRvgIhAKFE7x__HQdm4GSvFuhhfa7HtL8bN7YYUwy2cePwywmu",
+                "hex": "308201523081f902101104d905e0513c58561421880c6d44c3300a06082a8648ce3d040302302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f205665726966696572301e170d3236303932363133313331395a170d3236313032363133313431395a302e312c302a06035504030c23534d415254204865616c746820436865636b2d696e2044656d6f2056657269666965723059301306072a8648ce3d020106082a8648ce3d03010703420004e90325a848673c2ca85a96e4438fcdf99710b801258be5c09f6c5c225ba28868aebaa8f2e6d65ec45a922d8ccf6526486c44d1d6f486eb2fb5ac9660a1f0b00f300a06082a8648ce3d040302034800304502201c87f41f1e59b91d2ef7d1765834e203baf0c8cad7281cf5ff4a20e8846891be022100a144ef1fff1d0766e064af16e8617daec7b4bf1b37b618530cb671e3f0cb09ae"
+              }
+            ]
+          },
+          "signatureHex": "c7177057c9268d44bc5f455b0052e6c13847156259701dee16d3a3ec13542b46570b2004a212d7d72786bdc6915e2f97020696ba82ecc09a19be760dc671c2f6"
+        }
+      }
+    ]
+  },
+  "encryptionInfo": {
+    "encryptionInfoHex": "82656463617069a2656e6f6e63655820f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b420759972726563697069656e745075626c69634b6579a401022001215820f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c22582001fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc",
+    "encryptionInfoDiagnostic": "[\"dcapi\", {\"nonce\": h'f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b4207599', \"recipientPublicKey\": {1: 2, -1: 1, -2: h'f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c', -3: h'01fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc'}}]",
+    "encryptionInfo": [
+      "dcapi",
+      {
+        "nonce": {
+          "$bytes": "9hZhaT6s-QxN-WOHa7HX8_5DWSnBwO2wEoKQFLQgdZk",
+          "hex": "f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b4207599"
+        },
+        "recipientPublicKey": {
+          "1": 2,
+          "-1": 1,
+          "-2": {
+            "$bytes": "8CaGEhavZJEXKE3i8NCRJi_EZvjca6GG2s486h_Pp4w",
+            "hex": "f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c"
+          },
+          "-3": {
+            "$bytes": "Af42bKAFgdaG4VT8b4Ou8NXgCavZWnikyHOhBhfMg7w",
+            "hex": "01fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc"
+          }
+        }
+      }
+    ],
+    "nonce": {
+      "hex": "f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b4207599",
+      "base64url": "9hZhaT6s-QxN-WOHa7HX8_5DWSnBwO2wEoKQFLQgdZk"
+    },
+    "recipientPublicKey": {
+      "1": 2,
+      "-1": 1,
+      "-2": {
+        "$bytes": "8CaGEhavZJEXKE3i8NCRJi_EZvjca6GG2s486h_Pp4w",
+        "hex": "f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c"
+      },
+      "-3": {
+        "$bytes": "Af42bKAFgdaG4VT8b4Ou8NXgCavZWnikyHOhBhfMg7w",
+        "hex": "01fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc"
+      }
+    }
+  },
+  "sessionTranscript": {
+    "origin": "http://127.0.0.1:3010",
+    "hex": "83f6f68265646361706958205d373e34bbc5306ff28c944c2a1af663af3d503e179ed3ce9df0aa610a7ffe72",
+    "diagnostic": "[null, null, [\"dcapi\", h'5d373e34bbc5306ff28c944c2a1af663af3d503e179ed3ce9df0aa610a7ffe72']]"
+  }
+}
