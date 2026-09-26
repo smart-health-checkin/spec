@@ -2,7 +2,7 @@
    code, tables, callouts, pills, and chips come from /assets/smart-design.css;
    this file is layout and type, and takes every color from its tokens.
 
-   - The explainers (Request and response, Front-desk handoff, Trust and
+   - The explainers (Request and response, Kiosk check-in, Security and
      limits, Platform notes): <main class="page">.
    - The wire pages (Wire protocol, Capture inspector): <main class="wire">.
    - Diagrams (inline SVG, class "xd"). */
@@ -82,7 +82,7 @@ body {
   .page { padding: 28px 16px 48px; }
 }
 
-/* Text pages (Trust and limits, Platform notes): a narrower column. */
+/* Text pages (Security and limits, Platform notes): a narrower column. */
 .page.narrow { max-width: 860px; }
 :where(.narrow) ul { padding-left: 22px; }
 :where(.narrow) li { max-width: 38em; margin: 6px 0; text-wrap: pretty; }

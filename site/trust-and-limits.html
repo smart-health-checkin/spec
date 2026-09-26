@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trust and limits · SMART Health Check-in spec</title>
+  <title>Security and limits · SMART Health Check-in spec</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
@@ -15,7 +15,7 @@
   <nav data-smart-breadcrumb></nav>
   <main class="page narrow smart-prose" id="main">
     <header>
-      <h1>Trust and limits</h1>
+      <h1>Security and limits</h1>
       <p class="lede">
         What the exchange proves and what it leaves to you, how receivers treat problems, and the practical limits:
         response size, cancelling, and timeouts. The rules are in the <a href="./spec.html">spec</a>; this page
@@ -83,7 +83,7 @@
       </div>
       <p>
         The JSON has its own, narrower rule: one bad record or status row costs only that record or item
-        (<a href="./smart-model-explainer.html#checks">Request and response</a>). The
+        (<a href="./request-response.html#checks">Request and response</a>). The
         <a href="/connectathon/testing-ehr/">Testing EHR</a> lists warnings separately from failures, so a wallet
         developer sees both.
       </p>

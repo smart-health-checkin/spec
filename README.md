@@ -15,7 +15,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | Path | What it is |
 | --- | --- |
 | [`spec.md`](spec.md) | The draft spec. [§§5–6](https://smart-health-checkin.org/spec/#5-clinical-request-model) define the request and response model; [§8](https://smart-health-checkin.org/spec/#8-same-device-presentation-flow) the `org-iso-mdoc` flow; [Appendix A](https://smart-health-checkin.org/spec/#appendix-a-worked-example) a worked example computed from a real capture. |
-| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow, trust and limits, and platform notes. |
+| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, kiosk check-in, security and limits, and platform notes. |
 | [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see below). |
 | [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
@@ -39,11 +39,11 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | --- | --- |
 | `./` and `./spec.html` | The draft spec, rendered |
 | `./spec.md` | The draft spec, raw Markdown |
-| `./smart-model-explainer.html` | The request and response model |
-| `./wire-protocol-explainer.html` | The wire protocol, byte by byte |
-| `./wire-protocol-inspector.html` | Inspect the checked-in captures |
-| `./kiosk-flow-explainer.html` | Front-desk handoff: start at a kiosk or the desk, continue on the phone |
-| `./trust-and-limits.html` | What signatures prove, warnings, reader authentication, response size |
+| `./request-response.html` | The request and response model |
+| `./wire-protocol.html` | The wire protocol, byte by byte |
+| `./inspector.html` | Inspect the checked-in captures |
+| `./kiosk.html` | Kiosk check-in: start at a kiosk or the desk, continue on the phone |
+| `./trust-and-limits.html` | Security and limits: what signatures prove, warnings, reader authentication, response size |
 | `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
 | `./llms.txt` | The spec and explainers in one file |
 | `./fixtures/` | The fixtures |

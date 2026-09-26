@@ -18,10 +18,10 @@ rm -rf "$SITE_DIR"
 mkdir -p "$SITE_DIR"
 
 for file in \
-  smart-model-explainer.html \
-  kiosk-flow-explainer.html \
-  wire-protocol-explainer.html \
-  wire-protocol-inspector.html \
+  request-response.html \
+  kiosk.html \
+  wire-protocol.html \
+  inspector.html \
   trust-and-limits.html \
   platform-notes.html \
   pages.css \

@@ -13,10 +13,10 @@ Serving the GitHub Pages artifact from: $SITE_DIR
 
 Local URLs:
   http://localhost:$PORT/
-  http://localhost:$PORT/smart-model-explainer.html
-  http://localhost:$PORT/kiosk-flow-explainer.html
-  http://localhost:$PORT/wire-protocol-explainer.html
-  http://localhost:$PORT/wire-protocol-inspector.html
+  http://localhost:$PORT/request-response.html
+  http://localhost:$PORT/kiosk.html
+  http://localhost:$PORT/wire-protocol.html
+  http://localhost:$PORT/inspector.html
   http://localhost:$PORT/trust-and-limits.html
   http://localhost:$PORT/platform-notes.html
 EOF

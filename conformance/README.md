@@ -1,4 +1,4 @@
-# Conformance cases
+# Conformance tests
 
 Small, single-capability test cases that every SMART Health Check-in
 implementation runs in its own CI. Each case checks one thing: a request is

@@ -8,7 +8,7 @@ import {
   validateSmartCheckinRequest,
 } from "@smart-health-checkin/client/model";
 
-const file = process.argv[2] ?? new URL("../site/smart-model-explainer.html", import.meta.url).pathname;
+const file = process.argv[2] ?? new URL("../site/request-response.html", import.meta.url).pathname;
 const html = await Bun.file(file).text();
 const unescape = (s: string) =>
   s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&");

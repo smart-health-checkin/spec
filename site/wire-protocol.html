@@ -124,7 +124,7 @@
         How the request and response travel through the W3C Digital Credentials API as an ISO mdoc presentation:
         who builds each structure, what gets hashed, signed, and encrypted, and what each side checks. The steps follow
         <a href="./spec.html#8-same-device-presentation-flow">spec §8</a>, and each links its requirement. For what the
-        JSON inside means, see <a href="./smart-model-explainer.html">Request and response</a>.
+        JSON inside means, see <a href="./request-response.html">Request and response</a>.
       </p>
       <ul class="param-list">
         <li><b>Protocol</b> <code>org-iso-mdoc</code></li>
@@ -137,7 +137,7 @@
         <b>Strict to build, lenient to receive.</b> Whoever builds a message builds exactly what the spec describes
         <a class="rid" href="./spec.html#RCV-0">RCV-0</a>. Whoever receives one stops only at a step marked <span class="smart-pill bad">fail</span>; any other problem is a <span class="smart-pill warn">warn</span>: it keeps
         going and reports it <a class="rid" href="./spec.html#RCV-1">RCV-1</a> <a class="rid" href="./spec.html#RCV-2">RCV-2</a>. A bad signature is a warning, not a failure. See
-        <a href="./trust-and-limits.html">Trust and limits</a> for why.
+        <a href="./trust-and-limits.html">Security and limits</a> for why.
       </p>
     </div>
   </div>
@@ -152,7 +152,7 @@
       <a href="#encrypt">5. Wallet encrypts</a>
       <a href="#parse-verify">6. Verifier checks the response</a>
       <a href="#inspect">Real bytes</a>
-      <a href="./wire-protocol-inspector.html">Capture inspector →</a>
+      <a href="./inspector.html">Capture inspector →</a>
     </nav>
 
     <div>
@@ -375,7 +375,7 @@ result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dca
               <tr><td><a class="rid" href="./spec.html#VRS-6">VRS-6</a></td><td>SHA-256 of <code>IssuerSignedItemBytes</code> as received equals the MSO digest for its <code>digestID</code></td><td><span class="smart-pill warn">warn</span></td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-7">VRS-7</a></td><td>Rebuild <code>DeviceAuthenticationBytes</code>, verify the device signature</td><td><span class="smart-pill warn">warn</span>, also for an attached payload that differs from the rebuilt bytes</td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-8">VRS-8</a></td><td>Find <code>smart_health_checkin_response</code> with a text value</td><td><span class="smart-pill bad">fail</span> if missing</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="smart-pill bad">fail</span> only for the whole-response problems in <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">Request and response</a>)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="smart-pill bad">fail</span> only for the whole-response problems in <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>; the rest affects one item or record (<a href="./request-response.html#checks">Request and response</a>)</td></tr>
               <tr><td><a class="rid" href="./spec.html#VRS-10">VRS-10</a></td><td>MSO <code>validityInfo</code> includes now, give or take a few minutes</td><td><span class="smart-pill warn">warn</span></td></tr>
             </tbody>
           </table>
@@ -388,11 +388,11 @@ result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dca
           <a href="./spec.html#appendix-a-worked-example">Spec Appendix A</a> walks one real Chrome-to-Android capture
           step by step: the transcript hash, the decryption, the digest, and all three signatures, with every value
           recomputed from the fixture on each build. The
-          <a href="./wire-protocol-inspector.html">capture inspector</a> shows the same capture byte by byte, and
+          <a href="./inspector.html">capture inspector</a> shows the same capture byte by byte, and
           can load a run from the <a href="/connectathon/testing-ehr/">Testing EHR</a>.
         </p>
         <p>
-          <a class="next-link" href="./wire-protocol-inspector.html">Open the capture inspector →</a>
+          <a class="next-link" href="./inspector.html">Open the capture inspector →</a>
         </p>
       </section>
     </div>

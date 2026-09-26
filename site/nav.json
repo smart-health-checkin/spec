@@ -5,24 +5,24 @@
     {
       "title": "Explainers",
       "items": [
-        { "title": "Request and response", "href": "smart-model-explainer.html", "note": "The JSON model, one running example" },
-        { "title": "Wire protocol", "href": "wire-protocol-explainer.html", "note": "CBOR, COSE, HPKE" },
-        { "title": "Front-desk handoff", "href": "kiosk-flow-explainer.html", "note": "Start at the clinic, finish on the phone" }
+        { "title": "Request and response", "href": "request-response.html", "note": "The JSON model, one running example" },
+        { "title": "Wire protocol", "href": "wire-protocol.html", "note": "CBOR, COSE, HPKE" },
+        { "title": "Kiosk check-in", "href": "kiosk.html", "note": "Start at the clinic, finish on the phone" }
       ]
     },
     {
       "title": "Implementing",
       "items": [
-        { "title": "Trust and limits", "href": "trust-and-limits.html", "note": "What signatures prove, size, cancel" },
+        { "title": "Security and limits", "href": "trust-and-limits.html", "note": "What signatures prove, size, cancel" },
         { "title": "Platform notes", "href": "platform-notes.html", "note": "Android, iOS, browsers, app origins" },
-        { "title": "Capture inspector", "href": "wire-protocol-inspector.html", "note": "Walk a real capture byte by byte" }
+        { "title": "Capture inspector", "href": "inspector.html", "note": "Walk a real capture byte by byte" }
       ]
     },
     {
       "title": "Specification",
       "items": [
         { "title": "SMART Health Check-in 1.0", "href": "./", "note": "The draft specification (normative)" },
-        { "title": "Conformance cases", "href": "https://github.com/smart-health-checkin/spec/tree/main/conformance", "note": "The tests every implementation runs" }
+        { "title": "Conformance tests", "href": "https://github.com/smart-health-checkin/spec/tree/main/conformance", "note": "The tests every implementation runs" }
       ]
     }
   ]
