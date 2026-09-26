@@ -12,28 +12,6 @@
   <style>
     .fields dd small { display: block; color: var(--fg-3); font-size: var(--fs-sm); }
 
-    /* The overview: items, records, outcomes, linked by item id. */
-    .map {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: var(--space-5);
-      margin-top: var(--space-5);
-    }
-    .map h3 { margin: 0 0 var(--space-3); font-size: var(--fs-sm); color: var(--fg-mark); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
-    .map h3 code { text-transform: none; letter-spacing: 0; }
-    .map ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-    .map li {
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      font-size: var(--fs-sm);
-      transition: border-color var(--dur) var(--ease-out), background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out);
-    }
-    .map li b { display: block; font-weight: 600; }
-    .map li .sub { display: block; color: var(--fg-mark); overflow-wrap: anywhere; }
-    .map.focus li { opacity: 0.4; }
-    .map.focus li.on { opacity: 1; border-color: var(--brand); background: var(--status-info-wash); }
     .id {
       display: inline-block;
       margin: 2px 4px 0 0;
@@ -65,12 +43,14 @@
     .next li span { display: block; color: var(--fg-2); font-size: var(--fs-sm); }
 
     @media (max-width: 760px) {
-      .map, .pair, .next { grid-template-columns: minmax(0, 1fr); }
+      .pair, .next { grid-template-columns: minmax(0, 1fr); }
     }
 
-    /* The matching diagram replaces the list overview on wider screens. */
+    /* The wide matching diagram on wider screens, the stacked one on phones. */
+    .xd.narrow { min-width: 0; max-width: 30rem; margin: 0 auto; }
+    .map-narrow { padding: 14px; }
     .map-figure { display: none; }
-    @media (min-width: 44rem) { .map-figure { display: block; } .map { display: none !important; } }
+    @media (min-width: 44rem) { .map-figure { display: block; } .map-narrow { display: none; } }
     #match [data-ids]:focus { outline: none; }
     #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
     /* Follow an id across: hover an item or a record */
@@ -213,36 +193,55 @@
     </svg>
       </div>
 
-      <div class="map" id="map">
-        <div>
-          <h3>Request <code>items[]</code></h3>
-          <ul>
-            <li data-ids="patient"><b>Patient demographics</b><span class="id">patient</span></li>
-            <li data-ids="insurance"><b>Insurance card</b><span class="id">insurance</span></li>
-            <li data-ids="medications"><b>Medications</b><span class="id">medications</span></li>
-            <li data-ids="immunizations"><b>Immunizations</b><span class="id">immunizations</span></li>
-            <li data-ids="intake"><b>Depression screening form</b><span class="id">intake</span></li>
-          </ul>
-        </div>
-        <div>
-          <h3>Response <code>artifacts[]</code></h3>
-          <ul>
-            <li data-ids="patient medications"><b>FHIR Bundle</b><span class="sub">Patient and two MedicationRequests</span><span class="id">patient</span><span class="id">medications</span></li>
-            <li data-ids="immunizations"><b>SMART Health Card</b><span class="sub">Signed immunization record</span><span class="id">immunizations</span></li>
-            <li data-ids="immunizations"><b>FHIR Bundle</b><span class="sub">One Immunization not on the card</span><span class="id">immunizations</span></li>
-            <li data-ids="intake"><b>QuestionnaireResponse</b><span class="sub">The patient's answers</span><span class="id">intake</span></li>
-          </ul>
-        </div>
-        <div>
-          <h3>Response <code>requestStatus[]</code></h3>
-          <ul>
-            <li data-ids="patient"><span class="id">patient</span> <span class="smart-pill ok">fulfilled</span></li>
-            <li data-ids="insurance"><span class="id">insurance</span> <span class="smart-pill bad">declined</span><span class="sub">No record is returned for it.</span></li>
-            <li data-ids="medications"><span class="id">medications</span> <span class="smart-pill warn">partial</span><span class="sub">One medication was kept private.</span></li>
-            <li data-ids="immunizations"><span class="id">immunizations</span> <span class="smart-pill ok">fulfilled</span></li>
-            <li data-ids="intake"><span class="id">intake</span> <span class="smart-pill ok">fulfilled</span></li>
-          </ul>
-        </div>
+      <div class="xd-figure map-narrow">
+    <svg class="xd narrow" viewBox="0 0 360 668" role="img" aria-labelledby="mn-title mn-desc">
+      <title id="mn-title">How request items, outcomes and records connect</title>
+      <desc id="mn-desc">Five request items, each with one outcome. Patient demographics: fulfilled by a FHIR Bundle with the Patient and two MedicationRequests. Insurance card: declined, no record. Medications: partial, fulfilled by the same Bundle. Immunizations: fulfilled by a SMART Health Card and a second FHIR Bundle. Depression screening form: fulfilled by a QuestionnaireResponse.</desc>
+      <text x="0" y="16" class="head">Each item, its outcome, and the records</text>
+      <text x="0" y="33" class="sub">that fulfill it (<tspan class="mono">fulfills[]</tspan>)</text>
+      <rect class="box" x="1" y="48" width="358" height="52" rx="8"/>
+      <text x="14" y="70" class="t">Patient demographics</text>
+      <text x="14" y="88" class="mono">patient</text>
+      <rect class="pill-ok" x="276" y="62" width="72" height="24" rx="12"/><text x="312.0" y="78.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+      <path class="link" style="opacity:.8" d="M16 100 V 137.0 H 30"/><circle class="dot" cx="30" cy="137.0" r="3.5"/>
+      <rect class="box" x="30" y="108" width="329" height="58" rx="8"/>
+      <text x="42" y="126" class="rec-kind">FHIR BUNDLE</text>
+      <text x="42" y="144" class="t" style="font-size:13.5px">Patient and two MedicationRequests</text>
+      <text x="42" y="159" class="mono">also fulfills medications</text>
+      <rect class="box off" x="1" y="180" width="358" height="52" rx="8"/>
+      <text x="14" y="202" class="t off-t">Insurance card</text>
+      <text x="14" y="220" class="mono">insurance · no record returned</text>
+      <rect class="pill-off" x="276" y="194" width="72" height="24" rx="12"/><text x="312.0" y="210.5" text-anchor="middle" class="pill-off-t">declined</text>
+      <rect class="box" x="1" y="246" width="358" height="52" rx="8"/>
+      <text x="14" y="268" class="t">Medications</text>
+      <text x="14" y="286" class="mono">medications · one kept private</text>
+      <rect class="pill-warn" x="276" y="260" width="72" height="24" rx="12"/><text x="312.0" y="276.5" text-anchor="middle" class="pill-warn-t">partial</text>
+      <path class="link" style="opacity:.8" d="M16 298 V 335.0 H 30"/><circle class="dot" cx="30" cy="335.0" r="3.5"/>
+      <rect class="box" x="30" y="306" width="329" height="58" rx="8"/>
+      <text x="42" y="324" class="rec-kind">FHIR BUNDLE</text>
+      <text x="42" y="342" class="t" style="font-size:13.5px">The same Bundle as above</text>
+      <text x="42" y="357" class="mono">fulfills patient, medications</text>
+      <rect class="box" x="1" y="378" width="358" height="52" rx="8"/>
+      <text x="14" y="400" class="t">Immunizations</text>
+      <text x="14" y="418" class="mono">immunizations</text>
+      <rect class="pill-ok" x="276" y="392" width="72" height="24" rx="12"/><text x="312.0" y="408.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+      <path class="link" style="opacity:.8" d="M16 430 V 461.0 H 30"/><circle class="dot" cx="30" cy="461.0" r="3.5"/>
+      <rect class="box" x="30" y="438" width="329" height="46" rx="8"/>
+      <text x="42" y="456" class="rec-kind">SMART HEALTH CARD</text>
+      <text x="42" y="474" class="t" style="font-size:13.5px">Signed immunization record</text>
+      <path class="link" style="opacity:.8" d="M16 430 V 515.0 H 30"/><circle class="dot" cx="30" cy="515.0" r="3.5"/>
+      <rect class="box" x="30" y="492" width="329" height="46" rx="8"/>
+      <text x="42" y="510" class="rec-kind">FHIR BUNDLE</text>
+      <text x="42" y="528" class="t" style="font-size:13.5px">One Immunization not on the card</text>
+      <rect class="box" x="1" y="552" width="358" height="52" rx="8"/>
+      <text x="14" y="574" class="t">Depression screening form</text>
+      <text x="14" y="592" class="mono">intake</text>
+      <rect class="pill-ok" x="276" y="566" width="72" height="24" rx="12"/><text x="312.0" y="582.5" text-anchor="middle" class="pill-ok-t">fulfilled</text>
+      <path class="link" style="opacity:.8" d="M16 604 V 635.0 H 30"/><circle class="dot" cx="30" cy="635.0" r="3.5"/>
+      <rect class="box" x="30" y="612" width="329" height="46" rx="8"/>
+      <text x="42" y="630" class="rec-kind">QUESTIONNAIRE RESPONSE</text>
+      <text x="42" y="648" class="t" style="font-size:13.5px">The patient's answers</text>
+    </svg>
       </div>
 
       <p class="smart-callout">
@@ -749,26 +748,6 @@
         g.addEventListener('mouseenter', on); g.addEventListener('focus', on);
         g.addEventListener('mouseleave', clear); g.addEventListener('blur', clear);
         g.addEventListener('touchstart', on, { passive: true });
-      });
-    })();
-
-    // Follow an item id across the three columns (phone layout).
-    (function () {
-      var map = document.getElementById('map');
-      if (!map) return;
-      function focus(id) {
-        map.classList.toggle('focus', !!id);
-        map.querySelectorAll('li').forEach(function (li) {
-          li.classList.toggle('on', !!id && li.dataset.ids.split(' ').indexOf(id) >= 0);
-        });
-      }
-      map.querySelectorAll('.id').forEach(function (chip) {
-        chip.tabIndex = 0;
-        chip.addEventListener('mouseenter', function () { focus(chip.textContent); });
-        chip.addEventListener('focus', function () { focus(chip.textContent); });
-        chip.addEventListener('click', function () { focus(chip.textContent); });
-        chip.addEventListener('mouseleave', function () { focus(null); });
-        chip.addEventListener('blur', function () { focus(null); });
       });
     })();
 
