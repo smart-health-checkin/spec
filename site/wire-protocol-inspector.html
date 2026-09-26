@@ -778,7 +778,20 @@
     const byteViewerUrls = new Set();
 
     window.addEventListener("DOMContentLoaded", () => {
+      // Opened by a tool such as the Testing EHR: ask it for the run's bytes
+      // instead of loading the checked-in capture.
+      if (location.hash === "#from-opener" && window.opener) {
+        summary.className = "callout";
+        summary.textContent = "Waiting for the run from the page that opened this one...";
+        window.opener.postMessage({ type: "smart-capture-ready" }, "*");
+        return;
+      }
       loadDefaultCapture();
+    });
+    window.addEventListener("message", async (event) => {
+      if (event.source !== window.opener || event.data?.type !== "smart-capture") return;
+      const files = (event.data.files || []).map(([path, bytes]) => new EmbeddedFile(path, "bytes", bytes, "opener"));
+      await renderRun(indexFiles(files), String(event.data.label || "Run from the opening page"));
     });
     window.addEventListener("beforeunload", resetByteViewerRows);
 
