@@ -92,20 +92,18 @@
         result back to the app. Wallets bind the response to that page's origin; the app trusts the page because it's
         the app owner's own domain.
       </p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Platform</th><th>Opening the page</th><th>Handing the result back</th><th>Size</th></tr></thead>
-          <tbody>
-            <tr><td>Android</td><td>Custom Tab</td><td>Custom Tabs message channel, verified with Digital Asset Links; send in pieces</td><td>No limit</td></tr>
-            <tr><td>Android</td><td>Custom Tab</td><td>The page navigates to an App Link carrying the result</td><td>What fits in a URL</td></tr>
-            <tr><td>iOS</td><td><code>ASWebAuthenticationSession</code></td><td>The page navigates to the session's callback URL carrying the result</td><td>What fits in a URL</td></tr>
-            <tr><td>Either</td><td>Any</td><td>The page posts the result to the app's own backend, which the app already talks to</td><td>No limit</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <p>Two ways back carry a result of any size:</p>
+      <ul>
+        <li><b>The app's own backend</b> (Android and iOS). The page posts the result to the API the app already
+          talks to, under the patient's existing session, and the app fetches it there.</li>
+        <li><b>A Custom Tabs message channel</b> (Android). The app opens the page in a Custom Tab and asks for a
+          message channel, which Chrome grants after checking the app against the page's domain with Digital Asset
+          Links. The page sends the result to the app in pieces, since each message is capped at about 1 MB.</li>
+      </ul>
       <p class="note warning">
-        Not yet tested: whether a web wallet's tab, opened from a Custom Tab, keeps its link back to the page; and
-        whether the Digital Credentials API is available inside <code>ASWebAuthenticationSession</code>.
+        Not yet tested: whether a web wallet's tab, opened from a Custom Tab, keeps its link back to the page; and on
+        iOS, which in-app browser surface (<code>SFSafariViewController</code> or <code>ASWebAuthenticationSession</code>)
+        offers the Digital Credentials API. Safari itself does.
       </p>
       <h3 id="origins">Calling platform wallets directly on Android</h3>
       <p>
