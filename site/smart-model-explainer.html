@@ -307,14 +307,12 @@
         <code>profilesFrom</code> that is a string <a class="rid" href="./spec.html#SEL-10">SEL-10</a>.
       </p>
 
-      <div hidden>
-      <div class="smart-tabs" role="tablist" aria-label="Kinds of content">
+      <div class="smart-tabs" role="tablist" aria-label="Kinds of content" hidden>
         <button type="button" role="tab" aria-controls="c-profile">An exact profile</button>
         <button type="button" role="tab" aria-controls="c-family">A profile family</button>
         <button type="button" role="tab" aria-controls="c-open">No filter</button>
         <button type="button" role="tab" aria-controls="c-canonical">A form by URL</button>
         <button type="button" role="tab" aria-controls="c-inline">A form, inline</button>
-      </div>
       </div>
 
       <div class="panel" id="c-profile" role="tabpanel">
@@ -798,7 +796,7 @@
           select(next); next.focus();
         });
       });
-      list.parentElement.hidden = false;
+      list.hidden = false;
       select(tabs[0]);
     })();
   </script>
