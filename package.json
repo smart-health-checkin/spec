@@ -6,7 +6,7 @@
     "build": "scripts/build-pages.sh"
   },
   "dependencies": {
-    "@smart-health-checkin/client": "https://github.com/smart-health-checkin/client/releases/download/v0.2.1/smart-health-checkin-client-0.2.1.tgz",
+    "@smart-health-checkin/client": "https://github.com/smart-health-checkin/client/releases/download/v0.2.2/smart-health-checkin-client-0.2.2.tgz",
     "marked": "^18.0.3"
   },
   "devDependencies": {

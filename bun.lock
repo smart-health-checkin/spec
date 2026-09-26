@@ -5,7 +5,7 @@
     "": {
       "name": "smart-health-checkin-spec",
       "dependencies": {
-        "@smart-health-checkin/client": "https://github.com/smart-health-checkin/client/releases/download/v0.2.1/smart-health-checkin-client-0.2.1.tgz",
+        "@smart-health-checkin/client": "https://github.com/smart-health-checkin/client/releases/download/v0.2.2/smart-health-checkin-client-0.2.2.tgz",
         "marked": "^18.0.3",
       },
       "devDependencies": {
@@ -14,7 +14,7 @@
     },
   },
   "packages": {
-    "@smart-health-checkin/client": ["@smart-health-checkin/client@https://github.com/smart-health-checkin/client/releases/download/v0.2.1/smart-health-checkin-client-0.2.1.tgz", { "peerDependencies": { "react": ">=18" }, "optionalPeers": ["react"] }, "sha512-ffVQE+8bpgalN9wfvaQfXCpeEUNNdk6KBWYl2A+C98Zkybq1+RvgIgI4T5Y9Azuwq9L9bF4LUAYWxqNwT29Daw=="],
+    "@smart-health-checkin/client": ["@smart-health-checkin/client@https://github.com/smart-health-checkin/client/releases/download/v0.2.2/smart-health-checkin-client-0.2.2.tgz", { "peerDependencies": { "react": ">=18" }, "optionalPeers": ["react"] }, "sha512-KtrmS0KynSR1Q00WgUxKFmmk7JftPjvTuv6BYyvz13mwNDay0AwLb9JPb/bNs9GKO94c1P3C0GSlrvjtbgycZA=="],
 
     "@types/bun": ["@types/bun@1.4.2", "", { "dependencies": { "bun-types": "1.4.2" } }, "sha512-GimotNn7+ZV0uVArItBbriZsR1oNf0+WTzPkdcFrzShI7k2norL0uzEaJT8T33dWr7O/c9ZDuAFQrctKCi72oQ=="],
 
