@@ -1054,7 +1054,7 @@ Companion material is non-normative and subordinate to this specification. At th
 - [Live verifier and demo applications](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web): same-device verifier, kiosk creator, phone submitter, and static web app source.
 - [TypeScript SDK and verifier helpers](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web/src/sdk): request/response validation, DC API verifier flow, kiosk-session helpers, and React bindings.
 - [Protocol builders and inspectors](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web/src/protocol): CBOR builders, HPKE/open helpers, request/response inspectors, and test vectors.
-- [Android wallet implementation](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/wallet-android): demo wallet app plus reusable core, direct-mdoc, Credential Manager, UI, and matcher modules.
+- [Android wallet implementation](https://github.com/smart-health-checkin/android-wallet): demo wallet app plus reusable core, direct-mdoc, Credential Manager, UI, and matcher modules.
 - [Fixtures and captured byte artifacts](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/fixtures): checked-in request, response, transcript, and capture fixtures used by the test suites and explainers.
 - [Developer tools](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/tools): capture scripts, fixture-generation utilities, and diagnostic tooling.
 - [Historical design notes and archived material](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/docs): provenance, earlier design notes, and archived drafts that are not current implementation guidance.

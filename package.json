@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "scripts/build-pages.sh",
-    "vectors": "bun run wallet-android/app/src/test/resources/gen-test-vectors.ts"
+    "build": "scripts/build-pages.sh"
   },
   "dependencies": {
     "@smart-health-checkin/client": "github:smart-health-checkin/client",

@@ -19,8 +19,6 @@ const HTML_EXPLAINERS = [
 const MARKDOWN_SOURCES = [
   "README.md",
   "spec.md",
-  "wallet-android/README.md",
-  "wallet-android/app/matcher-rs/README.md",
 ];
 
 function decodeHtml(text) {
