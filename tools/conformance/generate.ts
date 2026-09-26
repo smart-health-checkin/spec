@@ -108,6 +108,11 @@ function fileName(key: string, v: string | Uint8Array): string {
 }
 
 const read = (p: string) => readFileSync(p, "utf8");
+/** Standard "=" padding for a base64url string whose length needs it. */
+function padded(b64u: string): string {
+  if (b64u.length % 4 === 0) throw new Error("no padding possible at this length");
+  return b64u + "=".repeat(4 - (b64u.length % 4));
+}
 const readBytes = (p: string) => new Uint8Array(readFileSync(p));
 
 // ---------------------------------------------------------------- base JSON
@@ -387,7 +392,7 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
   const cap = "request-cbor";
   const arg = (deviceRequest: Uint8Array, encryptionInfo: Uint8Array = synth.encryptionInfoBytes, protocol = "org-iso-mdoc", pad = false) => ({
     mediation: "required",
-    digital: { requests: [{ protocol, data: { deviceRequest: base64UrlEncodeBytes(deviceRequest) + (pad ? "=" : ""), encryptionInfo: base64UrlEncodeBytes(encryptionInfo) } }] },
+    digital: { requests: [{ protocol, data: { deviceRequest: pad ? padded(base64UrlEncodeBytes(deviceRequest)) : base64UrlEncodeBytes(deviceRequest), encryptionInfo: base64UrlEncodeBytes(encryptionInfo) } }] },
   });
   const itemsRequest = (over: { docType?: string; intent?: unknown; requestInfo?: unknown; extra?: boolean; companion?: boolean } = {}) => {
     const elements = new Map<string, unknown>([[SMART_RESPONSE_ELEMENT_ID, over.intent ?? true]]);
@@ -417,7 +422,13 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
   ok("unknown-docrequest-key", "An unknown key in the DocRequest is ignored (D11).", arg(deviceRequest(itemsRequest(), "1.0", true)), "D11");
   ok("unknown-itemsrequest-key", "An unknown key in the ItemsRequest is ignored (D11).", arg(deviceRequest(itemsRequest({ extra: true }))), "D11");
   bad("wrong-protocol", "The request's protocol is org.iso.mdoc, not org-iso-mdoc.", arg(deviceRequest(), undefined, "org.iso.mdoc"), "protocol", "§8.1");
-  bad("padded-base64url", "deviceRequest is padded base64url.", arg(deviceRequest(), undefined, "org-iso-mdoc", true), "base64url-padding", "§2, §8.2");
+  {
+    // A request whose deviceRequest encoding needs padding, so the padded form is standard base64url.
+    let k = 0;
+    const withId = (n: number) => deviceRequest(itemsRequest({ requestInfo: new Map([[SMART_REQUEST_INFO_KEY, JSON.stringify({ ...synthRequest, id: "conformance-request" + "x".repeat(n) })]]) }));
+    while (base64UrlEncodeBytes(withId(k)).length % 4 === 0) k++;
+    bad("padded-base64url", "deviceRequest is standard padded base64url, not unpadded.", arg(withId(k), undefined, "org-iso-mdoc", true), "base64url-padding", "§2, §8.2");
+  }
   bad("wrong-doc-type", "The ItemsRequest asks for another docType.", arg(deviceRequest(itemsRequest({ docType: "org.iso.18013.5.1.mDL" }))), "doc-type", "§8.1, §8.4");
   bad("intent-not-bool", "intentToRetain is a string.", arg(deviceRequest(itemsRequest({ intent: "yes" }))), "intent-to-retain", "§8.4");
   bad("missing-request-info", "No requestInfo carrier (the request travels only there, D7).", arg(deviceRequest(itemsRequest({ requestInfo: null }))), "request-info-missing", "D7, §8.2");
@@ -490,7 +501,15 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
     bad("tampered-ciphertext", "One ciphertext bit flipped.", { protocol: "org-iso-mdoc", data: { response: base64UrlEncodeBytes(cborEncode(["dcapi", fields])) } }, "hpke-open", "§8.5");
     bad("wrong-response-tag", "The response's first entry is not \"dcapi\".", { protocol: "org-iso-mdoc", data: { response: base64UrlEncodeBytes(cborEncode(["other", decoded[1]])) } }, "dcapi-response", "A.6");
   }
-  bad("padded-base64url", "data.response is padded base64url.", { protocol: "org-iso-mdoc", data: { response: good.data.response + "=".repeat((4 - (good.data.response.length % 4)) % 4 || 4) } }, "base64url-padding", "§8.5");
+  {
+    // A response whose base64url needs padding, so the padded form is standard base64url.
+    let k = 0, sealed = good;
+    while (sealed.data.response.length % 4 === 0) {
+      k++;
+      sealed = await seal(await buildMdoc(synthResponseJson + " ".repeat(k), synthTranscript, synthOtherTranscript), synthTranscript, synthPublicJwk);
+    }
+    bad("padded-base64url", "data.response is standard padded base64url, not unpadded.", { protocol: "org-iso-mdoc", data: { response: padded(sealed.data.response) } }, "base64url-padding", "§8.5");
+  }
   bad("wrong-protocol", "The credential's protocol is not org-iso-mdoc.", { protocol: "openid4vp", data: good.data }, "protocol", "§8.5");
 }
 

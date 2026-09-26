@@ -1014,7 +1014,7 @@
     {
       "id": "request-cbor/padded-base64url",
       "capability": "request-cbor",
-      "description": "deviceRequest is padded base64url.",
+      "description": "deviceRequest is standard padded base64url, not unpadded.",
       "rule": "§2, §8.2",
       "inputs": {
         "navigatorArgument": "request-cbor/padded-base64url/navigator-argument.json"
@@ -1300,7 +1300,7 @@
     {
       "id": "hpke-open/padded-base64url",
       "capability": "hpke-open",
-      "description": "data.response is padded base64url.",
+      "description": "data.response is standard padded base64url, not unpadded.",
       "rule": "§8.5",
       "inputs": {
         "credential": "hpke-open/padded-base64url/credential.json",
