@@ -5,9 +5,19 @@ and the conformance fixtures (`fixtures/`). Deploys to
 smart-health-checkin.org/spec/ on every push to `main`.
 [MAINTAINING.md](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md) maps every repo, what triggers what, and how to release.
 
-- Build: `bun install && scripts/build-pages.sh`. It fails if any JSON example
-  in `site/smart-model-explainer.html` stops validating against the client
-  library (`scripts/check-explainer.ts`).
+- Build: `bun install && scripts/build-pages.sh` (needs `gem install cddl`).
+  It fails if requirement IDs aren't unique or `requirements.json` is stale
+  (`scripts/spec-requirements.ts`), if a JSON example in the spec or the model
+  explainer stops validating (`check-spec-examples.ts`, `check-explainer.ts`),
+  if the CDDL no longer matches the real capture (`check-spec-cddl.ts`), if
+  Appendix A doesn't recompute from the capture (`worked-example.ts`), or if a
+  heading anchor or site link breaks (`check-spec-anchors.ts`,
+  `check-site-links.ts`). A PR runs the same build (`check.yml`).
+- Every normative sentence carries a requirement ID (`[XV-2]`). IDs never
+  change meaning and are never reused; conformance cases cite them.
+- Producers strict, receivers permissive (§2 RCV-0..2): §8 marks each receiver
+  step **fail** or warn.
+- Archived research and the rewrite map live in the notes repo, not here.
 - **Fixtures and conformance cases are published by tag.** client,
   android-wallet, swift, and connectathon pin a spec tag (`vX.Y.Z`, currently
   `v1.0.0-draft.1`). Never move a tag: change `fixtures/` or the cases, tag the
@@ -21,5 +31,3 @@ smart-health-checkin.org/spec/ on every push to `main`.
 - Section headings in `spec.md` become anchors that other sites link to
   (`#6-4-verifier-cross-validation`). Renaming a heading breaks those links.
 - This section's menu is `site/nav.json`.
-- The `wallet-v*` tags here are historical; the Android wallet is released
-  from its own repo.
