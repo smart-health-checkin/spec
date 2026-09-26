@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-03T03:22:29.511Z",
-  "source": "rp-web/src/protocol/index.ts via gen-test-vectors.ts",
+  "generatedAt": "2026-09-26T02:02:30.565Z",
+  "source": "@smart-health-checkin/client/wire via gen-test-vectors.ts",
   "doctype": "org.smarthealthit.checkin.1",
   "namespace": "org.smarthealthit.checkin",
   "responseElement": "smart_health_checkin_response",

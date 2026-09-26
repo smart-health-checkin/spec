@@ -10,7 +10,7 @@ import java.security.SecureRandom
 
 /**
  * Builds the `org-iso-mdoc` Digital Credentials request for a SMART Health
- * Check-in request, the way the web verifier (`rp-web` `buildOrgIsoMdocRequest`)
+ * Check-in request, the way the client library's `buildOrgIsoMdocRequest` (`@smart-health-checkin/client/wire`)
  * does: the SMART JSON rides in `ItemsRequest.requestInfo`, the response is
  * requested as the `smart_health_checkin_response` element, and
  * `encryptionInfo` carries a fresh P-256 HPKE recipient key plus a nonce.

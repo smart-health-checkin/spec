@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { Marked, Renderer } from "marked";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(HERE, "..", "..");
+const ROOT = resolve(HERE, "..");
 
 const inputArg = process.argv[2] ?? resolve(ROOT, "spec.md");
 const outputArg = process.argv[3] ?? resolve(ROOT, "_site", "spec.html");

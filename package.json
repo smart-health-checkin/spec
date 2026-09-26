@@ -1,0 +1,16 @@
+{
+  "name": "smart-health-checkin-spec",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "scripts/build-pages.sh",
+    "vectors": "bun run wallet-android/app/src/test/resources/gen-test-vectors.ts"
+  },
+  "dependencies": {
+    "@smart-health-checkin/client": "github:smart-health-checkin/client",
+    "marked": "^18.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}

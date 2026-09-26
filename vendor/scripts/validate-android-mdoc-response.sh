@@ -14,16 +14,16 @@ if ! command -v bun >/dev/null 2>&1; then
 fi
 
 echo "==> Generate request fixtures"
-cd "$PROJECT_DIR/rp-web"
-bun scripts/generate-dcapi-request-fixtures.ts
+cd "$PROJECT_DIR"
+bun tools/wire/generate-dcapi-request-fixtures.ts
 
 echo "==> Generate Android deterministic response fixture"
 cd "$ANDROID_DIR"
 ./gradlew :app:testDebugUnitTest --tests 'org.smarthealthit.checkin.wallet.AndroidMdocValidationFixtureTest' --no-daemon
 
-echo "==> Validate Android response with RP web"
-cd "$PROJECT_DIR/rp-web"
-bun scripts/validate-android-mdoc-response.ts "$GENERATED_DIR" "$REQUEST_FIXTURE_DIR" --out "$OUT_DIR"
+echo "==> Validate Android response with the client library"
+cd "$PROJECT_DIR"
+bun tools/wire/validate-android-mdoc-response.ts "$GENERATED_DIR" "$REQUEST_FIXTURE_DIR" --out "$OUT_DIR"
 
 if command -v uv >/dev/null 2>&1; then
   echo "==> Validate Android response issuer-signed bytes with pyMDOC tooling"

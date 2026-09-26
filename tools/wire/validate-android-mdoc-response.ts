@@ -6,7 +6,7 @@ import {
   buildDcapiSessionTranscript,
   openWalletResponse,
   PROTOCOL_ID,
-} from "../src/protocol/index.ts";
+} from "@smart-health-checkin/client/wire";
 
 type Options = {
   generatedDir: string;

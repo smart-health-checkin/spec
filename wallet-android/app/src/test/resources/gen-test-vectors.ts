@@ -2,8 +2,8 @@
 /**
  * Generate cross-checked test vectors for the Android wallet.
  *
- * Source of truth: the TypeScript verifier protocol library
- * (`rp-web/src/protocol`). This script imports it directly, builds the byte
+ * Source of truth: the client library's wire module
+ * (`@smart-health-checkin/client/wire`). This script imports it, builds the byte
  * artifacts the wallet has to interoperate with, and serializes them as JSON
  * to `test-vectors.json` next to this file. Kotlin tests load the JSON at
  * runtime via the test classpath.
@@ -18,9 +18,9 @@ import {
   buildDcapiSessionTranscript,
   buildDeviceRequestBytes,
   buildEncryptionInfoBytes,
-} from "../../../../../rp-web/src/protocol/index.ts";
+} from "@smart-health-checkin/client/wire";
 
-import type { SmartCheckinRequest } from "../../../../../rp-web/src/protocol/index.ts";
+import type { SmartCheckinRequest } from "@smart-health-checkin/client";
 
 type Vector = {
   name: string;
@@ -318,7 +318,7 @@ for (const r of REJECTION_HEX_FIXTURES) {
 
 const out = {
   generatedAt: new Date().toISOString(),
-  source: "rp-web/src/protocol/index.ts via gen-test-vectors.ts",
+  source: "@smart-health-checkin/client/wire via gen-test-vectors.ts",
   doctype: "org.smarthealthit.checkin.1",
   namespace: "org.smarthealthit.checkin",
   responseElement: "smart_health_checkin_response",

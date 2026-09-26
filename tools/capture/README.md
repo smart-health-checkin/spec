@@ -3,53 +3,9 @@
 These tools are for checking what a verifier page actually passes to the
 Digital Credentials API.
 
-## Android RP-to-Wallet Capture
+## Android end to end
 
-`capture-android-rp-flow.mjs` drives the local RP web app in Android Chrome,
-records the RP-side `@@SHC@@` debug events, pulls the latest wallet handler run
-from the connected Android device, and joins both sides into one inspectable
-fixture.
-
-Typical one-command run, after `adb connect ...`:
-
-```sh
-node tools/capture/capture-android-rp-flow.mjs \
-  --url http://127.0.0.1:3010 \
-  --adb-auto-wallet
-```
-
-If the RP server is not already running, the script starts `rp-web` on the port
-from `--url`. For local URLs it also runs `adb reverse` so Android Chrome can
-reach the host server.
-
-The RP button is clicked through Android Chrome CDP by selector, using
-`Runtime.evaluate(..., userGesture: true)` first and a CDP touch event on the
-same selector second. `--rp-tap 'x,y'` is only a final fallback.
-
-The `--adb-auto-wallet` flag waits until the RP has emitted
-`REQUEST_ARTIFACTS`, then uses fixed Pixel 10 Pro XL coordinates for the current
-two-step Android flow:
-
-```text
-785,2135  Credential Manager "Agree and continue"
-540,2174  Wallet "Share selected data"
-```
-
-Override them with `--wallet-taps 'x,y,delayMs;x,y,delayMs'` if the UI moves.
-
-Output is split and then joined:
-
-```text
-tools/capture/android-rp-flow/<timestamp>/  # RP console events and request keys
-/tmp/shc-handler-runs/run-*/rp-request/     # verifier private/public JWKs and request bytes
-/tmp/shc-handler-runs/run-*/rp-capture/     # RP event log copied into the wallet run
-/tmp/shc-handler-runs/run-*/analysis/hpke-opened/
-```
-
-The key artifact is `rp-request/recipient-private.jwk.json`. That is the
-verifier HPKE private key emitted by the RP for offline debugging. The script
-then calls `rp-web/scripts/validate-android-mdoc-response.ts` to prove that the
-saved key and session transcript can reopen the Android wallet ciphertext.
+The old `capture-android-rp-flow.mjs` drove the retired `rp-web` app. To run a check-in from a web page to the Android wallet now, use the connectathon's [`scripts/android-e2e.ts`](https://github.com/smart-health-checkin/connectathon/blob/main/scripts/android-e2e.ts): it drives the live Testing EHR in the device's Chrome, through the Digital Credentials API, to the reference wallet. For the wallet's own record of a run, `scripts/pull-android-handler-run.sh` in this repo still pulls and inspects it.
 
 ## Browser Branching Probe
 

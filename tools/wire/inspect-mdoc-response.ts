@@ -6,7 +6,7 @@ import {
   inspectDeviceResponseBytes,
   type DcapiResponseInspection,
   type DeviceResponseInspection,
-} from "../src/protocol/index.ts";
+} from "@smart-health-checkin/client/wire";
 
 type CliOptions = {
   input: string;

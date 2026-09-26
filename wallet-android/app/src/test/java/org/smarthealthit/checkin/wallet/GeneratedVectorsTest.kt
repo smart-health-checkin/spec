@@ -10,7 +10,7 @@ import org.junit.Test
 
 /**
  * Cross-implementation regression: every byte sequence asserted here was
- * produced by the TS verifier library (`rp-web/src/protocol/index.ts`). The
+ * produced by the client library's wire module (`@smart-health-checkin/client/wire`). The
  * generator script at `app/src/test/resources/gen-test-vectors.ts` calls
  * that library directly. Re-run the script after the TS lib changes its
  * byte output and commit the regenerated `test-vectors.json` so CI catches

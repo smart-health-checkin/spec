@@ -5,7 +5,6 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 paths=(
   "$ROOT/_site"
-  "$ROOT/rp-web/dist"
   "$ROOT/wallet-android/.gradle"
   "$ROOT/wallet-android/.kotlin"
   "$ROOT/wallet-android/app/build"

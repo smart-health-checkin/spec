@@ -42,17 +42,17 @@ origin="$(
 )"
 
 if [ -n "$origin" ]; then
-  (cd "$ROOT/rp-web" && bun scripts/inspect-mdoc-request.ts "$RUN_DIR" --origin "$origin" --out "$ANALYSIS_DIR/request")
+  (cd "$ROOT" && bun tools/wire/inspect-mdoc-request.ts "$RUN_DIR" --origin "$origin" --out "$ANALYSIS_DIR/request")
 else
-  (cd "$ROOT/rp-web" && bun scripts/inspect-mdoc-request.ts "$RUN_DIR" --out "$ANALYSIS_DIR/request")
+  (cd "$ROOT" && bun tools/wire/inspect-mdoc-request.ts "$RUN_DIR" --out "$ANALYSIS_DIR/request")
 fi
 
 if [ -f "$RUN_DIR/wallet-response.digital-credential.json" ]; then
-  (cd "$ROOT/rp-web" && bun scripts/inspect-mdoc-response.ts "$RUN_DIR/wallet-response.digital-credential.json" --out "$ANALYSIS_DIR/dcapi-response")
+  (cd "$ROOT" && bun tools/wire/inspect-mdoc-response.ts "$RUN_DIR/wallet-response.digital-credential.json" --out "$ANALYSIS_DIR/dcapi-response")
 fi
 
 if [ -f "$RUN_DIR/device-response.cbor" ]; then
-  (cd "$ROOT/rp-web" && bun scripts/inspect-mdoc-response.ts "$RUN_DIR/device-response.cbor" --out "$ANALYSIS_DIR/device-response")
+  (cd "$ROOT" && bun tools/wire/inspect-mdoc-response.ts "$RUN_DIR/device-response.cbor" --out "$ANALYSIS_DIR/device-response")
 fi
 
 echo "$RUN_DIR"

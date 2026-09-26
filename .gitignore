@@ -1,9 +1,7 @@
 _site/
 
-# Web build/dependencies
-rp-web/dist/
-rp-web/dist-wallet/
-rp-web/node_modules/
+# Dependencies
+node_modules/
 
 # Android/Gradle build outputs
 wallet-android/.gradle/

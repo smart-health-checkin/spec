@@ -16,15 +16,10 @@ do
   cp "$ROOT/site/$page" "$SITE_DIR/$page"
 done
 cp "$ROOT/spec.md" "$SITE_DIR/spec.md"
-cp "$ROOT/rp-web/src/sdk-web-wallet/WALLET-INTEGRATION-PROTOCOL.md" "$SITE_DIR/web-wallet-protocol.md"
-(cd "$ROOT/rp-web" && bun scripts/render-spec.ts "$ROOT/spec.md" "$SITE_DIR/spec.html")
-(cd "$ROOT/rp-web" && bun scripts/render-spec.ts \
-  "$ROOT/rp-web/src/sdk-web-wallet/WALLET-INTEGRATION-PROTOCOL.md" \
-  "$SITE_DIR/web-wallet-protocol.html" \
-  "SMART Health Check-in — Web Wallet Protocol Sketch" \
-  "Experimental web-wallet listen/respond contract for producing SMART Health Check-in org-iso-mdoc responses from a web app wallet." \
-  "./web-wallet-protocol.md" \
-  "Web Wallet Protocol Sketch")
+bun "$ROOT/scripts/render-spec.ts" "$ROOT/spec.md" "$SITE_DIR/spec.html"
+# The web-wallet hand-off is now documented by the client library.
+HANDOFF="https://smart-health-checkin.org/client/docs/web-wallet-handoff.html"
+printf '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=%s"><link rel="canonical" href="%s"><title>Moved</title><p>Moved to <a href="%s">%s</a>.</p>\n' "$HANDOFF" "$HANDOFF" "$HANDOFF" "$HANDOFF" > "$SITE_DIR/web-wallet-protocol.html"
 # This repo deploys to smart-health-checkin.org/spec/. The org site
 # (smart-health-checkin.github.io) serves the apex and /assets/ — the design
 # system and the shared chrome every page here loads — and the draft spec is

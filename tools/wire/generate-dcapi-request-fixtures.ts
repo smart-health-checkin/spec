@@ -6,8 +6,8 @@ import {
   buildOrgIsoMdocRequest,
   hex,
   inspectOrgIsoMdocNavigatorArgument,
-  type SmartCheckinRequest,
-} from "../src/protocol/index.ts";
+} from "@smart-health-checkin/client/wire";
+import { type SmartCheckinRequest } from "@smart-health-checkin/client";
 
 const OUT_ROOT = new URL("../../fixtures/dcapi-requests", import.meta.url).pathname;
 const FIXTURE_ID = "ts-smart-checkin-basic";
@@ -131,7 +131,7 @@ await writeJson(join(dir, "inspection.json"), inspection);
 await writeJson(join(dir, "metadata.json"), {
   id: FIXTURE_ID,
   kind: "positive-smart-health-checkin",
-  source: "rp-web/scripts/generate-dcapi-request-fixtures.ts",
+  source: "tools/wire/generate-dcapi-request-fixtures.ts",
   origin: ORIGIN,
   protocol: "org-iso-mdoc",
   note: "Synthetic deterministic request fixture. Private key is a test vector only.",
@@ -170,7 +170,7 @@ await writeJson(join(readerAuthDir, "inspection.json"), readerAuthInspection);
 await writeJson(join(readerAuthDir, "metadata.json"), {
   id: READER_AUTH_FIXTURE_ID,
   kind: "positive-smart-health-checkin-readerauth",
-  source: "rp-web/scripts/generate-dcapi-request-fixtures.ts",
+  source: "tools/wire/generate-dcapi-request-fixtures.ts",
   origin: ORIGIN,
   protocol: "org-iso-mdoc",
   note: "Synthetic request fixture with per-DocRequest readerAuth. Private keys and the reader certificate are test vectors only.",

@@ -24,10 +24,9 @@ uv run python bin/parse-checkin.py \
   --out ../../fixtures/responses/pymdoc-minimal/expected-walk.json
 
 if command -v bun >/dev/null 2>&1; then
-  echo "==> RP protocol tests"
-  cd "$PROJECT_DIR/rp-web"
-  bun scripts/generate-dcapi-request-fixtures.ts
-  bun test
+  echo "==> Request fixtures (from the client library's wire module)"
+  cd "$PROJECT_DIR"
+  bun tools/wire/generate-dcapi-request-fixtures.ts
 else
-  echo "bun not found; skipped rp-web tests" >&2
+  echo "bun not found; skipped request fixtures" >&2
 fi

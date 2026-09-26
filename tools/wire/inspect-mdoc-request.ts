@@ -13,7 +13,7 @@ import {
   PROTOCOL_ID,
   SMART_REQUEST_INFO_KEY,
   type OrgIsoMdocInspection,
-} from "../src/protocol/index.ts";
+} from "@smart-health-checkin/client/wire";
 
 type CliOptions = {
   input: string;

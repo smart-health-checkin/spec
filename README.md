@@ -1,125 +1,56 @@
-# smart-health-checkin-mdoc
+# SMART Health Check-in: specification
 
-A **SMART Health Check-in** prototype: a transport-neutral check-in
-request/response model bound to the W3C Digital Credentials API over direct
-`org-iso-mdoc`. The repo ships an end-to-end demo — Android wallet, web
-verifier — driven by checked-in byte
-fixtures captured from a real Chrome/Android session and exercised by Android,
-TypeScript, and Python test suites that validate request parsing, HPKE-opened
-response bytes, MSO digest binding, and COSE signatures.
+The SMART Health Check-in 1.0 draft specification, its conformance fixtures, and the reference Android wallet.
 
-SMART Health Check-in 1.0 is intentionally two-layered: the clinical
-request/response JSON model plus the same-device direct `org-iso-mdoc`
-presentation flow. QR codes, kiosks, desktop/staff handoffs, relays, and
-completion screens in this repo are deployment/demo UX around that same-device
-flow, not standardized SMART Health Check-in 1.0 pointer, relay, submission, or
-completion protocols.
+SMART Health Check-in is two layers: a transport-neutral request/response model for what a visit needs, and a same-device presentation flow over the W3C Digital Credentials API with `org-iso-mdoc`. QR codes, kiosks, and relays built around that flow are deployment choices, not part of the protocol.
 
-Live demo: <https://jmandel.github.io/smart-health-checkin-mdoc/>
+- **Spec:** <https://smart-health-checkin.org/spec/>
+- **Client library** (EHR pages, web wallets, testing): [smart-health-checkin/client](https://github.com/smart-health-checkin/client), docs at <https://smart-health-checkin.org/client/>
+- **Connectathon:** [smart-health-checkin/connectathon](https://github.com/smart-health-checkin/connectathon), at <https://smart-health-checkin.org/connectathon/>
 
-## Quickstart
+## What's here
 
-```sh
-cd rp-web && bun install && cd ..
-scripts/serve-pages.sh         # builds _site, serves http://localhost:3015/
-```
-
-The preview serves the same `_site` artifact GitHub Pages deploys. Page links
-are relative so the artifact works at either a domain root or a Pages subpath.
-
-## Where to start
-
-For a fresh pickup, in order:
-
-1. The deployed site (or the local preview above).
-2. [`spec.md`](spec.md) — the assembled SMART Health Check-in 1.0 draft
-   spec: §§5-6 define the normative TypeScript/JSDoc clinical request/response
-   model, §8 defines the same-device `org-iso-mdoc` presentation flow, and
-   Appendix A is a diagnostic bridge for the same-device byte boundaries.
-
-Research notes and archive material under `docs/research/` and
-`docs/archive/` are historical and not part of the public pickup path.
-
-## Major components
-
-- **SMART Health Check-in protocol.** A transport-neutral JSON
-  request/response model used by every component. Defined in [`spec.md`](spec.md)
-  §§5-6 by normative TypeScript interfaces and JSDoc comments.
-
-- **`org-iso-mdoc` wire profile.** The active binding to the W3C Digital
-  Credentials API: the SMART request rides inside
-  `ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]` and the
-  SMART response comes back in the stable mdoc element
-  `smart_health_checkin_response`. Specified in [`spec.md`](spec.md) §8,
-  with a non-normative diagnostic bridge in Appendix A. Byte ladders, schemas,
-  fixtures, and tutorials are companion material in this repository.
-
-- **TypeScript verifier SDK.** Framework-neutral SMART request/response
-  validation, browser DC API verifier flow, verifier-authority seam, and
-  deployment-handoff helpers used by the kiosk demo. Optional React bindings ship alongside.
-  Start at [`rp-web/src/sdk/README.md`](rp-web/src/sdk/README.md) and
-  [`rp-web/src/sdk/react.README.md`](rp-web/src/sdk/react.README.md).
-
-- **Demos.** The same-device check-in, the kiosk hand-off, and the demo web
-  wallet live on [smart-health-checkin.org](https://smart-health-checkin.org/)
-  and are built from the `checkin-client` repo; the apps that used to live
-  under `rp-web/` were retired in favour of them.
-- **Android wallet.** Modular Gradle project under
-  [`wallet-android/`](wallet-android/README.md) that registers credentials
-  with Credential Manager and answers direct mdoc requests carrying SMART
-  Health Check-in payloads, including the Rust WASM matcher
-  ([`wallet-android/app/matcher-rs/README.md`](wallet-android/app/matcher-rs/README.md)).
-
-- **Web-wallet shim (side surface, demo).** A second mediator path that uses
-  explicit web-wallet credential handles backed by a script-opened wallet
-  tab/window, while
-  keeping the wire format identical to the platform DC API flow. It does not
-  patch `navigator.credentials.get`; verifier UI can compose these handles with
-  the app-owned Platform Wallet path when configured.
-  Lives in [`rp-web/src/sdk-web-wallet/`](rp-web/src/sdk-web-wallet/README.md)
-  with a reference wallet app under `rp-web/src/wallet-app/`. Not part of the
-  v1.0 SMART Health Check-in protocol; not re-exported from the SDK
-  barrel.
-
-- **Public site.** Landing page and HTML explainers in
-  [`site/`](site/): the SMART model explainer, the kiosk handoff demo
-  explainer, and a byte-level wire-protocol inspector that fetches the same
-  checked-in fixtures the test suites use.
-
-- **Fixtures and tools.** [`fixtures/`](fixtures/) holds normalized,
-  checked-in byte captures shared across every language's tests;
-  [`tools/`](tools/) collects developer-only capture scripts,
-  fixture-generation utilities, and diagnostic matchers.
-
-## GitHub Pages deployment
-
-The repo deploys as one static site via
-[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) on
-pushes to `main` and on manual workflow dispatch.
-
-Paths are relative to the deployed Pages base path.
-
-| Relative path | Page |
+| Path | What it is |
 | --- | --- |
-| `./` | The draft spec (the landing page lives on smart-health-checkin.org) |
-| `./verifier/` | Same-device verifier |
-| `./verifier/creator/` | Kiosk handoff demo creator (desktop) |
-| `./verifier/submit/` | Kiosk handoff demo submitter (phone) |
-| `./verifier/wallet-choice/` | Verifier demo with configured Platform/Web Wallet choice |
-| `./wallet/` | Reference web wallet app used by the web-wallet verifier choice |
-| `./web-wallet-protocol.html` | Rendered web-wallet listen/respond integration sketch |
-| `./smart-model-explainer.html` | SMART Health Check-in model explainer |
-| `./kiosk-flow-explainer.html` | Kiosk handoff demo explainer |
-| `./wire-protocol-explainer.html` | Byte-level wire-protocol explainer |
-| `./spec.html` | SMART Health Check-in 1.0 draft spec — rendered HTML with TOC, syntax highlighting, and Mermaid diagrams |
-| `./spec.md` | SMART Health Check-in 1.0 draft spec — raw Markdown source |
-| `./llms.txt` | Generated LLM-friendly docs bundle |
-| `./fixtures/` | Checked-in test fixtures |
+| [`spec.md`](spec.md) | The draft spec. §§5–6 define the request and response model; §8 the `org-iso-mdoc` flow; Appendix A a byte-level bridge. |
+| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow. |
+| [`fixtures/`](fixtures/) | Checked-in byte captures and generated vectors, shared by the Android, TypeScript, and Python tests. |
+| [`wallet-android/`](wallet-android/README.md) | The reference Android wallet: Credential Manager registration, the Rust WASM matcher, and the responder. Releases publish a debug APK. |
+| [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
+| [`tools/fixtures-tool/`](tools/fixtures-tool/) | Python fixture checks with pyMDOC. |
+| [`tools/capture/`](tools/capture/README.md) | Browser capture and probing scripts. |
+| [`examples/swift-ios/`](examples/swift-ios/) | A Swift package exploring the iOS side. |
+| [`docs/`](docs/) | Research notes and archived planning. Historical, not part of the spec. |
 
-Local artifact build (no preview server):
+The TypeScript verifier and web-wallet code that used to live in `rp-web/` is now the [client library](https://github.com/smart-health-checkin/client); its demos run at <https://smart-health-checkin.org/client/demo/>.
+
+## Build the site
 
 ```sh
-cd rp-web && bun install
-cd ..
-scripts/build-pages.sh
+bun install
+scripts/build-pages.sh      # builds _site/
+scripts/serve-pages.sh      # builds and serves http://localhost:3015/
 ```
+
+Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml).
+
+| Path | Page |
+| --- | --- |
+| `./` and `./spec.html` | The draft spec, rendered |
+| `./spec.md` | The draft spec, raw Markdown |
+| `./smart-model-explainer.html` | The request and response model |
+| `./wire-protocol-explainer.html` | The wire protocol, byte by byte |
+| `./wire-protocol-inspector.html` | Inspect the checked-in captures |
+| `./kiosk-flow-explainer.html` | The kiosk hand-off flow |
+| `./llms.txt` | The spec and explainers in one file |
+| `./fixtures/` | The fixtures |
+
+## Tests and vectors
+
+```sh
+cd wallet-android && ./gradlew -Pskip-matcher :app:testDebugUnitTest   # Android wallet tests
+bun run vectors                                                         # regenerate Android test vectors from the client library
+vendor/scripts/regenerate-local-fixtures.sh                              # regenerate fixtures
+```
+
+The Android test vectors come from the client library's wire module, so the Kotlin wallet and the TypeScript library are checked against the same bytes.
