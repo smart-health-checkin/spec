@@ -291,10 +291,12 @@
     }
     .drill-chain {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       margin: 16px 0;
     }
     .drill-node {
+      min-width: 0;
       border: 1px solid var(--line);
       border-radius: 0;
       background: #ffffff;
@@ -307,6 +309,9 @@
       font-size: 1.05rem;
       margin: 0 0 6px;
     }
+    .drill-node pre { overflow-x: auto; max-width: 100%; }
+    .artifact-card p, .drill-node p, .callout { overflow-wrap: anywhere; }
+    @media (max-width: 560px) { .fact-grid { grid-template-columns: minmax(0, 1fr) !important; } }
     .fact-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -641,12 +646,36 @@
       <details class="advanced-loader">
         <summary>Load a different capture</summary>
         <div>
-          <p class="small">This page auto-loads the checked-in Chrome/Android capture. To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/real-chrome-android-smart-checkin</code> and <code>fixtures/responses/real-chrome-android-smart-checkin</code>. The Testing EHR can also open a run here directly.</p>
+          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>real-chrome-android-smart-checkin-v2</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2</code> and <code>fixtures/responses/real-chrome-android-smart-checkin-v2</code>. The Testing EHR can also open a run here directly.</p>
           <div class="button-row">
             <button id="loadExample" type="button">Reload checked-in capture</button>
             <button id="clearRun" class="secondary" type="button">Clear loaded run</button>
           </div>
           <input id="runPicker" type="file" webkitdirectory multiple />
+        </div>
+      </details>
+      <details class="advanced-loader" id="debugging">
+        <summary>Comparing your implementation with this capture</summary>
+        <div>
+          <p class="small">
+            Walk the same steps as <a href="./spec.html#appendix-a-worked-example">spec Appendix A</a>, which lists the
+            expected value at each one. The capture's HPKE private key is published with it
+            (<code>recipient-private.jwk.json</code>), so you can decrypt it yourself.
+          </p>
+          <ol class="small">
+            <li><b>Request.</b> Decode <code>device-request.cbor</code>. Check the docType, namespace, element, and that the SMART request text is in <code>requestInfo["org.smarthealthit.checkin.request"]</code>.</li>
+            <li><b>Transcript.</b> Build <code>dcapiInfo = CBOR([encryptionInfoBase64url, origin])</code>, hash it with SHA-256, build <code>CBOR([null, null, ["dcapi", hash]])</code>, and compare with <code>session-transcript.cbor</code>. Comparing <code>dcapiInfo</code> itself with the transcript file never matches.</li>
+            <li><b>Decrypt.</b> Open <code>dcapi-response.cbor</code> with the private key and <code>info = session-transcript.cbor</code>; the result is <code>device-response.cbor</code>.</li>
+            <li><b>Response.</b> Check <code>SHA-256(issuer-signed-item-tag24.cbor)</code> against the MSO digest for the item's <code>digestID</code>, then verify <code>issuerAuth</code> and the detached device signature over <code>device-authentication.cbor</code>.</li>
+          </ol>
+          <p class="small">From a checkout of the spec repository, after <code>bun install</code>:</p>
+<pre class="wrap-pre">bun tools/wire/inspect-mdoc-request.ts fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2 --out /tmp/out/request
+bun tools/wire/inspect-mdoc-response.ts fixtures/responses/real-chrome-android-smart-checkin-v2/device-response.cbor --out /tmp/out/response</pre>
+          <p class="small">
+            This capture's SMART response has 4 artifacts and 4 status entries. That describes this capture, not what
+            every response looks like. The older capture, <code>real-chrome-android-smart-checkin</code>, predates the
+            detached device signature and is kept for history.
+          </p>
         </div>
       </details>
       <div id="runSummary" class="callout">No run directory selected yet.</div>
@@ -657,9 +686,9 @@
   </main>
 
   <script>
-    const REAL_REQUEST_BASE = "fixtures/dcapi-requests/real-chrome-android-smart-checkin";
-    const REAL_RESPONSE_BASE = "fixtures/responses/real-chrome-android-smart-checkin";
-    const DEFAULT_CAPTURE_LABEL = "Checked-in real Chrome/Android capture: run-1777656438734";
+    const REAL_REQUEST_BASE = "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2";
+    const REAL_RESPONSE_BASE = "fixtures/responses/real-chrome-android-smart-checkin-v2";
+    const DEFAULT_CAPTURE_LABEL = "Checked-in real Chrome/Android capture (v2, detached device signature): run-1790428465319";
     const DEFAULT_CAPTURE_FILES = [
       [REAL_REQUEST_BASE + "/metadata.json", "manifest.json"],
       [REAL_REQUEST_BASE + "/credential-manager-request.json", "credential-manager-request.json"],
@@ -1039,7 +1068,7 @@
       await addByteRow(rows, index, {
         title: "DeviceAuthentication payload",
         file: preferredFile(index, "device-authentication.cbor"),
-        source: "DeviceSigned.deviceAuth.deviceSignature payload",
+        source: "Rebuilt by the verifier; deviceSignature carries a null (detached) payload",
         meaning: "Binds DeviceAuthentication, the SessionTranscript, docType, and empty device namespaces.",
         check: infoCheck("signature verification is still delegated to verifier/inspector tooling"),
       });
@@ -1712,7 +1741,7 @@
 
       chain.appendChild(drillNode({
         title: "9. DeviceAuthentication signature payload",
-        text: "The deviceSignature payload contains DeviceAuthentication, the exact SessionTranscript bytes, docType, and empty device namespaces. This is what fails if origin or transcript bytes differ.",
+        text: "The device signature covers DeviceAuthenticationBytes: DeviceAuthentication with the SessionTranscript (as an array), docType, and empty device namespaces. Its payload is null; both sides rebuild these bytes, so the signature fails if the origin or transcript differs.",
         facts: [
           ["device-authentication.cbor bytes", fileSize(index, "device-authentication.cbor")],
           ["docType", mdocDocument?.docType],

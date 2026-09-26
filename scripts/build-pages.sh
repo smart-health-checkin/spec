@@ -21,7 +21,9 @@ for page in \
   smart-model-explainer.html \
   kiosk-flow-explainer.html \
   wire-protocol-explainer.html \
-  wire-protocol-inspector.html
+  wire-protocol-inspector.html \
+  trust-and-limits.html \
+  platform-notes.html
 do
   cp "$ROOT/site/$page" "$SITE_DIR/$page"
 done
@@ -31,6 +33,8 @@ cp "$ROOT/site/nav.json" "$SITE_DIR/nav.json"
 bun "$ROOT/scripts/render-spec.ts" "$ROOT/spec.md" "$SITE_DIR/spec.html"
 # Links from other sites into the spec keep resolving.
 bun "$ROOT/scripts/check-spec-anchors.ts" "$SITE_DIR/spec.html"
+# Every link from the explainers into the spec or between pages resolves.
+bun "$ROOT/scripts/check-site-links.ts" "$SITE_DIR"
 cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
 # The web-wallet hand-off is now documented by the client library.
 HANDOFF="https://smart-health-checkin.org/client/docs/web-wallet-handoff.html"

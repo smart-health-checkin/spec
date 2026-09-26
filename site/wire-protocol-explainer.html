@@ -632,6 +632,12 @@
       padding-bottom: 1px;
     }
     .next-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
+    /* Fail or warn, per spec §2 [RCV-1] and §8. */
+    .fw { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
+    .fw.fail { background: #ffe7e5; color: var(--red); }
+    .fw.warn { background: #fff0ca; color: var(--amber); }
+    a.rid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+    td a.rid { font-size: 0.74rem; }
   </style>
 </head>
 <body>
@@ -641,21 +647,23 @@
       <a class="back-link" href="/">← SMART Health Check-in</a>
       <h1>Wire protocol</h1>
       <p class="lede">
-        How a SMART Health Check-in request and response are <em>built</em>, <em>signed</em>, <em>encrypted</em>, <em>parsed</em>, and <em>verified</em> &mdash;
-        with the encoding, the keys, and the math called out at every step. For what the request asks and what the
-        response means, see the <a href="./smart-model-explainer.html">SMART model explainer</a>.
+        How the request and response travel through the W3C Digital Credentials API as an ISO mdoc presentation:
+        who builds each structure, what gets hashed, signed, and encrypted, and what each side checks. The steps follow
+        <a href="./spec.html#8-same-device-presentation-flow">spec §8</a>, and each links its requirement. For what the
+        JSON inside means, see the <a href="./smart-model-explainer.html">model explainer</a>.
       </p>
       <ul class="param-list">
         <li><b>Protocol</b> <code>org-iso-mdoc</code></li>
         <li><b>docType</b> <code>org.smarthealthit.checkin.1</code></li>
         <li><b>Namespace</b> <code>org.smarthealthit.checkin</code></li>
         <li><b>Element</b> <code>smart_health_checkin_response</code></li>
+        <li><b>All fixed values</b> <a href="./spec.html#8-1-identifiers-and-constants">§8.1</a></li>
       </ul>
       <p class="lede">
-        Version 1.0 standardizes only the same-device direct
-        <code>org-iso-mdoc</code> presentation flow. QR, kiosk, SMS, portal, and
-        relay handoffs are deployment UX that land on this flow, not separate
-        SMART Health Check-in wire protocols.
+        <b>Strict to build, lenient to receive.</b> Whoever builds a message builds exactly what the spec describes
+        <a class="rid" href="./spec.html#RCV-0">RCV-0</a>. Whoever receives one stops only at a step marked <span class="fw fail">fail</span>; any other problem is a <span class="fw warn">warn</span>: it keeps
+        going and reports it <a class="rid" href="./spec.html#RCV-1">RCV-1</a> <a class="rid" href="./spec.html#RCV-2">RCV-2</a>. A bad signature is a warning, not a failure. See
+        <a href="./trust-and-limits.html">Trust and limits</a> for why.
       </p>
     </div>
   </header>
@@ -663,604 +671,251 @@
   <main class="wrap main-grid">
     <nav aria-label="Wire protocol sections">
       <a href="#flow">Flow</a>
-      <a href="#roles">Roles</a>
-      <a href="#construct-request">Build the request</a>
-      <a href="#bind-transcript">Bind origin &amp; transcript</a>
-      <a href="#construct-response">Build the response</a>
-      <a href="#encrypt">Encrypt with HPKE</a>
-      <a href="#parse-verify">Parse &amp; verify</a>
-      <a href="#debug-steps">Fixture/debug steps</a>
-      <a href="#known-edges">Known edges</a>
+      <a href="#construct-request">1. Verifier builds the request</a>
+      <a href="#bind-transcript">2. SessionTranscript</a>
+      <a href="#wallet-checks">3. Wallet checks the request</a>
+      <a href="#construct-response">4. Wallet builds the response</a>
+      <a href="#encrypt">5. Wallet encrypts</a>
+      <a href="#parse-verify">6. Verifier checks the response</a>
+      <a href="#inspect">Real bytes</a>
       <a href="./wire-protocol-inspector.html">Capture inspector →</a>
     </nav>
 
     <div>
       <section id="flow">
         <h2>How a request and response flow</h2>
-        <p>
-          Five hops from clinical intent to a rendered response. Each later step references the bytes the previous step produced.
-        </p>
         <div class="flow">
           <div class="flow-step">
             <strong>1. Verifier page</strong>
-            Builds a SMART intent, wraps it in an <code>org-iso-mdoc</code> mdoc request, generates an HPKE recipient key,
-            and calls <code>navigator.credentials.get</code>.
+            Builds the SMART request, wraps it in an mdoc request with a fresh HPKE key, and calls
+            <code>navigator.credentials.get</code>.
           </div>
           <div class="flow-step">
-            <strong>2. Browser</strong>
-            Mediates user interaction and supplies an authenticated origin/equivalent to the wallet.
+            <strong>2. Browser and platform</strong>
+            Show the wallet picker and hand the request to the chosen wallet, with the calling page's origin.
+            How this works on Android and iOS is in <a href="./platform-notes.html">Platform notes</a>.
           </div>
           <div class="flow-step">
-            <strong>3. Android Credential Manager</strong>
-            Runs wallet matchers and launches the chosen handler activity with the request payload.
+            <strong>3. Wallet</strong>
+            Checks the request, computes the SessionTranscript, lets the patient choose, and builds a signed mdoc
+            around the SMART response.
           </div>
           <div class="flow-step">
             <strong>4. Wallet</strong>
-            Recovers the SessionTranscript, performs holder review, packs the SMART response into a self-attested mdoc,
-            signs it, and HPKE-seals it.
+            Encrypts the mdoc to the Verifier's key, bound to the same SessionTranscript.
           </div>
           <div class="flow-step">
             <strong>5. Verifier page</strong>
-            Recomputes the SessionTranscript, opens the HPKE seal, checks the DeviceResponse and its issuer and device
-            signatures, validates the SMART response against the original request, and only then renders it.
+            Recomputes the SessionTranscript, decrypts, checks the mdoc, and validates the SMART response against the
+            request before using it.
           </div>
-        </div>
-        <div class="callout good">
-          <strong>End-to-end success:</strong> the HPKE seal opens, every signature and digest verifies, and the SMART
-          response passes validation against the original request.
-          That means the browser origin, the SessionTranscript, the HPKE key schedule, and every digest line up across the two sides.
-          It does not by itself prove requester identity, clinical-source provenance, patient matching, or EHR write-back authorization.
-        </div>
-      </section>
-
-      <section id="roles">
-        <h2>Roles and what each owns</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Role</th><th>Owns</th><th>Sends</th><th>Trust signal</th></tr></thead>
-            <tbody>
-              <tr>
-                <td>Verifier page</td>
-                <td>SMART intent, HPKE recipient keypair, nonce</td>
-                <td><code>navigator.credentials.get(...)</code></td>
-                <td>HPKE opening proves the response was encrypted to this request's retained key and transcript, not clinical provenance.</td>
-              </tr>
-              <tr>
-                <td>Browser</td>
-                <td>Web origin assertion</td>
-                <td>Credential Manager request plus <code>callingAppInfo.origin</code></td>
-                <td>Authenticated origin/equivalent is one input to policy; it is not organization identity by itself.</td>
-              </tr>
-              <tr>
-                <td>Android Credential Manager</td>
-                <td>Matcher dispatch, picker UI, PendingIntent delivery</td>
-                <td><code>ProviderGetCredentialRequest</code> to the wallet</td>
-                <td>Platform dispatch and user-selected entry; requester trust still comes from separate policy.</td>
-              </tr>
-              <tr>
-                <td>Wallet matcher</td>
-                <td>Picker entry display</td>
-                <td>One entry for <code>org.smarthealthit.checkin.1</code></td>
-                <td>Only enough request structure to decide whether to offer the entry.</td>
-              </tr>
-              <tr>
-                <td>Wallet handler</td>
-                <td>FHIR data, holder review UI, mdoc response, device key</td>
-                <td><code>DigitalCredential</code> wrapping a base64url CBOR response</td>
-                <td>Origin, readerAuth, issuer/device evidence, holder choice, and clinical-source provenance remain separate states.</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </section>
 
       <section id="construct-request">
-        <h2>Build the request <span class="party verifier">verifier</span></h2>
-        <p>
-          The verifier turns clinical intent into an mdoc request that the wallet can decode and bind to an encryption key.
-        </p>
+        <h2>1. Build the request <span class="party verifier">verifier</span></h2>
+        <p>Spec <a href="./spec.html#8-2-verifier-request-construction">§8.2</a>. The Verifier builds, in order:</p>
         <div class="calc">
           <div class="calc-row">
             <div>
-              <h3>SMART intent JSON</h3>
+              <h3>The SMART request, inside an ItemsRequest <a class="rid" href="./spec.html#VRQ-1">VRQ-1</a> <a class="rid" href="./spec.html#VRQ-2">VRQ-2</a> <a class="rid" href="./spec.html#VRQ-3">VRQ-3</a></h3>
               <p>
-                Start with a typed clinical request &mdash; the same shape the
-                <a href="./smart-model-explainer.html">SMART model explainer</a> documents. Each item names a FHIR resource
-                or questionnaire intent, plus accepted media types. Selectors are not disclosure limits.
-              </p>
-<pre>{
-  "type":    "smart-health-checkin-request",
-  "version": "1",
-  "id":      "...",
-  "items":   [...]
-}</pre>
-              <p class="note"><b>Encoding</b> JSON. <b>Why</b> human / clinical-readable intent the wallet can show to the user.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Wrap as an mdoc ItemsRequest</h3>
-              <p>
-                Stringify the SMART JSON and place it at <code>requestInfo["org.smarthealthit.checkin.request"]</code>.
-                Ask for the one stable mdoc element with <code>intentToRetain=true</code> &mdash; clinical workflows expect to ingest the artifacts into an EHR.
+                The SMART request JSON rides as a text string in <code>requestInfo</code>. The mdoc part asks for the one
+                element, and its boolean is <code>intentToRetain</code>: <code>true</code> only if the Verifier may keep
+                the response after the session. The whole <code>ItemsRequest</code> is CBOR-encoded and wrapped in tag 24,
+                which fixes the exact bytes that reader authentication later signs.
               </p>
 <pre>ItemsRequest = {
   docType:    "org.smarthealthit.checkin.1",
-  nameSpaces: { "org.smarthealthit.checkin": { smart_health_checkin_response: true } },
-  requestInfo: {
-    "org.smarthealthit.checkin.request": &lt;SMART JSON string&gt;
-  }
-}</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> mdoc readers and matchers see a fixed element name; the SMART payload rides as a string in <code>requestInfo</code>.</p>
+  nameSpaces: { "org.smarthealthit.checkin": { smart_health_checkin_response: intentToRetain } },
+  requestInfo: { "org.smarthealthit.checkin.request": "&lt;SMART request JSON text&gt;" }
+}
+ItemsRequestBytes = tag24(CBOR(ItemsRequest))</pre>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>Tag-24 wrap into DeviceRequest</h3>
+              <h3>A fresh HPKE key and encryptionInfo <a class="rid" href="./spec.html#VRQ-4">VRQ-4</a> <a class="rid" href="./spec.html#VRQ-5">VRQ-5</a></h3>
               <p>
-                Re-encode the ItemsRequest as a CBOR byte string, wrap with tag 24 (encoded-CBOR-data-item), and place
-                in <code>docRequests[0].itemsRequest</code>. The tag-24 wrap is what later participants <em>hash</em>, so locking the bytes here matters.
+                A new P-256 key pair and a random nonce (16 bytes or more) for this request. The public key goes to the
+                wallet inside <code>encryptionInfo</code>; the private key never leaves the page. The Verifier keeps the
+                exact base64url string it sends, because the transcript is computed from that string <a class="rid" href="./spec.html#VRQ-9">VRQ-9</a>.
               </p>
-<pre>DeviceRequest = {
-  version:     "1.0",
-  docRequests: [{ itemsRequest: Tag(24, bstr .cbor ItemsRequest) }]
-}</pre>
-              <p class="note"><b>Encoding</b> CBOR + tag 24. <b>Why</b> a stable byte boundary for downstream digests.</p>
+<pre>EncryptionInfo = ["dcapi", {
+  nonce:              bstr,
+  recipientPublicKey: { 1: 2, -1: 1, -2: x, -3: y }   // COSE_Key, EC2 P-256
+}]</pre>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>Generate an HPKE recipient keypair</h3>
+              <h3>Reader authentication, if used <a class="rid" href="./spec.html#VRQ-6">VRQ-6</a> <a class="rid" href="./spec.html#RA-1">RA-1</a></h3>
               <p>
-                Generate a fresh baseline ECDH P-256 keypair. The private key stays in the verifier page; the public key
-                travels to the wallet so the wallet can encrypt to it. Version 1.0 uses one fixed HPKE suite (see
-                <a href="#encrypt">the HPKE parameters</a>); nothing on the wire names or negotiates a suite.
+                Optional. The Verifier signs <code>ReaderAuthenticationBytes</code>, which covers this session's
+                SessionTranscript and the exact <code>ItemsRequestBytes</code>, with a key whose certificate goes in
+                <code>x5chain</code>. A wallet that checks it puts the result in one of five states (absent, malformed,
+                invalid, valid but untrusted, trusted) and shows a verifier identity only when trusted <a class="rid" href="./spec.html#TRUST-2">TRUST-2</a>.
+                It never stops the exchange <a class="rid" href="./spec.html#WRQ-9">WRQ-9</a>. Without a deployment trust list, "valid but untrusted" is the
+                normal result.
               </p>
-<pre>recipientPublicKey = COSE_Key {
-  1:  2,        // kty:  EC2
-  -1: 1,        // crv:  P-256
-  -2: x,
-  -3: y         // public coordinates
-}</pre>
-              <p class="note"><b>Math</b> baseline ECDH on P-256 (HPKE DHKEM). <b>Lifetime</b> per request. <b>Why</b> binds the response ciphertext to <em>this</em> verifier session.</p>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>encryptionInfo</h3>
-              <p>
-                Wrap a fresh nonce and the recipient public key in a CBOR array tagged for the DC API.
-              </p>
-<pre>encryptionInfo = CBOR([
-  "dcapi",
-  {
-    nonce:              bstr,
-    recipientPublicKey: COSE_Key
-  }
-])</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> the wallet needs the same bytes the verifier sent so the transcript binding is reproducible on both sides.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Hand off to the DC API</h3>
-              <p>
-                Pack <code>deviceRequest</code> and <code>encryptionInfo</code> as base64url and call
-                <code>navigator.credentials.get</code> with <code>protocol: "org-iso-mdoc"</code>.
-              </p>
-<pre>navigator.credentials.get({
-  digital: {
-    requests: [{
-      protocol: "org-iso-mdoc",
-      data: {
-        deviceRequest:  base64url(DeviceRequest),
-        encryptionInfo: base64url(encryptionInfo)
-      }
-    }]
-  }
+              <h3>DeviceRequest, then the browser call <a class="rid" href="./spec.html#VRQ-7">VRQ-7</a> <a class="rid" href="./spec.html#VRQ-8">VRQ-8</a></h3>
+<pre>DeviceRequest = { version: "1.0", docRequests: [{ itemsRequest: ItemsRequestBytes, readerAuth? }] }
+
+navigator.credentials.get({
+  mediation: "required",
+  digital: { requests: [{ protocol: "org-iso-mdoc",
+    data: { deviceRequest: base64url(DeviceRequest), encryptionInfo: base64url(EncryptionInfo) } }] }
 })</pre>
-              <p class="note"><b>Browser surface</b> Web Digital Credentials API. <b>Why</b> the browser brokers the call to a vetted wallet, with user approval.</p>
+              <p class="note">Set a timeout on the call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>. Response size is not a practical limit on current platforms, with one exception: a wallet using the two-argument <code>setGetCredentialResponse</code>, or Chrome below 150, drops responses above about 520 KB, and the call never settles (<a href="./trust-and-limits.html#size">response size</a>).</p>
             </div>
           </div>
         </div>
       </section>
 
       <section id="bind-transcript">
-        <h2>Bind origin and SessionTranscript <span class="party wallet">wallet</span></h2>
+        <h2>2. SessionTranscript <span class="party verifier">verifier</span> <span class="party wallet">wallet</span></h2>
         <p>
-          When the wallet receives the request, it has to recover the <em>same</em> SessionTranscript bytes the verifier will
-          compute later &mdash; that's what proves both sides agree on origin, encryption parameters, and request session.
+          Spec <a href="./spec.html#8-3-sessiontranscript">§8.3</a>. Both sides compute it separately, and it must come out
+          byte for byte the same: it is the HPKE <code>info</code>, and it is inside what reader authentication and the
+          device signature cover <a class="rid" href="./spec.html#TR-5">TR-5</a>.
         </p>
-        <div class="callout warn">
-          <strong>Why this matters:</strong> the wallet's <code>COSE_Sign1</code> over <code>DeviceAuthentication</code>
-          includes the SessionTranscript as a payload field, and the HPKE seal uses the SessionTranscript as <code>info</code>.
-          If the two sides disagree on a single byte here, decryption and signature verification both fail.
+<pre>dcapiInfo         = CBOR([encryptionInfoBase64url, origin])
+Handover          = ["dcapi", SHA-256(dcapiInfo)]
+SessionTranscript = [null, null, Handover]      // HPKE info = CBOR(SessionTranscript)</pre>
+        <ul>
+          <li><code>encryptionInfoBase64url</code> is the exact string the Verifier sent, not a re-encoding <a class="rid" href="./spec.html#TR-1">TR-1</a>.</li>
+          <li><code>origin</code> for a web page is its ASCII origin, such as <code>https://clinic.example</code>: no path, no trailing slash <a class="rid" href="./spec.html#TR-2">TR-2</a>. For a native app, it is exactly what the platform reports; see <a href="./platform-notes.html#origins">Platform notes</a>.</li>
+          <li>The wallet takes the origin only from the browser or platform, never from the request <a class="rid" href="./spec.html#TR-3">TR-3</a>. With no origin it cannot respond <a class="rid" href="./spec.html#TR-4">TR-4</a>.</li>
+          <li>The two <code>null</code> slots are ISO 18013-5's <code>DeviceEngagementBytes</code> and <code>EReaderKeyBytes</code>, which the Digital Credentials API flow doesn't use.</li>
+        </ul>
+      </section>
+
+      <section id="wallet-checks">
+        <h2>3. Check the request <span class="party wallet">wallet</span></h2>
+        <p>Spec <a href="./spec.html#8-4-wallet-request-handling-and-response-construction">§8.4</a>. On a <span class="fw fail">fail</span>, the wallet does not respond, and the platform ends the call with an error <a class="rid" href="./spec.html#WRQ-1">WRQ-1</a>.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Step</th><th>Check</th><th>On a problem</th></tr></thead>
+            <tbody>
+              <tr><td><a class="rid" href="./spec.html#WRQ-2">WRQ-2</a></td><td>Decode <code>deviceRequest</code> (base64url, CBOR)</td><td><span class="fw fail">fail</span> if it can't be decoded; <span class="fw warn">warn</span> for another protocol name or padded base64url</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-3">WRQ-3</a></td><td><code>DeviceRequest.version</code> is <code>"1.0"</code></td><td><span class="fw warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-4">WRQ-4</a></td><td>Find the DocRequest with this profile's <code>docType</code></td><td><span class="fw fail">fail</span> if none; <span class="fw warn">warn</span> if several (use the first)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-5">WRQ-5</a></td><td>Take the request text from <code>requestInfo</code></td><td><span class="fw fail">fail</span> if missing; <span class="fw warn">warn</span> for other <code>nameSpaces</code> or <code>intentToRetain</code> problems</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-6">WRQ-6</a></td><td>Validate the SMART request (spec §5)</td><td><span class="fw fail">fail</span> where §5 rejects it; problems inside one item make that item <code>unsupported</code></td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-7">WRQ-7</a></td><td>Decode <code>encryptionInfo</code> and its P-256 key</td><td><span class="fw fail">fail</span> if no usable key; <span class="fw warn">warn</span> for other shape problems</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-8">WRQ-8</a></td><td>Compute the SessionTranscript</td><td><span class="fw fail">fail</span> if there is no origin</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-9">WRQ-9</a></td><td>Check <code>readerAuth</code>, if present</td><td>Never fails; classified as above</td></tr>
+            </tbody>
+          </table>
         </div>
-        <div class="calc">
-          <div class="calc-row">
-            <div>
-              <h3>Origin from a privileged caller</h3>
-              <p>
-                On Android, AndroidX exposes <code>callingAppInfo.origin</code> only when the wallet passes a
-                privileged-caller allowlist into <code>getOrigin(...)</code>. A wallet should list trusted browser
-                package names with their signing-certificate fingerprints.
-              </p>
-              <p class="note"><b>What it is</b> an authenticated origin or approved equivalent (e.g. <code>https://clinic.example</code>). <b>Caveat</b> origin is a presentation-layer signal, not requester or organization identity by itself.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>dcapiInfo</h3>
-              <p>
-                Build an intermediate CBOR array from the exact base64url <code>encryptionInfo</code> string (as the verifier sent it) and the origin.
-              </p>
-<pre>dcapiInfo = CBOR([
-  encryptionInfoBase64Url,
-  origin
-])</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> deterministic input for the handover hash.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Handover hash</h3>
-              <p>
-                Hash the encoded byte string with SHA-256 and tag with <code>"dcapi"</code> so other handover mechanisms (NFC, BLE) can coexist in the same field.
-              </p>
-<pre>handover = [ "dcapi", SHA-256(dcapiInfo) ]</pre>
-              <p class="note"><b>Math</b> SHA-256. <b>Why</b> a fixed-size, transport-tagged binding to the request session.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>SessionTranscript</h3>
-              <p>
-                The exact CBOR byte string used both as HPKE <code>info</code> and as a field inside the device-signed payload.
-              </p>
-<pre>SessionTranscript = CBOR([ null, null, handover ])</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> the two leading <code>null</code> slots are ISO 18013-5's <code>DeviceEngagementBytes</code> and <code>EReaderKeyBytes</code>, which the DC API flow doesn't use; only the handover is filled in.</p>
-            </div>
-          </div>
-        </div>
+        <p>Then the patient chooses, item by item, and the wallet builds the SMART response <a class="rid" href="./spec.html#WRQ-10">WRQ-10</a>.</p>
       </section>
 
       <section id="construct-response">
-        <h2>Build the response <span class="party wallet">wallet</span></h2>
+        <h2>4. Build the response <span class="party wallet">wallet</span></h2>
         <p>
-          The wallet packs the SMART response into one mdoc element, then assembles the issuer and device signatures
-          that prove its integrity and bind it to <em>this</em> verifier's request.
+          Spec <a href="./spec.html#8-4-wallet-request-handling-and-response-construction">§8.4</a>. The wallet signs its
+          own mdoc: it acts as the issuer and as the device, with keys it controls. The signatures make the mdoc complete
+          and verifiable; they don't say who issued the content (<a href="./spec.html#7-trust-framework">§7</a>).
         </p>
         <div class="calc">
           <div class="calc-row">
             <div>
-              <h3>SMART response JSON</h3>
-              <p>
-                The wallet produces <code>{type:"smart-health-checkin-response", version:"1", requestId, artifacts, requestStatus}</code>.
-                Each artifact declares <code>mediaType</code>, media-type-specific payload fields, and the request-item ids it <code>fulfills</code>. Raw FHIR uses <code>value</code> plus <code>fhirVersion</code>; SMART Health Cards use <code>value.verifiableCredential[]</code>; extensions define their own typed fields. <code>requestStatus[]</code> has one entry per requested item: <code>item</code> is the item id and <code>status</code> is one of <code>fulfilled</code>, <code>partial</code>, <code>unavailable</code>, <code>declined</code>, <code>unsupported</code>, or <code>error</code>.
-              </p>
-              <p class="note"><b>Encoding</b> JSON. <b>Why</b> the same shape the verifier later renders to the user.</p>
+              <h3>The issuer-signed item and its digest <a class="rid" href="./spec.html#WRS-1">WRS-1</a></h3>
+<pre>IssuerSignedItem = { digestID: 0, random: 16+ random bytes,
+  elementIdentifier: "smart_health_checkin_response", elementValue: "&lt;SMART response JSON text&gt;" }
+IssuerSignedItemBytes = tag24(CBOR(IssuerSignedItem))
+digest = SHA-256(IssuerSignedItemBytes)          // tag included</pre>
+              <p class="note">Receivers hash these bytes exactly as received and never re-encode them <a class="rid" href="./spec.html#ENC-2">ENC-2</a>.</p>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>IssuerSignedItem and tag-24 wrap</h3>
-              <p>
-                The SMART response JSON is the <code>elementValue</code> of one stable mdoc element. The item is encoded as CBOR,
-                then wrapped as tag 24 &mdash; that wrapper is what gets hashed, so verifiers hash the bytes exactly as received and never re-encode them.
-              </p>
-<pre>IssuerSignedItem = {
-  digestID:          0,
-  random:            random16,
-  elementIdentifier: "smart_health_checkin_response",
-  elementValue:      &lt;SMART response JSON string&gt;
-}
-
-issuerSignedItemTag24 = Tag(24, bstr .cbor IssuerSignedItem)</pre>
-              <p class="note"><b>Encoding</b> CBOR + tag 24. <b>Why</b> the verifier hashes these exact bytes; re-encoding them could change the digest.</p>
+              <h3>The MSO and <code>issuerAuth</code> <a class="rid" href="./spec.html#WRS-2">WRS-2</a> <a class="rid" href="./spec.html#WRS-3">WRS-3</a> <a class="rid" href="./spec.html#WRS-4">WRS-4</a></h3>
+<pre>MSO = { version: "1.0", digestAlgorithm: "SHA-256", docType: "org.smarthealthit.checkin.1",
+  valueDigests:  { "org.smarthealthit.checkin": { digestID: digest } },
+  deviceKeyInfo: { deviceKey: COSE_Key },
+  validityInfo:  { signed, validFrom, validUntil } }     // tag-0 UTC date-times, no fractions
+issuerAuth = COSE_Sign1(protected {1: -7}, unprotected {33: x5chain}, payload tag24(CBOR(MSO)))</pre>
+              <p class="note">The certificate in <code>x5chain</code> may be self-signed.</p>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>Value digest</h3>
-              <p>SHA-256 over the <em>tag-24 bytes</em>, not just the inner map.</p>
-<pre>valueDigest = SHA-256(issuerSignedItemTag24)</pre>
-              <p class="note"><b>Math</b> SHA-256. <b>Why</b> commits the issuer to one specific JSON byte string.</p>
+              <h3>The device signature, detached <a class="rid" href="./spec.html#WRS-5">WRS-5</a> <a class="rid" href="./spec.html#WRS-6">WRS-6</a></h3>
+<pre>DeviceAuthentication = ["DeviceAuthentication", SessionTranscript, "org.smarthealthit.checkin.1",
+                        DeviceNameSpacesBytes]           // SessionTranscript as the array, not bytes
+deviceSignature = COSE_Sign1(protected {1: -7}, payload null)
+                  signed over tag24(CBOR(DeviceAuthentication)) with the MSO's deviceKey</pre>
+              <p class="note">The payload is <code>null</code>; the verifier rebuilds the signed bytes from its own transcript. <code>DeviceNameSpacesBytes</code> is <code>tag24(CBOR({}))</code>.</p>
             </div>
           </div>
           <div class="calc-row">
             <div>
-              <h3>MobileSecurityObject (MSO)</h3>
-              <p>
-                Records the value digest, the docType, the device public key, the digest algorithm, and a validity window.
-                Encoded as CBOR; that CBOR becomes the payload of an issuer <code>COSE_Sign1</code>.
-              </p>
-<pre>MSO = {
-  version:         "1.0",
-  digestAlgorithm: "SHA-256",
-  valueDigests:    { "org.smarthealthit.checkin": { 0: valueDigest } },
-  deviceKeyInfo:   { deviceKey: COSE_Key },
-  docType:         "org.smarthealthit.checkin.1",
-  validityInfo:    { signed, validFrom, validUntil }
-}
-
-issuerAuth = COSE_Sign1(MSO, issuerKey)</pre>
-              <p class="note"><b>Math</b> baseline ES256 / SHA-256 fixture values. <b>Why</b> binds digest + deviceKey + docType + validity into one signed object. </p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>DeviceAuthentication payload</h3>
-              <p>The device signature payload binds the response to the verifier's request session.</p>
-<pre>DeviceAuthentication = Tag(24, CBOR([
-  "DeviceAuthentication",
-  SessionTranscript,
-  "org.smarthealthit.checkin.1",
-  Tag(24, bstr .cbor {})
-]))</pre>
-              <p class="note"><b>Why</b> the SessionTranscript field is what makes a response un-replayable into a different verifier session.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Device signature</h3>
-              <p>
-                Sign the DeviceAuthentication payload with the wallet's device key &mdash; the same key whose public part
-                the issuer pinned in the MSO.
-              </p>
-<pre>deviceSignature = COSE_Sign1(DeviceAuthentication, deviceKey)</pre>
-              <p class="note"><b>Math</b> baseline ES256 fixture value. <b>Why</b> proves the device key signed for <em>this</em> session; holder approval remains a separate wallet/policy decision.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>DeviceResponse envelope</h3>
-<pre>DeviceResponse = {
-  version: "1.0",
-  documents: [{
-    docType: "org.smarthealthit.checkin.1",
-    issuerSigned: {
-      nameSpaces: { "org.smarthealthit.checkin": [issuerSignedItemTag24] },
-      issuerAuth: COSE_Sign1(MSO)
-    },
-    deviceSigned: {
-      nameSpaces: Tag(24, bstr .cbor {}),
-      deviceAuth: { deviceSignature: COSE_Sign1(DeviceAuthentication) }
-    }
-  }],
-  status: 0
-}</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> the bundle the verifier walks during parse and verify.</p>
+              <h3>The DeviceResponse <a class="rid" href="./spec.html#WRS-7">WRS-7</a></h3>
+<pre>DeviceResponse = { version: "1.0", status: 0, documents: [{
+  docType: "org.smarthealthit.checkin.1",
+  issuerSigned: { nameSpaces: { "org.smarthealthit.checkin": [IssuerSignedItemBytes] }, issuerAuth },
+  deviceSigned: { nameSpaces: DeviceNameSpacesBytes, deviceAuth: { deviceSignature } } }] }</pre>
+              <p class="note">Every structure is defined in CDDL in <a href="./spec.html#8-7-message-structures">§8.7</a>; which bytes each hash and signature covers is in the table in <a href="./spec.html#8-6-encoding-rules-and-signed-bytes">§8.6</a>.</p>
             </div>
           </div>
         </div>
       </section>
 
       <section id="encrypt">
-        <h2>Encrypt with HPKE <span class="party wallet">wallet</span></h2>
-        <p>
-          The wallet seals the plaintext <code>DeviceResponse</code> to the verifier's <code>recipientPublicKey</code>,
-          using the same SessionTranscript both sides computed.
-        </p>
+        <h2>5. Encrypt <span class="party wallet">wallet</span></h2>
+        <p>Spec <a href="./spec.html#8-5-hpke-encryption-and-verifier-processing">§8.5</a> <a class="rid" href="./spec.html#HPKE-1">HPKE-1</a> <a class="rid" href="./spec.html#HPKE-2">HPKE-2</a>. One fixed suite; nothing on the wire names another <a class="rid" href="./spec.html#ALG-1">ALG-1</a>.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Parameter</th><th>Value (fixed for 1.0)</th></tr></thead>
+            <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
             <tbody>
-              <tr><td>KEM</td><td><code>DHKEM(P-256, HKDF-SHA256)</code> &middot; suite id <code>0x0010</code></td></tr>
-              <tr><td>KDF</td><td><code>HKDF-SHA256</code> &middot; suite id <code>0x0001</code></td></tr>
-              <tr><td>AEAD</td><td><code>AES-128-GCM</code> &middot; suite id <code>0x0001</code></td></tr>
-              <tr><td>HPKE info</td><td><code>SessionTranscript</code> bytes</td></tr>
-              <tr><td>AEAD AAD</td><td>empty byte string</td></tr>
-              <tr><td>Nonce</td><td>HPKE base nonce for sequence number 0</td></tr>
+              <tr><td>Mode</td><td>HPKE base mode</td></tr>
+              <tr><td>KEM</td><td><code>DHKEM(P-256, HKDF-SHA256)</code>, <code>0x0010</code></td></tr>
+              <tr><td>KDF</td><td><code>HKDF-SHA256</code>, <code>0x0001</code></td></tr>
+              <tr><td>AEAD</td><td><code>AES-128-GCM</code>, <code>0x0001</code></td></tr>
+              <tr><td>info</td><td><code>CBOR(SessionTranscript)</code></td></tr>
+              <tr><td>aad</td><td>empty</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="note">
-          This is the only suite in version 1.0, in base mode. Neither <code>encryptionInfo</code> nor
-          <code>dcapiResponse</code> has a field that names a suite, so both sides use exactly these parameters.
-        </p>
-        <p>The encrypted result is wrapped as a small CBOR array and returned to the browser through Credential Manager.</p>
-<pre>dcapiResponse = CBOR([
-  "dcapi",
-  {
-    enc:        hpkeEphemeralPublicKeyRawP256,
-    cipherText: aesGcmCiphertextAndTag
-  }
-])
-
-DigitalCredential = {
-  protocol: "org-iso-mdoc",
-  data: { response: base64url(dcapiResponse) }
-}</pre>
+<pre>dcapiResponse = ["dcapi", { enc: 65-byte P-256 point, cipherText }]
+result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dcapiResponse)) } }</pre>
       </section>
 
       <section id="parse-verify">
-        <h2>Parse and verify <span class="party verifier">verifier</span></h2>
-        <p>
-          The verifier walks the response in reverse: open the seal, walk the signatures, compare digests, render artifacts.
-        </p>
-        <div class="calc">
-          <div class="calc-row">
-            <div>
-              <h3>Recompute SessionTranscript locally</h3>
-              <p>
-                The verifier never receives the wallet's transcript bytes &mdash; it must re-derive the same bytes from its own origin and the encryptionInfo it originally sent.
-              </p>
-<pre>dcapiInfo         = CBOR([ encryptionInfoBase64Url, myOrigin ])
-handover          = [ "dcapi", SHA-256(dcapiInfo) ]
-SessionTranscript = CBOR([ null, null, handover ])</pre>
-              <p class="note"><b>If the bytes match the wallet's</b>, HPKE-open and signature verify will succeed. If they don't, both fail.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>HPKE-open the dcapiResponse</h3>
-              <p>
-                Extract <code>enc</code> and <code>cipherText</code>. Use the saved private key plus the wallet's ephemeral public key to derive a shared secret. For the baseline fixture suite, run HKDF-SHA256 with <code>info = SessionTranscript</code> bytes, then decrypt with AES-128-GCM, nonce 0, AAD empty.
-              </p>
-<pre>plaintext = HPKE_Open({
-  kem:     DHKEM(P-256, HKDF-SHA256),
-  kdf:     HKDF-SHA256,
-  aead:    AES-128-GCM,
-  privKey: recipientPrivKey,
-  enc:     hpkeEphemeralPublicKeyRawP256,
-  info:    SessionTranscript,
-  aad:     &lt;empty&gt;,
-  ct:      cipherText
-})</pre>
-              <p class="note"><b>Math</b> baseline ECDH(P-256) &rarr; HKDF &rarr; AES-GCM. <b>Why</b> only this verifier holds the private half; the SessionTranscript info prevents replays into a different verifier session.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Walk the DeviceResponse</h3>
-              <p>
-                Decode the plaintext CBOR, step into <code>documents[0]</code>, and pull out
-                the IssuerSignedItem tag-24 wrapper from <code>issuerSigned.nameSpaces["org.smarthealthit.checkin"]</code>
-                and the issuer <code>COSE_Sign1</code>. Check that the DeviceResponse <code>status</code> is 0 and the
-                document's <code>docType</code> is <code>org.smarthealthit.checkin.1</code>.
-              </p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Verify the issuer signature</h3>
-              <p>
-                The MSO sits in the <code>COSE_Sign1</code> payload. Verify the signature using the issuer certificate
-                or key evidence in the headers, then evaluate issuer trust under deployment policy.
-              </p>
-<pre>verify_COSE_Sign1(issuerAuth, issuerCertChainPubKey)</pre>
-              <p class="note"><b>What it proves</b> the issuer signed <em>this</em> MSO &mdash; its digest, deviceKey, docType, and validity.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Re-hash and compare the value digest</h3>
-              <p>
-                Take the IssuerSignedItem exactly as wrapped by the wallet (tag 24 + bytes), SHA-256 it, and compare to
-                the MSO's expected digest at <code>(namespace, digestID)</code>.
-              </p>
-<pre>SHA-256(issuerSignedItemTag24Bytes) == MSO.valueDigests["org.smarthealthit.checkin"][item.digestID]</pre>
-              <p class="note"><b>What it proves</b> the SMART response JSON in this item is exactly what the issuer committed to.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Verify the device signature</h3>
-              <p>
-                Reconstruct the <code>DeviceAuthentication</code> payload &mdash; using the SessionTranscript you computed
-                in step 1 &mdash; and verify the device <code>COSE_Sign1</code> with the deviceKey from the MSO.
-              </p>
-<pre>DeviceAuthentication = Tag(24, CBOR([
-  "DeviceAuthentication",
-  SessionTranscript,
-  "org.smarthealthit.checkin.1",
-  Tag(24, bstr .cbor {})
-]))
-
-verify_COSE_Sign1(deviceSignature, MSO.deviceKey)</pre>
-              <p class="note"><b>What it proves</b> the wallet signed this response in <em>this</em> verifier's request session &mdash; no replay across sessions or origins.</p>
-            </div>
-          </div>
-          <div class="calc-row">
-            <div>
-              <h3>Validate, then render</h3>
-              <p>
-                Parse <code>IssuerSignedItem.elementValue</code> as the SMART response JSON. Before showing anything,
-                validate it (<a href="./spec.html#6-1-normative-typescript-model">spec §6</a>) and cross-validate it against
-                the request you sent (<a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>): <code>requestId</code>
-                matches, every item has exactly one status, and every artifact's <code>mediaType</code> is accepted by the
-                items it fulfills. Then walk <code>artifacts[]</code> and <code>requestStatus[]</code>, render each artifact
-                by its media type, and show the status of every requested item.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="debug-steps">
-        <h2>Fixture/debug verification steps</h2>
-        <p class="note">These steps are non-normative debugging guidance for the checked-in fixtures, not a normative test plan.</p>
-        <div class="three">
-          <div class="mini">
-            <h3>Request</h3>
-            <p>
-              Decode <code>device-request.cbor</code>. Confirm docType, namespace, element id,
-              <code>intentToRetain=true</code>, and that the SMART JSON sits at
-              <code>requestInfo["org.smarthealthit.checkin.request"]</code>.
-            </p>
-          </div>
-          <div class="mini">
-            <h3>Transcript</h3>
-            <p>
-              Hash <code>CBOR([encryptionInfoB64u, origin])</code> with SHA-256, build
-              <code>CBOR([null, null, ["dcapi", hash]])</code>, and compare the bytes to
-              <code>session-transcript.cbor</code>.
-            </p>
-          </div>
-          <div class="mini">
-            <h3>Response</h3>
-            <p>
-              Check <code>SHA-256(issuer-signed-item-tag24.cbor) == MSO.valueDigests[namespace][digestID]</code>,
-              then verify the issuer and device <code>COSE_Sign1</code> envelopes.
-            </p>
-          </div>
-        </div>
-        <div class="two" style="margin-top:16px">
-          <div class="mini">
-            <h3>Offline tools</h3>
-<pre>bun tools/wire/inspect-mdoc-request.ts \
-  fixtures/dcapi-requests/real-chrome-android-smart-checkin \
-  --out /tmp/out/request
-
-bun tools/wire/inspect-mdoc-response.ts \
-  fixtures/responses/real-chrome-android-smart-checkin/device-response.cbor \
-  --out /tmp/out/response</pre>
-            <p class="note">Run from a checkout of the spec repository after <code>bun install</code>.</p>
-          </div>
-          <div class="mini">
-            <h3>This fixture's result</h3>
-            <p>
-              The checked-in capture opens, its digest and signatures verify, and its SMART response has four
-              artifacts and four <code>fulfilled</code> statuses. That describes this capture, not what every
-              response looks like.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="known-edges">
-        <h2>Known edges</h2>
+        <h2>6. Check the response <span class="party verifier">verifier</span></h2>
+        <p>Spec <a href="./spec.html#8-5-hpke-encryption-and-verifier-processing">§8.5</a>. On a <span class="fw fail">fail</span>, the Verifier rejects the whole response <a class="rid" href="./spec.html#VRS-1">VRS-1</a>.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Area</th><th>Current behavior</th><th>Future hardening</th></tr></thead>
+            <thead><tr><th>Step</th><th>Check</th><th>On a problem</th></tr></thead>
             <tbody>
-              <tr>
-                <td>Clinical source trust</td>
-                <td>The demo mdoc issuer certificate is fixture material. SMART artifacts carry their own media semantics: signed SMART Health Cards retain issuer proof; raw FHIR JSON is treated as patient-mediated content.</td>
-                <td>Deployments can layer source-specific policy when they require source attestation; it is not assumed by the transport demo.</td>
-              </tr>
-              <tr>
-                <td>HPKE binding</td>
-                <td>SessionTranscript is HPKE <code>info</code>; AEAD AAD is empty.</td>
-                <td>One fixed suite in 1.0. A later version that adds suites needs a new wire field to name them.</td>
-              </tr>
-              <tr>
-                <td>Request carrier</td>
-                <td>The request travels only in <code>ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]</code>.</td>
-                <td>None planned.</td>
-              </tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-2">VRS-2</a></td><td>Decode <code>data.response</code> as <code>["dcapi", {enc, cipherText}]</code></td><td><span class="fw fail">fail</span> if it can't be decoded; <span class="fw warn">warn</span> for another protocol name or padding</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-3">VRS-3</a></td><td>Recompute the transcript from its own origin and <code>encryptionInfo</code> string, and decrypt</td><td><span class="fw fail">fail</span> if it doesn't open. HPKE is authenticated, so this also catches tampering in transit.</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-4">VRS-4</a></td><td>Decode the DeviceResponse, find the document with this <code>docType</code></td><td><span class="fw fail">fail</span> if none; <span class="fw warn">warn</span> for version, <code>status</code>, or extra documents</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-5">VRS-5</a></td><td>Verify <code>issuerAuth</code> with the first <code>x5chain</code> certificate; check MSO fields</td><td><span class="fw warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-6">VRS-6</a></td><td>SHA-256 of <code>IssuerSignedItemBytes</code> as received equals the MSO digest for its <code>digestID</code></td><td><span class="fw warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-7">VRS-7</a></td><td>Rebuild <code>DeviceAuthenticationBytes</code>, verify the device signature</td><td><span class="fw warn">warn</span>, also for an attached payload that differs from the rebuilt bytes</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-8">VRS-8</a></td><td>Find <code>smart_health_checkin_response</code> with a text value</td><td><span class="fw fail">fail</span> if missing</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="fw fail">fail</span> only for the whole-response problems in §6.4; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">model explainer</a>)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-10">VRS-10</a></td><td>MSO <code>validityInfo</code> includes now, give or take a few minutes</td><td><span class="fw warn">warn</span></td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
       <section id="inspect">
-        <h2>See it on real bytes</h2>
+        <h2>Real bytes</h2>
         <p>
-          For byte-for-byte comparison against your own implementation, the
-          <a href="./wire-protocol-inspector.html">capture inspector</a>
-          loads a checked-in Chrome + Android run and walks the actual fixture bytes for every
-          artifact above &mdash; byte ledger, structural drilldown, and per-artifact viewers.
+          <a href="./spec.html#appendix-a-worked-example">Spec Appendix A</a> walks one real Chrome-to-Android capture
+          step by step: the transcript hash, the decryption, the digest, and all three signatures, with every value
+          recomputed from the fixture on each build. The
+          <a href="./wire-protocol-inspector.html">capture inspector</a> shows the same capture byte by byte, and
+          can load a run from the <a href="/connectathon/testing-ehr/">Testing EHR</a>.
         </p>
         <p>
           <a class="next-link" href="./wire-protocol-inspector.html">Open the capture inspector →</a>

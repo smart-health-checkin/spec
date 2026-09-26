@@ -138,6 +138,8 @@
     }
     section:last-child { border-bottom: 0; }
 
+    .facts { margin: 12px 0 0; padding-left: 20px; }
+    .facts li { margin: 8px 0; }
     .callout {
       margin: var(--space-5) 0;
       padding: 14px 18px;
@@ -432,6 +434,22 @@
         provenance, patient matching, EHR write-back, and payment or claims
         handling are still site policy and integration decisions.
       </div>
+    </section>
+
+    <section id="implementers">
+      <h2>For implementers: keys and origins</h2>
+      <p>
+        The kiosk has no wallet, so the phone makes the browser call. This is how the
+        <a href="/client/docs/wallets.html#kiosk-hand-off">client library's hand-off</a> works, and
+        what any hand-off has to get right.
+      </p>
+      <ul class="facts">
+        <li><b>The kiosk builds the request and holds the key.</b> It creates the SMART request, the HPKE key pair, and <code>encryptionInfo</code>, and keeps the private key. Only the kiosk can open the response.</li>
+        <li><b>The phone's hand-off page is the caller.</b> It calls <code>navigator.credentials.get</code> with exactly the argument the kiosk built, so the wallet binds the transcript to the <em>hand-off page's</em> origin (<a href="./spec.html#TR-2">TR-2</a>).</li>
+        <li><b>The kiosk computes the transcript for that origin.</b> When it opens the response, it uses the hand-off page's origin, not its own, and the exact <code>encryptionInfo</code> string it sent (<a href="./spec.html#TR-1">TR-1</a>). If the origins differ by even a trailing slash, decryption fails.</li>
+        <li><b>The relay sees only public material.</b> Whatever carries messages between the devices sees the request argument going out and the encrypted result coming back. It cannot read or change the response: a changed ciphertext doesn't decrypt.</li>
+        <li><b>Cross-device flows are out of scope for the spec</b> (<a href="./spec.html#1-4-out-of-scope">§1.4</a>). Once the phone makes the call, it is the ordinary same-device flow of <a href="./spec.html#8-same-device-presentation-flow">§8</a>.</li>
+      </ul>
     </section>
 
     <section id="deployment">

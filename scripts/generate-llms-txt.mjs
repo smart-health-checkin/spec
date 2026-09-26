@@ -14,6 +14,8 @@ const HTML_EXPLAINERS = [
   "site/smart-model-explainer.html",
   "site/kiosk-flow-explainer.html",
   "site/wire-protocol-explainer.html",
+  "site/trust-and-limits.html",
+  "site/platform-notes.html",
 ];
 
 const MARKDOWN_SOURCES = [

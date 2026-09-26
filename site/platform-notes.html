@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMART Health Check-in Platform Notes</title>
+  <link rel="stylesheet" href="/assets/smart-design.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--fg-1); background: var(--bg); font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-relaxed); }
+    .page { max-width: 860px; margin: 0 auto; padding: 36px 24px 56px; }
+    .page > header { padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .eyebrow { margin: 0 0 var(--space-3); color: var(--brand); font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+    h1, h2, h3 { margin: 0; color: var(--fg-1); line-height: var(--lh-tight); text-wrap: balance; }
+    h1 { font-size: clamp(2rem, 4.2vw, 3rem); font-weight: 800; letter-spacing: -0.03em; }
+    h2 { margin-bottom: var(--space-3); font-size: clamp(1.4rem, 2.6vw, 1.8rem); font-weight: 700; }
+    h3 { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; }
+    p, li { max-width: 72ch; text-wrap: pretty; }
+    p { margin: 0 0 var(--space-4); }
+    .lede { margin-top: var(--space-4); color: var(--fg-2); font-size: var(--fs-md); }
+    a { color: var(--brand); font-weight: 600; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
+    .toc a { color: var(--fg-2); font-size: var(--fs-sm); }
+    section { padding: var(--space-6) 0; border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: 0; }
+    ul { padding-left: 22px; }
+    li { margin: 6px 0; }
+    code { padding: 1px 5px; background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; }
+    table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); margin: var(--space-3) 0 var(--space-4); }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { color: var(--fg-mark); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+    .table-wrap { overflow-x: auto; }
+    .note { padding: 12px 16px; border-left: 3px solid var(--brand); background: var(--info-wash); border-radius: var(--radius-md); font-size: var(--fs-sm); max-width: none; }
+    .note.warning { border-left-color: var(--warning); background: var(--warning-wash); }
+    a.rid { display: inline-block; padding: 0 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--gray-50); font-family: var(--font-mono); font-size: 11.5px; line-height: 18px; white-space: nowrap; }
+    .fw { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .fw.fail { background: var(--danger-wash); color: #A32A22; }
+    .fw.warn { background: var(--warning-wash); color: #8A5A08; }
+    @media (max-width: 700px) { .page { padding: 24px 16px 44px; } body { font-size: 15.5px; } }
+  </style>
+</head>
+<body>
+  <div data-smart-topbar></div>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Explainer</p>
+      <h1>Platform notes</h1>
+      <p class="lede">
+        How the same-device flow (<a href="./spec.html#8-same-device-presentation-flow">spec §8</a>) looks on each
+        platform: how a wallet gets the request and the caller's origin, what has been tested, and what hasn't.
+        These notes are not normative; the spec's origin rule <a class="rid" href="./spec.html#TR-2">TR-2</a> points here for platform formats.
+      </p>
+    </header>
+
+    <nav class="toc" aria-label="On this page">
+      <a href="#android">Android</a>
+      <a href="#origins">Native-app origins</a>
+      <a href="#ios">iOS and Safari</a>
+      <a href="#desktop">Desktop browsers</a>
+      <a href="#tested">What has been tested</a>
+    </nav>
+
+    <section id="android">
+      <h2>Android</h2>
+      <p>
+        Chrome on Android hands a Digital Credentials API request to Google Play services, which shows the picker and
+        launches the chosen wallet. The <a href="https://github.com/smart-health-checkin/android-wallet">reference Android wallet</a> works like this:
+      </p>
+      <ul>
+        <li><b>Registration.</b> The wallet registers an entry with Credential Manager through
+          <code>androidx.credentials.registry.provider.RegistryManager.registerCredentials</code>, with a WebAssembly
+          matcher. The matcher reads each incoming request and decides whether to show the wallet in the picker.</li>
+        <li><b>The request.</b> When the patient picks the wallet, its handler activity receives the
+          <code>org-iso-mdoc</code> request and reads the SMART request from <code>requestInfo</code> <a class="rid" href="./spec.html#WRQ-5">WRQ-5</a>.</li>
+        <li><b>The web origin.</b> <code>CallingAppInfo.getOrigin(allowlist)</code> returns the page's origin only when
+          the calling app's package name and signing-certificate fingerprint are on the wallet's privileged-caller
+          allowlist. A production wallet keeps a list of the browsers it trusts. The reference wallet's development
+          build trusts whichever caller it sees, which is fine for testing and wrong for production.</li>
+        <li><b>The response.</b> The wallet returns it with the three-argument
+          <code>PendingIntentHandler.setGetCredentialResponse(intent, response, request)</code> on
+          <code>androidx.credentials</code> 1.7.0-alpha03, so large responses travel as a file
+          (<a href="./trust-and-limits.html#size">response size</a>).</li>
+      </ul>
+    </section>
+
+    <section id="origins">
+      <h2>Native-app origins</h2>
+      <p>
+        A native Android app can be the Verifier without a browser: it calls
+        <code>CredentialManager.getCredential</code> with a <code>GetDigitalCredentialOption</code> holding the same
+        <code>org-iso-mdoc</code> request, and gets the same picker. A WebView has no Digital Credentials API, and a
+        Custom Tab is Chrome, so the response stays in that page.
+      </p>
+      <p>
+        The transcript needs an origin string, and for an app caller Android's <code>getOrigin</code> returns none.
+        Wallet and app must therefore agree on a string, and today two are in use:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>String</th><th>Used by</th></tr></thead>
+          <tbody>
+            <tr><td><code>android:apk-key-hash:&lt;base64url SHA-256 of the app's signing certificate&gt;</code></td><td>Android's holder documentation, Multipaz, Google Wallet</td></tr>
+            <tr><td><code>android-app:&lt;package name&gt;</code></td><td>The reference Android wallet today</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note warning">
+        These don't match, and the spec doesn't yet say which one a wallet uses when the platform reports no origin
+        (<a href="./spec.html#TR-2">TR-2</a> asks for "exactly the origin string its platform reports"). Until that is
+        settled, a native Verifier has to try each string when opening the response, as the
+        <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a> does.
+      </p>
+    </section>
+
+    <section id="ios">
+      <h2>iOS and Safari</h2>
+      <ul>
+        <li>Safari 26 ships the Digital Credentials API, including the <code>org-iso-mdoc</code> protocol.</li>
+        <li>Testing on iOS showed that a wallet can read the SMART request from <code>requestInfo</code>, which is why
+          the spec carries the request only there.</li>
+        <li>There is no reference iOS wallet, and no checked-in iOS capture yet. The
+          <a href="https://github.com/smart-health-checkin/swift">Swift package</a> implements the Verifier and Wallet
+          sides and runs the spec's conformance cases, but it hasn't been tested end to end with Safari.</li>
+        <li>How an iOS app registers as a wallet for this document type is not documented here, because it hasn't
+          been tried in this project.</li>
+      </ul>
+    </section>
+
+    <section id="desktop">
+      <h2>Desktop browsers</h2>
+      <p>
+        On a computer, Chrome can offer to continue on a phone by showing a QR code. The phone's wallet answers, and
+        the transcript is bound to the desktop page's origin. The spec leaves cross-device flows out of scope
+        (<a href="./spec.html#1-4-out-of-scope">§1.4</a>), but the messages are the same. This project's automated
+        tests don't cover it.
+      </p>
+    </section>
+
+    <section id="tested">
+      <h2>What has been tested</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setup</th><th>Versions</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td>Android phone, Chrome, reference wallet</td><td>Android 17, Chrome 151, Play services 26.32</td><td>By hand, including the response-size measurements</td></tr>
+            <tr><td>Android emulator, Chrome, reference wallet, Testing EHR</td><td>API 37 image, Chrome 145, Play services 26.11</td><td>Nightly in <a href="https://github.com/smart-health-checkin/connectathon/actions/workflows/android-e2e.yml">CI</a>; the large-response scenario is skipped because Chrome 145 is below 150</td></tr>
+            <tr><td>Native Android app as Verifier</td><td>Android 17</td><td>By hand, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a></td></tr>
+            <tr><td>Web wallets in any browser</td><td>Current Chrome and Chromium</td><td>After every deploy and nightly, by the Testing EHR self-test</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The real Chrome-to-Android capture that <a href="./spec.html#appendix-a-worked-example">Appendix A</a> walks
+        through came from the emulator setup above.
+      </p>
+    </section>
+  </main>
+  <div data-smart-footer></div>
+  <script src="/assets/site-chrome.js" defer></script>
+</body>
+</html>

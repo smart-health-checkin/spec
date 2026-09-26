@@ -185,6 +185,24 @@
     th { color: var(--fg-mark); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; font-weight: 700; }
     td:first-child { white-space: nowrap; }
 
+    /* Requirement tags: link to the rule in the spec. */
+    a.rid {
+      display: inline-block;
+      padding: 0 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--gray-50);
+      color: var(--brand-ink);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 18px;
+      white-space: nowrap;
+      vertical-align: 1px;
+    }
+    a.rid:hover { border-color: var(--brand); }
+    .terms { margin-top: var(--space-4); color: var(--fg-2); font-size: var(--fs-sm); }
+    #checks h3 { margin-top: var(--space-6); }
     .checks { margin: var(--space-4) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
     .checks li { padding: 10px 0; border-bottom: 1px solid var(--border); }
     .checks li a { font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; }
@@ -220,6 +238,13 @@
         through that JSON with one running example. Every example on it is
         checked against the client library's validators when the site is built.
       </p>
+      <p class="terms">
+        <b>Words on this page, and in the spec:</b>
+        clinic app = <i>Verifier</i> · health app = <i>Wallet</i> ·
+        patient = <i>Holder</i> · record = <i>Artifact</i>.
+        Tags like <a class="rid" href="./spec.html#XV-2">XV-2</a> link to the requirement in the
+        <a href="./spec.html">spec</a>, which is the authority where this page and it differ.
+      </p>
     </header>
 
     <nav class="toc" aria-label="On this page">
@@ -229,6 +254,7 @@
       <a href="#patient">What the patient sees</a>
       <a href="#response">The response</a>
       <a href="#outcomes">Outcomes</a>
+      <a href="#versions">Versions in canonicals</a>
       <a href="#checks">What the app checks</a>
       <a href="#complete">Complete example</a>
       <a href="#next">Where next</a>
@@ -316,12 +342,12 @@
   "accept": ["application/fhir+json"]
 }</pre>
       <dl class="fields">
-        <div><dt>id</dt><dd>Short and unique within the request. The response refers to the item by this id.</dd></div>
+        <div><dt>id</dt><dd>Short and unique within the request. The response refers to the item by this id. <a class="rid" href="./spec.html#ITEM-1">ITEM-1</a></dd></div>
         <div><dt>title</dt><dd>What the patient sees.</dd></div>
         <div><dt>summary</dt><dd>Optional. One more line for the patient.</dd></div>
-        <div><dt>required</dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the health app can still answer <code>unavailable</code>.</small></dd></div>
+        <div><dt>required</dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the health app can still answer <code>unavailable</code>. <a class="rid" href="./spec.html#HOLD-3">HOLD-3</a></small></dd></div>
         <div><dt>content</dt><dd>What is being asked for. See the next section.</dd></div>
-        <div><dt>accept</dt><dd>Media types the app can read for this item, most preferred first.</dd></div>
+        <div><dt>accept</dt><dd>Media types the app can read for this item, most preferred first. <a class="rid" href="./spec.html#ACC-1">ACC-1</a></dd></div>
       </dl>
     </section>
 
@@ -331,7 +357,9 @@
         <code>content.kind</code> is either <code>selection.fhir</code> (share records the
         patient already has) or <code>form.fhir</code> (fill in a form). A health app
         that sees a kind it doesn't know answers <code>unsupported</code> for that
-        item and handles the rest of the request as usual.
+        item and handles the rest of the request as usual <a class="rid" href="./spec.html#SEL-9">SEL-9</a>. The same
+        goes for a selector whose members have the wrong types, such as a
+        <code>profilesFrom</code> that is a string <a class="rid" href="./spec.html#SEL-10">SEL-10</a>.
       </p>
 
       <div class="tabs" role="tablist" aria-label="Kinds of content" hidden>
@@ -356,19 +384,21 @@
 }</pre>
         <p class="note warning">
           Keep canonical strings exactly as written, including any
-          <code>|version</code>. A health app must not strip the version to look the
-          profile up, and must only report <code>fulfilled</code> for a versioned
-          profile when the records claim that same version.
-          <a href="./spec.html#5-5-canonical-version-handling">Spec §5.5</a>
+          <code>|version</code> <a class="rid" href="./spec.html#CAN-2">CAN-2</a>. A health app reports
+          <code>fulfilled</code> for a versioned profile only when a returned record
+          claims that exact version <a class="rid" href="./spec.html#CAN-5">CAN-5</a>. See
+          <a href="#versions">Versions in canonicals</a>.
         </p>
       </div>
 
       <div class="panel" id="c-family" role="tabpanel">
         <h4>A profile family</h4>
         <p>
-          Any profile from an implementation guide, such as all of US Core. Add
-          <code>resourceTypes</code> to narrow it. If <code>profiles</code> is also present,
-          it widens the match rather than narrowing it.
+          Any profile from an implementation guide, such as all of US Core. A
+          profile belongs to the family when its URL starts with the family URL
+          and a <code>/</code> <a class="rid" href="./spec.html#SEL-5">SEL-5</a>. Add <code>resourceTypes</code> to narrow it. If
+          <code>profiles</code> is also present, it widens the match rather than
+          narrowing it <a class="rid" href="./spec.html#SEL-3">SEL-3</a>.
         </p>
 <pre data-check="item">{
   "id": "medications",
@@ -386,7 +416,7 @@
         <h4>No filter</h4>
         <p>
           Leave out all three filters to let the patient and their health app
-          decide what's relevant for the visit. Partial answers are expected.
+          decide what's relevant for the visit. Partial answers are expected <a class="rid" href="./spec.html#SEL-7">SEL-7</a>.
         </p>
 <pre data-check="item">{
   "id": "anything-helpful",
@@ -399,10 +429,10 @@
       <div class="panel" id="c-canonical" role="tabpanel">
         <h4>A form by URL</h4>
         <p>
-          The health app finds the Questionnaire from its canonical URL, shows it,
+          The health app finds the Questionnaire from its canonical URL <a class="rid" href="./spec.html#CAN-4">CAN-4</a>, shows it,
           and returns a QuestionnaireResponse whose <code>questionnaire</code> is the same
-          string. If it can't load the form, it answers <code>unsupported</code> or
-          <code>error</code> rather than guessing.
+          string <a class="rid" href="./spec.html#FORM-5">FORM-5</a>. If it can't load the form, it answers <code>unsupported</code> or
+          <code>error</code> rather than guessing <a class="rid" href="./spec.html#FORM-4">FORM-4</a>.
         </p>
 <pre data-check="item">{
   "id": "intake",
@@ -420,7 +450,9 @@
         <p>
           Send the whole Questionnaire when it isn't published anywhere. You can
           send both: the canonical names the form and the inline copy is what
-          gets shown.
+          gets shown <a class="rid" href="./spec.html#FORM-2">FORM-2</a>. Without a canonical, the answers'
+          <code>questionnaire</code> is the inline form's <code>url</code>, plus
+          <code>|version</code> if it has one <a class="rid" href="./spec.html#FORM-5">FORM-5</a>.
         </p>
 <pre data-check="item">{
   "id": "visit-reason",
@@ -440,6 +472,33 @@
       </div>
     </section>
 
+    <section id="versions">
+      <h2>Versions in canonicals</h2>
+      <p>
+        A canonical can name one version of a form or profile by adding
+        <code>|</code> and the version. The text before the first <code>|</code> is the
+        URL; the rest is the version <a class="rid" href="./spec.html#CAN-1">CAN-1</a>.
+      </p>
+<pre data-check="item">{
+  "id": "intake",
+  "title": "Depression screening (PHQ-2)",
+  "content": {
+    "kind": "form.fhir",
+    "questionnaireCanonical": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json|1"
+  },
+  "accept": ["application/fhir+json"]
+}</pre>
+      <ol class="steps">
+        <li><div>The health app looks the form up any way it likes: a cache, a FHIR server search, or fetching the bare URL <code>…/phq-2.json</code>.</div></li>
+        <li><div>It checks what it got: a <code>Questionnaire</code> whose <code>url</code> is exactly <code>…/phq-2.json</code> and whose <code>version</code> is exactly <code>1</code>. Anything else doesn't count, and the item is <code>unsupported</code> <a class="rid" href="./spec.html#CAN-4">CAN-4</a>.</div></li>
+        <li><div>The answers carry <code>"questionnaire": "…/phq-2.json|1"</code>, the request's string unchanged <a class="rid" href="./spec.html#FORM-5">FORM-5</a>.</div></li>
+      </ol>
+      <p>
+        The same applies to <code>profiles[]</code>: a record counts toward
+        <code>…|1.2</code> only if its <code>meta.profile</code> has exactly that string <a class="rid" href="./spec.html#CAN-5">CAN-5</a>.
+      </p>
+    </section>
+
     <section id="patient">
       <h2>What the patient sees</h2>
       <ol class="steps">
@@ -448,11 +507,17 @@
         <li><div>The patient shares, leaves out, or fills in each item. They can share less than was asked for, and the health app can offer other records that would help.</div></li>
         <li><div>The health app sends back the records and one outcome per item.</div></li>
       </ol>
+      <p>
+        The patient decides item by item <a class="rid" href="./spec.html#HOLD-1">HOLD-1</a>. If they review the
+        request and decline everything, the health app still answers, with every
+        item <code>declined</code>. If they close it without reviewing, nothing comes
+        back and the browser call ends with an error <a class="rid" href="./spec.html#HOLD-4">HOLD-4</a>.
+      </p>
       <p class="note warning">
         Text in the request is not proof of who is asking. The browser and the
         wallet's trust decisions establish that, outside the JSON, so the request
-        must not carry names, logos, or URLs claiming to identify the clinic.
-        <a href="./spec.html#5-7-identity-trust-and-holder-control">Spec §5.7</a>
+        must not carry names, logos, or URLs claiming to identify the clinic
+        <a class="rid" href="./spec.html#ID-1">ID-1</a> <a class="rid" href="./spec.html#ID-2">ID-2</a>.
       </p>
     </section>
 
@@ -501,17 +566,17 @@
         </div>
       </div>
       <dl class="fields">
-        <div><dt>id</dt><dd>Unique within the response.</dd></div>
-        <div><dt>mediaType</dt><dd><code>application/fhir+json</code> or <code>application/smart-health-card</code>.<small>It must be in the <code>accept</code> list of every item the record fulfills.</small></dd></div>
+        <div><dt>id</dt><dd>Unique within the response. <a class="rid" href="./spec.html#ART-1">ART-1</a></dd></div>
+        <div><dt>mediaType</dt><dd><code>application/fhir+json</code> or <code>application/smart-health-card</code>.<small>It must be in the <code>accept</code> list of every item the record fulfills. <a class="rid" href="./spec.html#ACC-2">ACC-2</a></small></dd></div>
         <div><dt>fulfills</dt><dd>The item ids this record answers. At least one.</dd></div>
-        <div><dt>fhirVersion</dt><dd>FHIR JSON only. A health card carries its FHIR version inside the signed card.</dd></div>
+        <div><dt>fhirVersion</dt><dd>FHIR JSON only, such as <code>4.0.1</code> <a class="rid" href="./spec.html#ART-2">ART-2</a>. A health card carries its FHIR version inside the signed card <a class="rid" href="./spec.html#ART-6">ART-6</a>.</dd></div>
         <div><dt>value</dt><dd>For FHIR JSON, a resource or a Bundle. For a health card, the card file's JSON.</dd></div>
       </dl>
     </section>
 
     <section id="outcomes">
       <h2>Outcomes</h2>
-      <p>Each item gets one row, whether or not any record came back for it.</p>
+      <p>Each item gets one row, whether or not any record came back for it <a class="rid" href="./spec.html#RSP-2">RSP-2</a>.</p>
 <pre>{ "item": "medications", "status": "partial", "message": "One medication was kept private" }</pre>
       <table>
         <thead><tr><th>Status</th><th>Meaning</th><th>For example</th></tr></thead>
@@ -526,7 +591,7 @@
       </table>
       <p class="note">
         <code>fulfilled</code> and <code>partial</code> should come with at least one record
-        that lists the item. The others usually come with none.
+        that lists the item <a class="rid" href="./spec.html#ART-7">ART-7</a>. The others usually come with none.
       </p>
     </section>
 
@@ -534,23 +599,40 @@
       <h2>What the app checks</h2>
       <p>
         Before using a response, the app checks it against the request it sent.
-        The client library does this for you. The
+        One bad record or status row costs only that record or item; the rest of
+        the response is still used. The client library does this for you, and the
         <a href="/connectathon/testing-ehr/">Testing EHR</a> runs the same checks
         against your health app.
       </p>
+      <h3>These reject the whole response</h3>
       <ul class="checks">
-        <li><code>requestId</code> equals the request's <code>id</code>. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
-        <li>Every item has exactly one outcome, with no unknown or repeated ids. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
-        <li>Every id in <code>fulfills[]</code> is an item in the request. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
-        <li>Every record's <code>mediaType</code> is accepted by each item it fulfills. <a href="./spec.html#5-6-accepted-media-types">§5.6</a></li>
-        <li>FHIR JSON has a <code>fhirVersion</code>, and a Bundle doesn't mix releases. A health card has no outer <code>fhirVersion</code>. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
-        <li>Returned <code>meta.profile</code> strings and <code>QuestionnaireResponse.questionnaire</code> are kept exactly as written, and a record only counts toward a versioned profile (<code>…|1.2</code>) if it claims that exact version. <a href="./spec.html#5-5-canonical-version-handling">§5.5</a></li>
-        <li>Several records for one item are allowed, and the app looks at all of them. <a href="./spec.html#6-3-many-to-many-fulfillment">§6.3</a></li>
+        <li>It isn't valid JSON, or <code>type</code>, <code>version</code>, <code>artifacts</code>, or <code>requestStatus</code> is wrong. <a class="rid" href="./spec.html#XV-1">XV-1</a></li>
+        <li><code>requestId</code> isn't the request's <code>id</code>: it answers some other request. <a class="rid" href="./spec.html#XV-2">XV-2</a></li>
+      </ul>
+      <h3>These affect only one item</h3>
+      <ul class="checks">
+        <li>An item with no status row, two rows, or a status code outside the six has no valid outcome. Rows for ids not in the request are ignored. <a class="rid" href="./spec.html#XV-3">XV-3</a></li>
+        <li>A <code>fulfilled</code> or <code>partial</code> item that no valid record lists is flagged. <a class="rid" href="./spec.html#XV-12">XV-12</a></li>
+        <li>A <code>fulfilled</code> versioned-profile item needs a record claiming that exact version. <a class="rid" href="./spec.html#XV-11">XV-11</a></li>
+      </ul>
+      <h3>These set aside one record</h3>
+      <ul class="checks">
+        <li>A record with a duplicate <code>id</code>, no <code>mediaType</code>, or a <code>fulfills[]</code> naming items that aren't in the request. <a class="rid" href="./spec.html#XV-5">XV-5</a></li>
+        <li>A <code>mediaType</code> that isn't a known type, or isn't in the <code>accept[]</code> of every item it lists. <a class="rid" href="./spec.html#XV-6">XV-6</a> <a class="rid" href="./spec.html#XV-7">XV-7</a></li>
+        <li>FHIR JSON without a <code>fhirVersion</code> or a resource in <code>value</code>, or (usually) in a release the request didn't list. <a class="rid" href="./spec.html#XV-8">XV-8</a></li>
+        <li>A health card without <code>verifiableCredential[]</code>, or with an outer <code>fhirVersion</code>. <a class="rid" href="./spec.html#XV-9">XV-9</a></li>
+        <li>Form answers whose <code>questionnaire</code> isn't the requested canonical, exactly. <a class="rid" href="./spec.html#XV-10">XV-10</a></li>
       </ul>
       <p>
+        A set-aside record doesn't count toward the items it lists <a class="rid" href="./spec.html#XV-4">XV-4</a>.
+        Several valid records for one item are fine; the app looks at all of them <a class="rid" href="./spec.html#MM-2">MM-2</a>.
+        Problems below the JSON, in the mdoc envelope, are warnings rather than
+        failures; see <a href="./trust-and-limits.html">Trust and limits</a>.
+      </p>
+      <p>
         Passing these checks means the response is well formed. Whether to
-        trust a health card's issuer or to file a record into the chart is up
-        to the clinic.
+        trust a health card's issuer <a class="rid" href="./spec.html#XV-13">XV-13</a> or to file a record into the chart
+        is up to the clinic.
       </p>
     </section>
 
@@ -694,6 +776,8 @@
         <li><a href="./wire-protocol-explainer.html">Wire protocol explainer</a><span>How this JSON travels: mdoc, CBOR, HPKE, and signatures.</span></li>
         <li><a href="/client/docs/tutorial.html">Developer tutorial</a><span>Build a check-in page with the client library.</span></li>
         <li><a href="/connectathon/testing-ehr/">Testing EHR</a><span>Send these requests to your health app and see what fails.</span></li>
+        <li><a href="./trust-and-limits.html">Trust and limits</a><span>What the signatures prove, warnings, response size, and cancel.</span></li>
+        <li><a href="./platform-notes.html">Platform notes</a><span>Android, iOS, browsers, and native-app origins.</span></li>
         <li><a href="./spec.html">Draft spec 1.0</a><span>The normative text. Sections 5 and 6 cover this page.</span></li>
       </ul>
     </section>

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMART Health Check-in Trust and Limits</title>
+  <link rel="stylesheet" href="/assets/smart-design.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--fg-1); background: var(--bg); font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-relaxed); }
+    .page { max-width: 860px; margin: 0 auto; padding: 36px 24px 56px; }
+    .page > header { padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .eyebrow { margin: 0 0 var(--space-3); color: var(--brand); font-size: var(--fs-xs); font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+    h1, h2, h3 { margin: 0; color: var(--fg-1); line-height: var(--lh-tight); text-wrap: balance; }
+    h1 { font-size: clamp(2rem, 4.2vw, 3rem); font-weight: 800; letter-spacing: -0.03em; }
+    h2 { margin-bottom: var(--space-3); font-size: clamp(1.4rem, 2.6vw, 1.8rem); font-weight: 700; }
+    h3 { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; }
+    p, li { max-width: 72ch; text-wrap: pretty; }
+    p { margin: 0 0 var(--space-4); }
+    .lede { margin-top: var(--space-4); color: var(--fg-2); font-size: var(--fs-md); }
+    a { color: var(--brand); font-weight: 600; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
+    .toc a { color: var(--fg-2); font-size: var(--fs-sm); }
+    section { padding: var(--space-6) 0; border-bottom: 1px solid var(--border); }
+    section:last-child { border-bottom: 0; }
+    ul { padding-left: 22px; }
+    li { margin: 6px 0; }
+    code { padding: 1px 5px; background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; }
+    table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); margin: var(--space-3) 0 var(--space-4); }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { color: var(--fg-mark); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+    .table-wrap { overflow-x: auto; }
+    .note { padding: 12px 16px; border-left: 3px solid var(--brand); background: var(--info-wash); border-radius: var(--radius-md); font-size: var(--fs-sm); max-width: none; }
+    .note.warning { border-left-color: var(--warning); background: var(--warning-wash); }
+    a.rid { display: inline-block; padding: 0 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--gray-50); font-family: var(--font-mono); font-size: 11.5px; line-height: 18px; white-space: nowrap; }
+    .fw { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .fw.fail { background: var(--danger-wash); color: #A32A22; }
+    .fw.warn { background: var(--warning-wash); color: #8A5A08; }
+    @media (max-width: 700px) { .page { padding: 24px 16px 44px; } body { font-size: 15.5px; } }
+  </style>
+</head>
+<body>
+  <div data-smart-topbar></div>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Explainer</p>
+      <h1>Trust and limits</h1>
+      <p class="lede">
+        What the exchange proves and what it leaves to you, how receivers treat problems, and the practical limits:
+        response size, cancelling, and timeouts. The rules are in the <a href="./spec.html">spec</a>; this page
+        explains them and links each one.
+      </p>
+    </header>
+
+    <nav class="toc" aria-label="On this page">
+      <a href="#signatures">What the signatures prove</a>
+      <a href="#warnings">Warnings, not failures</a>
+      <a href="#reader-auth">Reader authentication</a>
+      <a href="#size">Response size</a>
+      <a href="#cancel">Cancel and decline</a>
+      <a href="#timeouts">Timeouts</a>
+    </nav>
+
+    <section id="signatures">
+      <h2>What the signatures prove</h2>
+      <p>
+        The wallet signs its own mdoc, as both issuer and device, with keys it controls <a class="rid" href="./spec.html#WRS-4">WRS-4</a> <a class="rid" href="./spec.html#WRS-6">WRS-6</a>. The
+        signatures make the response a complete, verifiable ISO mdoc that strict mdoc software accepts. They show the
+        bytes are intact and well formed. They don't show who issued the content: the wallet may make new keys for
+        every response, and anyone holding a SMART response can wrap it in a new, valid mdoc.
+      </p>
+      <ul>
+        <li><b>The encryption</b> is what protects the response in transit. Only the holder of the Verifier's private key, for this origin and this request, can open it, and a changed ciphertext doesn't open <a class="rid" href="./spec.html#VRS-3">VRS-3</a>.</li>
+        <li><b>The origin</b> comes from the browser or platform, never from the request <a class="rid" href="./spec.html#TR-3">TR-3</a>. It tells the wallet which page asked; it doesn't tell anyone that the page belongs to an organization you trust.</li>
+        <li><b>Evidence about clinical content</b> lives in the content. A SMART Health Card is signed by its issuer, and the Verifier checks that signature against its own trust policy <a class="rid" href="./spec.html#XV-13">XV-13</a>. Raw FHIR and form answers are what the patient chose to share.</li>
+      </ul>
+      <p>
+        The spec's <a href="./spec.html#7-trust-framework">§7</a> has the full table: each signal, what it proves,
+        what it doesn't, and the threats it does and doesn't cover.
+      </p>
+    </section>
+
+    <section id="warnings">
+      <h2>Warnings, not failures</h2>
+      <p>
+        Whoever builds a message builds it exactly as the spec says <a class="rid" href="./spec.html#RCV-0">RCV-0</a>. Whoever receives one stops only
+        when it can't go on, and reports everything else as a warning <a class="rid" href="./spec.html#RCV-1">RCV-1</a> <a class="rid" href="./spec.html#RCV-2">RCV-2</a>. This lets exchanges work
+        while implementations are still being corrected, without anyone producing sloppy messages.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>The receiver stops (<span class="fw fail">fail</span>) when</th><th>Everything else is a <span class="fw warn">warn</span>, for example</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                It can't decode the message <a class="rid" href="./spec.html#WRQ-2">WRQ-2</a> <a class="rid" href="./spec.html#VRS-2">VRS-2</a><br>
+                It can't decrypt the response <a class="rid" href="./spec.html#VRS-3">VRS-3</a><br>
+                It can't find the request or the response text <a class="rid" href="./spec.html#WRQ-4">WRQ-4</a> <a class="rid" href="./spec.html#WRQ-5">WRQ-5</a> <a class="rid" href="./spec.html#VRS-8">VRS-8</a><br>
+                The wallet has no usable key or no origin <a class="rid" href="./spec.html#WRQ-7">WRQ-7</a> <a class="rid" href="./spec.html#WRQ-8">WRQ-8</a><br>
+                The JSON is invalid, or answers another request <a class="rid" href="./spec.html#XV-1">XV-1</a> <a class="rid" href="./spec.html#XV-2">XV-2</a>
+              </td>
+              <td>
+                A signature or digest that doesn't verify <a class="rid" href="./spec.html#VRS-5">VRS-5</a> <a class="rid" href="./spec.html#VRS-6">VRS-6</a> <a class="rid" href="./spec.html#VRS-7">VRS-7</a><br>
+                An MSO outside its validity window <a class="rid" href="./spec.html#VRS-10">VRS-10</a><br>
+                An unknown algorithm value <a class="rid" href="./spec.html#ALG-2">ALG-2</a><br>
+                A wrong version or <code>status</code>, or an extra document <a class="rid" href="./spec.html#VRS-4">VRS-4</a><br>
+                A duplicate CBOR map key the decoder tolerates <a class="rid" href="./spec.html#ENC-5">ENC-5</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The JSON has its own, narrower rule: one bad record or status row costs only that record or item
+        (<a href="./smart-model-explainer.html#checks">model explainer</a>). The
+        <a href="/connectathon/testing-ehr/">Testing EHR</a> lists warnings separately from failures, so a wallet
+        developer sees both.
+      </p>
+    </section>
+
+    <section id="reader-auth">
+      <h2>Reader authentication</h2>
+      <p>
+        A Verifier may sign its request with <code>readerAuth</code> <a class="rid" href="./spec.html#RA-1">RA-1</a>. A wallet that checks it puts the result
+        in exactly one of five states <a class="rid" href="./spec.html#TRUST-2">TRUST-2</a>:
+      </p>
+      <table>
+        <thead><tr><th>State</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>absent</td><td>The request isn't signed.</td></tr>
+          <tr><td>malformed</td><td>The signature structure can't be read.</td></tr>
+          <tr><td>invalid</td><td>The signature, or its binding to this session, fails.</td></tr>
+          <tr><td>valid but untrusted</td><td>It verifies, but the wallet doesn't recognize the certificate.</td></tr>
+          <tr><td>trusted</td><td>It verifies, and a deployment trust list recognizes the certificate.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        The wallet shows a verifier identity only for <b>trusted</b>. Without a deployment trust list,
+        <b>valid but untrusted</b> is the normal result. No state stops the exchange <a class="rid" href="./spec.html#WRQ-9">WRQ-9</a>.
+      </p>
+    </section>
+
+    <section id="size">
+      <h2>Response size</h2>
+      <p>
+        <b>Response size is not a practical limit on current platforms.</b> A wallet on
+        <code>androidx.credentials</code> 1.7 or later that returns its response with the three-argument
+        <code>PendingIntentHandler.setGetCredentialResponse(intent, response, request)</code>, answering Chrome 150 or
+        later, hands responses of 200 KB and up to Chrome as a file. Measured with no transport limit up to about
+        67 MB; the practical ceiling is the wallet's own memory, about 20 MB at a default Android heap. The reference
+        Android wallet uses this path.
+      </p>
+      <p>
+        The one exception: a wallet that uses the older two-argument
+        <code>setGetCredentialResponse(intent, response)</code>, or a browser that doesn't offer the large-payload
+        path (Chrome below 150), drops responses above about 520 KB. Measured: 514 KB passes, 522 KB never arrives,
+        and the browser call never settles. That silent hang is why a Verifier sets its own timeout <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>.
+      </p>
+      <p>
+        Measurements: Pixel, Android 17, Chrome 151, Google Play services 26.32, August 2026
+        (<a href="https://github.com/smart-health-checkin/spec/blob/main/docs/research/10-android-response-size.md">full write-up</a>).
+      </p>
+    </section>
+
+    <section id="cancel">
+      <h2>Cancel and decline</h2>
+      <p>
+        If the patient reviews the request and declines everything, the wallet still answers, with every item
+        <code>declined</code>. The clinic learns the patient saw the request and chose not to share.
+        If the patient closes the wallet without reviewing, nothing comes back, and the browser call ends with the
+        platform's cancellation error <a class="rid" href="./spec.html#HOLD-4">HOLD-4</a>.
+      </p>
+      <p>
+        A request the wallet can't process at all, such as one with no request text, also ends the call with an error
+        <a class="rid" href="./spec.html#WRQ-1">WRQ-1</a>. Problems inside one item make only that item <code>unsupported</code>.
+      </p>
+    </section>
+
+    <section id="timeouts">
+      <h2>Timeouts</h2>
+      <p>
+        A Verifier sets its own timeout on the browser call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>, because the too-large case above never
+        settles. The <a href="/client/">client library</a> gives a web wallet 5 minutes by default; for the phone's
+        own wallet, pass an <code>AbortSignal</code> to <code>runCheckin</code>. A response that arrives after the
+        Verifier gave up is not acted on <a class="rid" href="./spec.html#SEC-1">SEC-1</a>.
+      </p>
+    </section>
+  </main>
+  <div data-smart-footer></div>
+  <script src="/assets/site-chrome.js" defer></script>
+</body>
+</html>
