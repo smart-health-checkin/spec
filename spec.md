@@ -15,7 +15,7 @@ Editor's draft 1.0, for implementer review. Editors, license, and publication de
 > - A clinic web page, kiosk, or patient portal is the **Verifier**. It builds the request (§5), calls the browser (§8.2), and checks the response before using it (§6.4, §8.5).
 > - A patient's wallet app is the **Wallet**. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6).
 > - The minimum to implement: the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1). Reader authentication is optional.
-> - Every requirement has an ID such as [XV-2]. Conformance cases in the spec repository cite these IDs, and `requirements.json` lists them all.
+> - Every requirement has an ID such as [XV-2]. The conformance tests in the spec repository cite these IDs, and `requirements.json` lists them all.
 > - Appendix A walks one real capture byte by byte. The [explainers](#companion-material) teach the model and the wire format with examples.
 
 ---

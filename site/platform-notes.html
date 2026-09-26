@@ -25,7 +25,7 @@
 
     <nav class="toc" aria-label="On this page">
       <a href="#android">Android</a>
-      <a href="#native-apps">Native apps</a>
+      <a href="#native-apps">Native Verifier apps</a>
       <a href="#ios">iOS and Safari</a>
       <a href="#desktop">Desktop browsers</a>
       <a href="#tested">What has been tested</a>
@@ -55,7 +55,7 @@
     </section>
 
     <section id="native-apps">
-      <h2>Native apps as Verifiers</h2>
+      <h2>Native Verifier apps</h2>
       <p>
         A native app uses the web flow. It opens a page on its own domain in a browser surface, the page runs the
         client library as any web page would (platform wallets and web wallets alike), and the page hands the checked
@@ -110,7 +110,7 @@
           <a class="rid" href="./spec.html#TR-2">TR-2</a>, so strip the slash before hashing. For a page in an iframe,
           the origin is the top-level page's.</li>
         <li><b>Native iOS apps</b> have no public API for asking a third-party wallet directly. They use the pattern in
-          <a href="#native-apps">Native apps as Verifiers</a>.</li>
+          <a href="#native-apps">Native Verifier apps</a>.</li>
         <li>There is no reference iOS wallet or checked-in iOS capture yet. The
           <a href="https://github.com/smart-health-checkin/swift">Swift package</a> implements the Verifier and Wallet
           sides and runs the spec's <a href="https://github.com/smart-health-checkin/spec/tree/main/conformance">conformance tests</a>.</li>
