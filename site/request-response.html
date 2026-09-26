@@ -46,11 +46,6 @@
       .pair, .next { grid-template-columns: minmax(0, 1fr); }
     }
 
-    /* The wide matching diagram on wider screens, the stacked one on phones. */
-    .xd.narrow { min-width: 0; max-width: 30rem; margin: 0 auto; }
-    .map-narrow { padding: 14px; }
-    .map-figure { display: none; }
-    @media (min-width: 44rem) { .map-figure { display: block; } .map-narrow { display: none; } }
     #match [data-ids]:focus { outline: none; }
     #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
     /* Follow an id across: hover an item or a record */
@@ -105,7 +100,7 @@
         name the items they answer. Point at an id to follow it across.
       </p>
 
-      <div class="xd-figure map-figure">
+      <div class="xd-figure xd-wide">
 <svg id="match" class="xd" viewBox="0 0 880 404" role="img" aria-labelledby="m-title m-desc">
       <title id="m-title">How request items, outcomes and records connect</title>
       <desc id="m-desc">Five request items, each with one outcome: patient fulfilled, insurance declined, medications partial, immunizations fulfilled, intake fulfilled. Four records: a FHIR Bundle fulfills patient and medications; a SMART Health Card and a second FHIR Bundle both fulfill immunizations; a QuestionnaireResponse fulfills intake. Insurance has no record.</desc>
@@ -193,8 +188,8 @@
     </svg>
       </div>
 
-      <div class="xd-figure map-narrow">
-    <svg class="xd narrow" viewBox="0 0 360 668" role="img" aria-labelledby="mn-title mn-desc">
+      <div class="xd-figure xd-narrow">
+    <svg class="xd" viewBox="0 0 360 668" role="img" aria-labelledby="mn-title mn-desc">
       <title id="mn-title">How request items, outcomes and records connect</title>
       <desc id="mn-desc">Five request items, each with one outcome. Patient demographics: fulfilled by a FHIR Bundle with the Patient and two MedicationRequests. Insurance card: declined, no record. Medications: partial, fulfilled by the same Bundle. Immunizations: fulfilled by a SMART Health Card and a second FHIR Bundle. Depression screening form: fulfilled by a QuestionnaireResponse.</desc>
       <text x="0" y="16" class="head">Each item, its outcome, and the records</text>

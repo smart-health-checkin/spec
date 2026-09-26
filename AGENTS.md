@@ -24,8 +24,9 @@ smart-health-checkin.org/spec/ on every push to `main`.
   page CSS takes every color from the shared tokens and uses the shared
   components ([Colors and dark mode](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#colors-and-dark-mode),
   [Components](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#components)).
-  The explainers' and wire pages' layout and the diagrams (`.xd`) are in
-  `site/pages.css`; the capture inspector's pieces in `site/inspector.css`.
+  The explainers' and wire pages' layout is in `site/pages.css`; the
+  diagrams (`.xd`) use the shared stylesheet's classes
+  ([Diagrams](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#diagrams)); the capture inspector's pieces in `site/inspector.css`.
   Code is highlighted at build time by `scripts/highlight.ts` (Shiki, the
   spec's code blocks and the explainers' JSON examples); the inspector colors
   JSON with `/assets/smart-json.js`.

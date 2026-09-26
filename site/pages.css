@@ -5,7 +5,8 @@
    - The explainers (Request and response, Kiosk check-in, Security and
      limits, Platform notes): <main class="page">.
    - The wire pages (Wire protocol, Capture inspector): <main class="wire">.
-   - Diagrams (inline SVG, class "xd"). */
+   The diagrams (inline SVG, class "xd") are styled by the shared stylesheet
+   (MAINTAINING.md, "Diagrams"). */
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -121,38 +122,4 @@ a.rid {
   vertical-align: 1px;
 }
 a.rid:hover { border-color: var(--brand); }
-
-/* ---- Diagrams (inline SVG, class "xd") ---- */
-.xd-figure { margin: var(--space-4) 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow-x: auto; background: var(--surface); }
-.xd { display: block; width: 100%; min-width: 640px; height: auto; }
-.xd text { font-family: var(--font-sans); fill: var(--fg-1); }
-.xd .mono { font-family: var(--font-mono); font-size: 12px; fill: var(--fg-3); }
-.xd .head { font-size: 13px; font-weight: 700; fill: var(--fg-1); }
-.xd .sub { font-size: 12px; fill: var(--fg-3); }
-.xd .t { font-size: 14px; font-weight: 600; }
-.xd .s { font-size: 12.5px; fill: var(--fg-2); }
-.xd .box { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.2; }
-.xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
-.xd .off-t { fill: var(--fg-3); }
-.xd .pill-ok { fill: var(--status-ok-wash); } .xd .pill-ok-t { fill: var(--status-ok); font-size: 12px; font-weight: 600; }
-.xd .pill-warn { fill: var(--status-warn-wash); } .xd .pill-warn-t { fill: var(--status-warn); font-size: 12px; font-weight: 600; }
-.xd .pill-off { fill: var(--border-subtle); } .xd .pill-off-t { fill: var(--fg-3); font-size: 12px; font-weight: 600; }
-.xd .ok-t { font-weight: 600; fill: var(--status-ok); }
-.xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
-.xd .dot { fill: var(--brand); }
-.xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
-.xd .rule { stroke: var(--border); stroke-width: 1; }
-.xd .band { fill: var(--bg-alt); }
-.xd .lane { fill: none; stroke: var(--border); stroke-dasharray: 3 5; }
-.xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
-.xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
-.xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
-.xd .num { fill: var(--brand); } .xd .num-t { fill: var(--on-brand); font-size: 12px; font-weight: 700; }
-.xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
-.xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-.xd .key { fill: none; stroke: #B8860B; stroke-width: 2.2; stroke-linecap: round; }  /* a key icon: gold in both modes */
-.xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
-.xd .lock.open { fill: none; }
-.xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand-ink); font-size: 11.5px; font-weight: 600; }
-.xd .qr { fill: var(--fg-1); }
 
