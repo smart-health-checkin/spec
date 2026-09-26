@@ -1,0 +1,158 @@
+/* Page CSS for the spec section's pages other than the spec itself. Colors,
+   code, tables, callouts, pills, and chips come from /assets/smart-design.css;
+   this file is layout and type, and takes every color from its tokens.
+
+   - The explainers (Request and response, Front-desk handoff, Trust and
+     limits, Platform notes): <main class="page">.
+   - The wire pages (Wire protocol, Capture inspector): <main class="wire">.
+   - Diagrams (inline SVG, class "xd"). */
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- The explainers ---- */
+.page { max-width: 960px; margin: 0 auto; padding: 36px 24px 56px; }
+.page > header { padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+
+:where(.page) :is(h1, h2, h3) {
+  margin: 0;
+  color: var(--fg-1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+:where(.page) h1 { max-width: 820px; font-size: clamp(2.1rem, 4.4vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; }
+:where(.page) h2 { margin-bottom: var(--space-3); font-size: clamp(1.55rem, 2.8vw, 2rem); font-weight: 700; letter-spacing: var(--tracking-snug); line-height: var(--lh-snug); }
+:where(.page) h3 { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; letter-spacing: 0; line-height: var(--lh-snug); }
+
+:where(.page) p { max-width: 38em; margin: 0 0 var(--space-4); text-wrap: pretty; }
+:where(.page) .lede { margin-top: var(--space-5); color: var(--fg-2); font-size: var(--fs-md); }
+/* Callouts span the column, not just the text measure. */
+:where(.page) p.smart-callout { max-width: none; }
+
+:where(.page) a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
+}
+:where(.page) a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
+
+/* "On this page" links under the header. */
+.toc { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
+.toc a { color: var(--fg-2); font-size: var(--fs-sm); }
+
+:where(.page) section { padding: var(--space-7) 0; border-bottom: 1px solid var(--border); }
+:where(.page) section:last-child { border-bottom: 0; }
+
+/* Numbered steps. */
+.steps { margin: var(--space-5) 0 0; padding: 0; list-style: none; counter-reset: step; }
+.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border);
+}
+.steps li:first-child { border-top: 0; }
+.steps li::before {
+  content: counter(step);
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--brand);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  background: var(--surface);
+}
+
+@media (max-width: 760px) {
+  body { font-size: 15.5px; }
+  .page { padding: 28px 16px 48px; }
+}
+
+/* Text pages (Trust and limits, Platform notes): a narrower column. */
+.page.narrow { max-width: 860px; }
+:where(.narrow) ul { padding-left: 22px; }
+:where(.narrow) li { max-width: 38em; margin: 6px 0; text-wrap: pretty; }
+
+/* ---- The wire pages ---- */
+:where(.wire) .page-head { border-bottom: 1px solid var(--border); }
+:where(.wire) .wrap { max-width: 1080px; margin: 0 auto; padding: 28px; }
+:where(.wire) :is(h1, h2, h3, h4) { line-height: 1.13; margin: 0; }
+:where(.wire) h1 { font-size: clamp(1.6rem, 2.6vw, 2.4rem); letter-spacing: -0.02em; margin: 4px 0 0; }
+:where(.wire) h2 { font-size: 1.45rem; letter-spacing: -0.005em; margin-bottom: 8px; }
+:where(.wire) h3 { font-size: 1.18rem; margin-bottom: 8px; }
+:where(.wire) h4 { font-size: 1rem; margin-bottom: 8px; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.04em; }
+:where(.wire) p { margin: 0 0 12px; }
+:where(.wire) a { color: var(--brand); }
+:where(.wire) .lede { color: var(--fg-2); font-size: 1.04rem; max-width: 760px; margin-top: 14px; }
+:where(.wire) section { min-width: 0; padding: 30px 0; border-bottom: 1px solid var(--border); }
+:where(.wire) .small { color: var(--fg-2); font-size: 0.92rem; }
+@media (max-width: 980px) {
+  :where(.wire) .wrap { padding: 18px; }
+}
+
+/* ---- Requirement tags, on every page ---- */
+/* A link to the rule in the spec. */
+a.rid {
+  display: inline-block;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  color: var(--brand-ink);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+a.rid:hover { border-color: var(--brand); }
+
+/* ---- Diagrams (inline SVG, class "xd") ---- */
+.xd-figure { margin: var(--space-4) 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow-x: auto; background: var(--surface); }
+.xd { display: block; width: 100%; min-width: 640px; height: auto; }
+.xd text { font-family: var(--font-sans); fill: var(--fg-1); }
+.xd .mono { font-family: var(--font-mono); font-size: 12px; fill: var(--fg-3); }
+.xd .head { font-size: 13px; font-weight: 700; fill: var(--fg-1); }
+.xd .sub { font-size: 12px; fill: var(--fg-3); }
+.xd .t { font-size: 14px; font-weight: 600; }
+.xd .s { font-size: 12.5px; fill: var(--fg-2); }
+.xd .box { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.2; }
+.xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
+.xd .off-t { fill: var(--fg-3); }
+.xd .pill-ok { fill: var(--status-ok-wash); } .xd .pill-ok-t { fill: var(--status-ok); font-size: 12px; font-weight: 600; }
+.xd .pill-warn { fill: var(--status-warn-wash); } .xd .pill-warn-t { fill: var(--status-warn); font-size: 12px; font-weight: 600; }
+.xd .pill-off { fill: var(--border-subtle); } .xd .pill-off-t { fill: var(--fg-3); font-size: 12px; font-weight: 600; }
+.xd .ok-t { font-weight: 600; fill: var(--status-ok); }
+.xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
+.xd .dot { fill: var(--brand); }
+.xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
+.xd .rule { stroke: var(--border); stroke-width: 1; }
+.xd .band { fill: var(--bg-alt); }
+.xd .lane { fill: none; stroke: var(--border); stroke-dasharray: 3 5; }
+.xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
+.xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
+.xd .num { fill: var(--brand); } .xd .num-t { fill: var(--on-brand); font-size: 12px; font-weight: 700; }
+.xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
+.xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.xd .key { fill: none; stroke: #B8860B; stroke-width: 2.2; stroke-linecap: round; }  /* a key icon: gold in both modes */
+.xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
+.xd .lock.open { fill: none; }
+.xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand-ink); font-size: 11.5px; font-weight: 600; }
+.xd .qr { fill: var(--fg-1); }
+

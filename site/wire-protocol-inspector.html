@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,635 +8,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
-  <style>
-    :root {
-      color-scheme: light;
-      --ink: var(--fg-1);
-      --muted: var(--fg-2);
-      --line: var(--border);
-      --soft: var(--bg-alt);
-      --blue: var(--brand);
-      --green: var(--success);
-      --amber: #8A4F0E;
-      --red: var(--danger);
-      --code: #F6F8FA;
-      --code-fg: #1F2933;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--font-sans);
-      font-size: var(--fs-base);
-      line-height: var(--lh-relaxed);
-      color: var(--fg-1);
-      background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    code, pre, .mono, .byte-offset, .byte-hex, .byte-ascii {
-      font-family: var(--font-mono);
-    }
-    .page-head {
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
-    }
-    .wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-    .hero {
-      display: block;
-    }
-    h1, h2, h3, h4 { line-height: 1.13; margin: 0; }
-    h1 { font-size: clamp(2.4rem, 5vw, 4.7rem); letter-spacing: -0.055em; max-width: 820px; }
-    h2 { font-size: 1.8rem; margin-bottom: 12px; }
-    h3 { font-size: 1.18rem; margin-bottom: 8px; }
-    h4 { font-size: 1rem; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    p { margin: 0 0 12px; }
-    :where(main) a { color: var(--blue); }
-    .lede {
-      color: var(--muted);
-      font-size: 1.13rem;
-      max-width: 820px;
-      margin-top: 16px;
-    }
-    .badge-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .actions {
-      display: flex;
-      gap: 10px 16px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-bottom: 1px solid var(--line);
-      color: #365b82;
-      background: transparent;
-      border-radius: 0;
-      padding: 0 0 3px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    /* The capture renders after load; keep the footer below the fold until it does. */
-    #inspect { min-height: 100vh; padding-top: 0; }
-    .advanced-loader {
-      max-width: 760px;
-      margin-top: 22px;
-    }
-    .button-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 12px 0;
-    }
-    :where(main) button {
-      border: 1px solid #006fb7;
-      background: var(--blue);
-      color: #ffffff;
-      border-radius: 0;
-      padding: 10px 12px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    :where(main) button.secondary {
-      background: #ffffff;
-      color: var(--blue);
-    }
-    .main-grid {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-    }
-    .sections-nav {
-      position: sticky;
-      top: 12px;
-      border-left: 3px solid var(--line);
-      padding: 4px 0 4px 12px;
-    }
-    .sections-nav a {
-      display: block;
-      padding: 8px 10px;
-      border-radius: 0;
-      text-decoration: none;
-      color: var(--ink);
-      font-weight: 650;
-    }
-    .sections-nav a:hover { background: var(--soft); }
-    section {
-      padding: 30px 0;
-      margin-bottom: 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .flow {
-      display: block;
-      margin-top: 16px;
-      margin-left: 14px;
-      border-left: 3px solid #c8d9e8;
-    }
-    .flow-step {
-      position: relative;
-      padding: 0 0 18px 24px;
-      background: transparent;
-    }
-    .flow-step::before {
-      content: "";
-      position: absolute;
-      left: -8px;
-      top: 0.35em;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--blue);
-    }
-    .flow-step strong { display: block; margin-bottom: 6px; }
-    .flow-step code { font-size: 0.86rem; }
-    .callout {
-      border-left: 4px solid var(--blue);
-      background: #f0f8ff;
-      padding: 14px 16px;
-      border-radius: 0;
-      margin: 16px 0;
-    }
-    .callout.warn {
-      border-left-color: var(--amber);
-      background: #fff8ea;
-    }
-    .callout.good {
-      border-left-color: var(--green);
-      background: #ecfbf5;
-    }
-    .two {
-      display: block;
-    }
-    .three {
-      display: block;
-    }
-    .mini {
-      margin: 18px 0;
-      padding: 0 0 0 16px;
-      border-left: 4px solid var(--line);
-      background: transparent;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 14px 0;
-      font-size: 0.95rem;
-    }
-    th, td {
-      border-bottom: 1px solid var(--line);
-      padding: 10px;
-      vertical-align: top;
-      text-align: left;
-    }
-    th {
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-size: 0.78rem;
-    }
-    code, pre, .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-    code {
-      background: #eef2f7;
-      padding: 0.12em 0.3em;
-      border-radius: 0;
-    }
-    pre {
-      margin: 0;
-      background: var(--code);
-      color: var(--code-fg);
-      padding: 14px;
-      border-radius: 0;
-      overflow: auto;
-      tab-size: 2;
-      white-space: pre;
-      font-size: 0.85rem;
-    }
-    .wrap-pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-    .byte-pre {
-      max-height: 520px;
-      border: 1px solid #E4E7EB;
-    }
-    .calc {
-      counter-reset: step;
-      display: grid;
-      gap: 10px;
-    }
-    .calc-row {
-      display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
-      gap: 12px;
-      align-items: start;
-      border-left: 4px solid var(--line);
-      padding: 4px 0 4px 12px;
-      background: transparent;
-    }
-    .calc-row:before {
-      counter-increment: step;
-      content: counter(step);
-      display: grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      color: #ffffff;
-      background: var(--blue);
-      font-weight: 800;
-    }
-    .artifact-card {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 14px;
-      margin: 12px 0;
-      background: #ffffff;
-    }
-    .artifact-card.missing {
-      background: #fafafa;
-      color: var(--muted);
-    }
-    .artifact-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .artifact-title { font-weight: 800; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 0;
-      padding: 4px 9px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      background: #eef2f7;
-      color: var(--muted);
-    }
-    .pill.good { background: #ddf8eb; color: var(--green); }
-    .pill.warn { background: #fff0ca; color: var(--amber); }
-    .path {
-      color: var(--muted);
-      font-size: 0.88rem;
-      overflow-wrap: anywhere;
-    }
-    .drill-chain {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      gap: 12px;
-      margin: 16px 0;
-    }
-    .drill-node {
-      min-width: 0;
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .drill-node h4 {
-      color: var(--ink);
-      letter-spacing: 0;
-      text-transform: none;
-      font-size: 1.05rem;
-      margin: 0 0 6px;
-    }
-    .drill-node pre { overflow-x: auto; max-width: 100%; }
-    .artifact-card p, .drill-node p, .callout { overflow-wrap: anywhere; }
-    @media (max-width: 560px) { .fact-grid { grid-template-columns: minmax(0, 1fr) !important; } }
-    .fact-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .fact {
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      background: var(--soft);
-      padding: 9px;
-      min-width: 0;
-    }
-    .fact b {
-      display: block;
-      color: var(--muted);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 3px;
-    }
-    .fact span {
-      display: block;
-      overflow-wrap: anywhere;
-    }
-    .item-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .item-row {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .item-row strong { display: block; }
-    .item-row .small { overflow-wrap: anywhere; }
-    .byte-ledger {
-      display: grid;
-      gap: 10px;
-      margin: 16px 0;
-    }
-    .byte-row {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .byte-row-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .byte-row-head strong { font-size: 1.02rem; }
-    .check {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 0;
-      padding: 4px 9px;
-      font-size: 0.76rem;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-    .check.pass { color: var(--green); background: #ddf8eb; }
-    .check.fail { color: var(--red); background: #ffe7e5; }
-    .check.info { color: #005f9e; background: #eef8ff; }
-    .check.skip { color: var(--muted); background: #eef2f7; }
-    .byte-fields {
-      display: grid;
-      grid-template-columns: 160px minmax(0, 1fr);
-      gap: 7px 12px;
-      font-size: 0.9rem;
-    }
-    .byte-fields dt {
-      color: var(--muted);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-size: 0.72rem;
-    }
-    .byte-fields dd {
-      margin: 0;
-      overflow-wrap: anywhere;
-    }
-    .byte-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 12px;
-    }
-    .byte-actions button {
-      padding: 8px 10px;
-    }
-    .byte-viewer-note {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .byte-inspector {
-      display: grid;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .byte-dump-panel {
-      border: 1px solid #E4E7EB;
-      border-radius: 0;
-      overflow: auto;
-      background: var(--code);
-    }
-    .byte-dump-panel pre {
-      border-radius: 0;
-      max-height: 520px;
-      white-space: pre;
-      margin: 0;
-    }
-    .byte-anchor-list {
-      display: grid;
-      gap: 8px;
-    }
-    .byte-anchor {
-      display: grid;
-      grid-template-columns: minmax(148px, 180px) minmax(0, 1fr);
-      gap: 12px;
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .tree {
-      max-height: 640px;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #fbfdff;
-      padding: 8px;
-      margin-top: 10px;
-    }
-    .tree details { margin: 8px 0 8px 12px; }
-    .tree summary {
-      cursor: pointer;
-      padding: 4px 6px;
-      border-radius: 0;
-      font-weight: 650;
-    }
-    .tree summary:hover { background: #eef8ff; }
-    .tree .leaf {
-      padding: 4px 6px;
-      margin-left: 12px;
-      border-radius: 0;
-    }
-    .range { color: var(--muted); font-size: 0.78rem; }
-    .value-preview { color: var(--ink); overflow-wrap: anywhere; }
-    .meaning {
-      color: #005f9e;
-      font-size: 0.78rem;
-      margin-left: 4px;
-    }
-    .byte-slice {
-      display: grid;
-      grid-template-columns: minmax(148px, 180px) minmax(0, 1fr);
-      gap: 10px;
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .byte-offset {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      color: var(--muted);
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .byte-hex {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      overflow-wrap: anywhere;
-      word-break: break-all;
-      margin-bottom: 5px;
-    }
-    .byte-ascii {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      color: var(--muted);
-      overflow-wrap: anywhere;
-      margin-bottom: 5px;
-    }
-    .byte-note strong {
-      display: block;
-      margin-bottom: 2px;
-    }
-    @media (max-width: 700px) {
-      .byte-anchor, .byte-slice {
-        grid-template-columns: 1fr;
-      }
-    }
-    .nested-json {
-      display: grid;
-      gap: 10px;
-    }
-    input[type="file"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px dashed #9fb6cc;
-      border-radius: 0;
-      background: #f8fbff;
-    }
-    :where(main) details {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 0;
-      margin: 10px 0;
-      background: #ffffff;
-    }
-    :where(main) summary {
-      cursor: pointer;
-      padding: 12px 14px;
-      font-weight: 800;
-    }
-    :where(main) details > div { padding: 0 14px 14px; }
-    .small { color: var(--muted); font-size: 0.92rem; }
-    .nowrap { white-space: nowrap; }
-    @media (max-width: 980px) {
-      .main-grid { grid-template-columns: 1fr; }
-      .sections-nav { position: static; }
-      .wrap { padding: 18px; }
-    }
-
-    /* ----- Layout robustness: prevent grid items from blowing out at min-content ----- */
-    .main-grid > * { min-width: 0; }
-    section { min-width: 0; }
-    pre { max-width: 100%; }
-    p code, li code, td code, dd code, .note code,
-    .flow-step code, .calc-row p code, .callout code {
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-    .table-wrap { overflow-x: auto; max-width: 100%; }
-    .table-wrap > table { margin: 0; }
-
-    /* ----- Hero typography (override earlier h1 sizing) ----- */
-    .page-head h1 {
-      font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-      letter-spacing: -0.02em;
-      max-width: none;
-      margin: 4px 0 0;
-    }
-    .page-head .lede {
-      font-size: 1.04rem;
-      margin-top: 14px;
-      max-width: 760px;
-    }
-    .back-link {
-      display: inline-block;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .back-link:hover { color: var(--blue); }
-    .param-list {
-      list-style: none;
-      margin: 18px 0 0;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px 22px;
-      font-size: 0.9rem;
-    }
-    .param-list li { display: inline-flex; align-items: baseline; gap: 6px; }
-    .param-list b {
-      display: inline-block;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 800;
-      font-size: 0.7rem;
-    }
-
-    /* ----- Party tag (verifier / wallet next to a section heading) ----- */
-    .party {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      vertical-align: 0.22em;
-      margin-left: 10px;
-    }
-    .party.verifier { background: #e7f1fb; color: #1e58a0; }
-    .party.wallet   { background: #e7f7ee; color: #0d6e4f; }
-
-    /* ----- Per-step "note" line: encoding/keys/math callout ----- */
-    .note {
-      margin-top: 10px;
-      font-size: 0.86rem;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-    .note b {
-      color: var(--ink);
-      font-weight: 800;
-      margin-right: 4px;
-    }
-    .note + .note { margin-top: 4px; }
-
-    /* ----- H2 sentence-case nudge ----- */
-    section > h2 {
-      font-size: 1.45rem;
-      letter-spacing: -0.005em;
-      margin-bottom: 8px;
-    }
-  </style>
+  <link rel="stylesheet" href="./pages.css">
+  <link rel="stylesheet" href="./inspector.css">
+  <script type="module" src="/assets/smart-json.js"></script>
 </head>
 <body>
   <div data-smart-topbar></div>
   <nav data-smart-breadcrumb></nav>
-  <main id="main">
+  <main id="main" class="wire">
   <div class="page-head">
     <div class="wrap hero">
       <h1>Capture inspector</h1>
@@ -649,33 +28,33 @@
 
   <div class="wrap">
     <section id="inspect">
-      <details class="advanced-loader">
+      <details class="smart-details advanced-loader">
         <summary>Load a different capture</summary>
         <div>
-          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>android-chrome-capture</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/android-chrome-capture</code> and <code>fixtures/responses/android-chrome-capture</code>. The <a href="/connectathon/testing-ehr/">Testing EHR</a> can also open a run here directly.</p>
+          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code class="smart-inline-code">android-chrome-capture</code>). To compare another capture, pick a folder laid out like <code class="smart-inline-code">fixtures/dcapi-requests/android-chrome-capture</code> and <code class="smart-inline-code">fixtures/responses/android-chrome-capture</code>. The <a href="/connectathon/testing-ehr/">Testing EHR</a> can also open a run here directly.</p>
           <div class="button-row">
-            <button id="loadExample" type="button">Reload checked-in capture</button>
-            <button id="clearRun" class="secondary" type="button">Clear loaded run</button>
+            <button id="loadExample" class="smart-btn primary" type="button">Reload checked-in capture</button>
+            <button id="clearRun" class="smart-btn" type="button">Clear loaded run</button>
           </div>
           <input id="runPicker" type="file" webkitdirectory multiple />
         </div>
       </details>
-      <details class="advanced-loader" id="debugging">
+      <details class="smart-details advanced-loader" id="debugging">
         <summary>Comparing your implementation with this capture</summary>
         <div>
           <p class="small">
             Walk the same steps as <a href="./spec.html#appendix-a-worked-example">spec Appendix A</a>, which lists the
             expected value at each one. The capture's HPKE private key is published with it
-            (<code>recipient-private.jwk.json</code>), so you can decrypt it yourself.
+            (<code class="smart-inline-code">recipient-private.jwk.json</code>), so you can decrypt it yourself.
           </p>
           <ol class="small">
-            <li><b>Request.</b> Decode <code>device-request.cbor</code>. Check the docType, namespace, element, and that the SMART request text is in <code>requestInfo["org.smarthealthit.checkin.request"]</code>.</li>
-            <li><b>Transcript.</b> Build <code>dcapiInfo = CBOR([encryptionInfoBase64url, origin])</code>, hash it with SHA-256, build <code>CBOR([null, null, ["dcapi", hash]])</code>, and compare with <code>session-transcript.cbor</code>. Comparing <code>dcapiInfo</code> itself with the transcript file never matches.</li>
-            <li><b>Decrypt.</b> Open <code>dcapi-response.cbor</code> with the private key and <code>info = session-transcript.cbor</code>; the result is <code>device-response.cbor</code>.</li>
-            <li><b>Response.</b> Check <code>SHA-256(issuer-signed-item-tag24.cbor)</code> against the MSO digest for the item's <code>digestID</code>, then verify <code>issuerAuth</code> and the detached device signature over <code>device-authentication.cbor</code>.</li>
+            <li><b>Request.</b> Decode <code class="smart-inline-code">device-request.cbor</code>. Check the docType, namespace, element, and that the SMART request text is in <code class="smart-inline-code">requestInfo["org.smarthealthit.checkin.request"]</code>.</li>
+            <li><b>Transcript.</b> Build <code class="smart-inline-code">dcapiInfo = CBOR([encryptionInfoBase64url, origin])</code>, hash it with SHA-256, build <code class="smart-inline-code">CBOR([null, null, ["dcapi", hash]])</code>, and compare with <code class="smart-inline-code">session-transcript.cbor</code>. Comparing <code class="smart-inline-code">dcapiInfo</code> itself with the transcript file never matches.</li>
+            <li><b>Decrypt.</b> Open <code class="smart-inline-code">dcapi-response.cbor</code> with the private key and <code class="smart-inline-code">info = session-transcript.cbor</code>; the result is <code class="smart-inline-code">device-response.cbor</code>.</li>
+            <li><b>Response.</b> Check <code class="smart-inline-code">SHA-256(issuer-signed-item-tag24.cbor)</code> against the MSO digest for the item's <code class="smart-inline-code">digestID</code>, then verify <code class="smart-inline-code">issuerAuth</code> and the detached device signature over <code class="smart-inline-code">device-authentication.cbor</code>.</li>
           </ol>
-          <p class="small">From a checkout of the spec repository, after <code>bun install</code>:</p>
-<pre class="wrap-pre">bun tools/wire/inspect-mdoc-request.ts fixtures/dcapi-requests/android-chrome-capture --out /tmp/out/request
+          <p class="small">From a checkout of the spec repository, after <code class="smart-inline-code">bun install</code>:</p>
+<pre class="smart-code wrap-pre">bun tools/wire/inspect-mdoc-request.ts fixtures/dcapi-requests/android-chrome-capture --out /tmp/out/request
 bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-capture/device-response.cbor --out /tmp/out/response</pre>
           <p class="small">
             This capture's SMART response has 4 artifacts and 4 status entries. That describes this capture, not what
@@ -683,7 +62,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
           </p>
         </div>
       </details>
-      <div id="runSummary" class="callout">No run directory selected yet.</div>
+      <div id="runSummary" class="smart-callout">No run directory selected yet.</div>
       <div id="byteLedgerOutput"></div>
       <div id="drillOutput"></div>
       <div id="artifactOutput"></div>
@@ -809,7 +188,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       // Opened by a tool such as the Testing EHR: ask it for the run's bytes
       // instead of loading the checked-in capture.
       if (location.hash === "#from-opener" && window.opener) {
-        summary.className = "callout";
+        summary.className = "smart-callout";
         summary.textContent = "Waiting for the run from the page that opened this one...";
         window.opener.postMessage({ type: "smart-capture-ready" }, "*");
         return;
@@ -829,7 +208,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       output.innerHTML = "";
       byteLedgerOutput.innerHTML = "";
       drillOutput.innerHTML = "";
-      summary.className = "callout";
+      summary.className = "smart-callout";
       summary.textContent = "No run directory selected yet.";
     });
 
@@ -841,7 +220,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
     });
 
     async function loadDefaultCapture() {
-      summary.className = "callout";
+      summary.className = "smart-callout";
       summary.textContent = "Loading checked-in real Chrome/Android fixture files...";
       const files = [];
       const missing = [];
@@ -855,7 +234,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         }
       }
       if (missing.length) {
-        summary.className = "callout warn";
+        summary.className = "smart-callout warn";
         summary.innerHTML = `<strong>Loaded partial checked-in capture.</strong><br><span class="small">${escapeHtml(missing.join("\n"))}</span>`;
       }
       await renderRun(indexFiles(files), DEFAULT_CAPTURE_LABEL);
@@ -919,17 +298,17 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       if (manifest) {
         const runId = manifest.runId || String(manifest.source || "").split("/").pop() || "real fixture";
         const sessionTranscriptBytes = manifest.sessionTranscriptByteSize || manifest.sizes?.sessionTranscriptBytes || "";
-        summary.className = "callout good";
+        summary.className = "smart-callout ok";
         summary.innerHTML = `
           <strong>Loaded ${escapeHtml(label || runId)}</strong><br>
-          origin: <code>${escapeHtml(manifest.origin || "")}</code><br>
-          originSource: <code>${escapeHtml(manifest.originSource || "")}</code>,
-          protocol: <code>${escapeHtml(manifest.protocol || "")}</code>,
-          sessionTranscript bytes: <code>${escapeHtml(String(sessionTranscriptBytes))}</code>,
-          readerAuth: <code>${escapeHtml(manifest.readerAuth?.signatureValid === true ? "signature valid" : "not available")}</code>
+          origin: <code class="smart-inline-code">${escapeHtml(manifest.origin || "")}</code><br>
+          originSource: <code class="smart-inline-code">${escapeHtml(manifest.originSource || "")}</code>,
+          protocol: <code class="smart-inline-code">${escapeHtml(manifest.protocol || "")}</code>,
+          sessionTranscript bytes: <code class="smart-inline-code">${escapeHtml(String(sessionTranscriptBytes))}</code>,
+          readerAuth: <code class="smart-inline-code">${escapeHtml(manifest.readerAuth?.signatureValid === true ? "signature valid" : "not available")}</code>
         `;
       } else {
-        summary.className = "callout warn";
+        summary.className = "smart-callout warn";
         summary.textContent = "Directory loaded, but manifest.json was not found.";
       }
 
@@ -1125,7 +504,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
           available, and ties it back to the container field or decoded structure
           that produced it.
         </p>
-        <div class="callout warn">
+        <div class="smart-callout warn">
           The page recomputes carrier equality, transcript, and SHA-256 digest checks
           in-browser. It also loads the checked-in Verifier HPKE-open inspection and pyMDOC
           COSE assertion fixture so the full validation story is visible on the page.
@@ -1174,22 +553,22 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       const viewerId = row.bytes ? storeByteViewerRow(row) : "";
       const byteHtml = row.bytes
         ? `<div class="byte-actions">
-             <button type="button" class="secondary" data-byte-viewer-id="${escapeHtml(viewerId)}">Open full byte viewer in new tab</button>
+             <button type="button" class="smart-btn sm" data-byte-viewer-id="${escapeHtml(viewerId)}">Open full byte viewer in new tab</button>
              <span class="byte-viewer-note">${(row.annotations?.length || 0).toLocaleString()} semantic anchors; complete hex is generated as a blob URL.</span>
            </div>`
         : "";
       const readableHtml = row.readable
-        ? `<details><summary>Readable decode</summary><div><pre class="wrap-pre">${escapeHtml(row.readable.trim())}</pre></div></details>`
+        ? `<details class="smart-details"><summary>Readable decode</summary><pre class="smart-code wrap-pre">${codeHtml(row.readable.trim())}</pre></details>`
         : "";
       const nestedHtml = row.nestedJson
-        ? `<details><summary>Contained JSON</summary><div class="nested-json"><pre class="wrap-pre">${escapeHtml(row.nestedJson.trim())}</pre></div></details>`
+        ? `<details class="smart-details"><summary>Contained JSON</summary><pre class="smart-code wrap-pre">${codeHtml(row.nestedJson.trim())}</pre></details>`
         : "";
       node.innerHTML = `
         <div class="byte-row-head">
           <strong>${escapeHtml(row.title)}</strong>
-          <span class="check ${escapeHtml(check.kind)}">${escapeHtml(check.label)}</span>
+          <span class="smart-pill ${CHECK_TONE[check.kind] || ""}">${escapeHtml(check.label)}</span>
         </div>
-        <dl class="byte-fields">
+        <dl class="smart-fields">
           <dt>File</dt><dd>${row.path ? escapeHtml(row.path) : "<span class=\"small\">missing</span>"}</dd>
           <dt>Bytes</dt><dd>${row.size ? row.size.toLocaleString() : ""}</dd>
           <dt>SHA-256</dt><dd class="mono">${escapeHtml(row.sha256 || "")}</dd>
@@ -1247,63 +626,40 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       const check = row.check || skipCheck("not checked");
       const anchors = row.annotations?.length || 0;
       return `<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(row.title)} byte viewer</title>
+<link rel="stylesheet" href="${new URL("/assets/smart-design.css", location.href)}">
+<link rel="stylesheet" href="${new URL("./pages.css", location.href)}">
+<link rel="stylesheet" href="${new URL("./inspector.css", location.href)}">
 <style>
-  :root { color-scheme: light; --ink:#172033; --muted:#60708a; --line:#d9e2ec; --soft:#f7fafc; --code:#0e1628; --code-fg:#e9f0ff; --blue:#0072bc; }
-  * { box-sizing: border-box; }
-  body { margin:0; font:15px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:#fff; }
-  main { max-width:1180px; margin:0 auto; padding:24px; }
-  header { background:#fff; border-bottom:1px solid var(--line); padding:0 0 18px; margin-bottom:18px; }
-  h1 { margin:0 0 8px; font-size:clamp(1.5rem,3vw,2.4rem); line-height:1.12; }
-  p { margin:0 0 10px; }
-  code, pre, .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; }
-  code { background:#eef2f7; padding:.12em .3em; }
-  pre { margin:0; background:var(--code); color:var(--code-fg); padding:14px; overflow:auto; tab-size:2; white-space:pre; font-size:.84rem; }
-  .meta { display:grid; grid-template-columns:150px minmax(0,1fr); gap:7px 12px; margin-top:12px; }
-  .meta dt { color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.04em; font-size:.72rem; }
-  .meta dd { margin:0; overflow-wrap:anywhere; }
-  .check { display:inline-flex; padding:4px 9px; font-size:.76rem; font-weight:850; white-space:nowrap; background:#eef8ff; color:#005f9e; }
-  .check.pass { color:#0b7c58; background:#ddf8eb; }
-  .check.fail { color:#b42318; background:#ffe7e5; }
-  .check.skip { color:var(--muted); background:#eef2f7; }
-  .byte-inspector { display:grid; gap:12px; margin-top:14px; }
-  .byte-dump-panel { border: 1px solid #E4E7EB; overflow:auto; background:var(--code); }
-  .byte-dump-panel pre { border-radius:0; max-height:none; margin:0; }
-  .byte-anchor-list { display:grid; gap:8px; }
-  .byte-anchor { display:grid; grid-template-columns:minmax(148px,180px) minmax(0,1fr); gap:12px; border:1px solid #dce6f0; padding:10px; background:#fbfdff; }
-  .byte-offset, .byte-hex, .byte-ascii { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; }
-  .byte-offset { color:var(--muted); font-weight:800; white-space:nowrap; }
-  .byte-hex { overflow-wrap:anywhere; word-break:break-all; margin-bottom:5px; }
-  .byte-ascii { color:var(--muted); overflow-wrap:anywhere; margin-bottom:5px; }
-  .byte-note strong { display:block; margin-bottom:2px; }
-  details { border:1px solid var(--line); background:#fff; margin:12px 0; }
-  summary { cursor:pointer; padding:12px 14px; font-weight:800; }
-  details > div { padding:0 14px 14px; }
-  .wrap-pre { white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; }
-  @media (max-width:700px) { .byte-anchor, .meta { grid-template-columns:1fr; } main { padding:14px; } }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+  .viewer-head { border-bottom: 1px solid var(--border); padding: 0 0 18px; margin-bottom: 18px; }
+  h1 { margin: 0 0 8px; font-size: clamp(1.5rem, 3vw, 2.4rem); line-height: 1.12; }
+  p { margin: 0 0 10px; }
+  .byte-inspector .smart-code { max-height: none; }
+  @media (max-width: 700px) { main { padding: 14px; } }
 </style>
 </head>
 <body>
 <main>
-  <header>
+  <div class="viewer-head">
     <h1>${escapeHtml(row.title)}</h1>
     <p>${escapeHtml(row.meaning || "")}</p>
-    <dl class="meta">
+    <dl class="smart-fields">
       <dt>File</dt><dd>${escapeHtml(row.path || "")}</dd>
       <dt>Bytes</dt><dd>${row.size ? row.size.toLocaleString() : ""}</dd>
       <dt>SHA-256</dt><dd class="mono">${escapeHtml(row.sha256 || "")}</dd>
       <dt>Comes From</dt><dd>${escapeHtml(row.source || "")}</dd>
-      <dt>Check</dt><dd><span class="check ${escapeHtml(check.kind)}">${escapeHtml(check.label)}</span> ${escapeHtml(check.text || "")}</dd>
+      <dt>Check</dt><dd><span class="smart-pill ${CHECK_TONE[check.kind] || ""}">${escapeHtml(check.label)}</span> ${escapeHtml(check.text || "")}</dd>
       <dt>Anchors</dt><dd>${anchors.toLocaleString()}</dd>
     </dl>
-  </header>
+  </div>
   ${renderAnnotatedBytes(row.bytes, row.annotations || [])}
-  ${row.readable ? `<details><summary>Readable decode</summary><div><pre class="wrap-pre">${escapeHtml(row.readable.trim())}</pre></div></details>` : ""}
-  ${row.nestedJson ? `<details><summary>Contained JSON</summary><div><pre class="wrap-pre">${escapeHtml(row.nestedJson.trim())}</pre></div></details>` : ""}
+  ${row.readable ? `<details class="smart-details"><summary>Readable decode</summary><pre class="smart-code wrap-pre">${codeHtml(row.readable.trim())}</pre></details>` : ""}
+  ${row.nestedJson ? `<details class="smart-details"><summary>Contained JSON</summary><pre class="smart-code wrap-pre">${codeHtml(row.nestedJson.trim())}</pre></details>` : ""}
 </main>
 </body>
 </html>`;
@@ -1313,9 +669,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       const rows = annotations.length ? annotations : fallbackAnnotations(bytes);
       return `
         <div class="byte-inspector">
-          <div class="byte-dump-panel">
-            <pre class="byte-pre">${escapeHtml(annotatedHexDump(bytes, rows))}</pre>
-          </div>
+          <pre class="smart-code tall">${escapeHtml(annotatedHexDump(bytes, rows))}</pre>
           <div class="byte-anchor-list">
             ${rows.map(note => {
         const start = Math.max(0, note.start);
@@ -1598,6 +952,12 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         : failCheck("text mismatch");
     }
 
+    // Each check's result as a pill: checked, mismatch, info, not checked.
+    const CHECK_TONE = { pass: "ok", fail: "bad", info: "info", skip: "" };
+    // A code block's HTML: JSON in the site's syntax colors, anything else escaped.
+    function codeHtml(text) {
+      return globalThis.SmartJson ? globalThis.SmartJson.jsonToHtml(text) : escapeHtml(text);
+    }
     function passCheck(text) { return { kind: "pass", label: "checked", text }; }
     function failCheck(text) { return { kind: "fail", label: "mismatch", text }; }
     function infoCheck(text) { return { kind: "info", label: "info", text }; }
@@ -1801,7 +1161,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         .map(([key, value]) => `<div class="fact"><b>${escapeHtml(key)}</b><span>${escapeHtml(String(value).trim())}</span></div>`)
         .join("");
       const preHtml = pre
-        ? `<details><summary>${escapeHtml(preTitle || "Details")}</summary><div><pre>${escapeHtml(pre.trim())}</pre></div></details>`
+        ? `<details class="smart-details"><summary>${escapeHtml(preTitle || "Details")}</summary><pre class="smart-code">${codeHtml(pre.trim())}</pre></details>`
         : "";
       node.innerHTML = `
         <h4>${escapeHtml(title)}</h4>
@@ -1866,7 +1226,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         const target = [...profileList, ...resourceTypes, questionnaireTitle].filter(Boolean).join(", ");
         return `
           <div class="item-row">
-            <strong>${escapeHtml(item.id || "(no id)")} <span class="pill">${escapeHtml(kind)}</span></strong>
+            <strong>${escapeHtml(item.id || "(no id)")} <span class="smart-pill">${escapeHtml(kind)}</span></strong>
             <div class="small">${escapeHtml(item.title || item.description || "")}</div>
             <div class="small">${escapeHtml(item.summary || "")}</div>
             <div class="small mono">${escapeHtml(target)}</div>
@@ -1884,13 +1244,13 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         <div class="item-list">
           ${statuses.map(status => `
             <div class="item-row">
-              <strong>item ${escapeHtml(status.item || "(unknown)")} <span class="pill">${escapeHtml(status.status || "")}</span></strong>
+              <strong>item ${escapeHtml(status.item || "(unknown)")} <span class="smart-pill">${escapeHtml(status.status || "")}</span></strong>
               <div class="small">${escapeHtml(status.message || "")}</div>
             </div>
           `).join("")}
           ${artifacts.map(artifact => `
             <div class="item-row">
-              <strong>${escapeHtml(artifact.id || "(artifact)")} <span class="pill">${escapeHtml(artifact.mediaType || artifact.type || "")}</span></strong>
+              <strong>${escapeHtml(artifact.id || "(artifact)")} <span class="smart-pill">${escapeHtml(artifact.mediaType || artifact.type || "")}</span></strong>
               <div class="small mono">fulfills: ${escapeHtml(Array.isArray(artifact.fulfills) ? artifact.fulfills.join(", ") : "")}</div>
               <div class="small">${escapeHtml(fhirSummary(artifact.value))}</div>
             </div>
@@ -1938,7 +1298,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
         card.innerHTML = `
           <div class="artifact-head">
             <span class="artifact-title">${escapeHtml(name)}</span>
-            <span class="pill warn">missing</span>
+            <span class="smart-pill warn">missing</span>
           </div>
           <p>${escapeHtml(description)}</p>
         `;
@@ -1951,7 +1311,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       const head = `
         <div class="artifact-head">
           <span class="artifact-title">${escapeHtml(name)}</span>
-          <span class="pill good">${size.toLocaleString()} bytes</span>
+          <span class="smart-pill ok">${size.toLocaleString()} bytes</span>
         </div>
         <p>${escapeHtml(description)}</p>
         <p class="path">${escapeHtml(path)}</p>
@@ -1960,7 +1320,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       if (textExtensions.has(ext)) {
         const text = await file.text();
         const rendered = ext === ".json" ? prettyJson(text) : text.trimEnd();
-        card.innerHTML = head + `<details><summary>Text content</summary><div><pre>${escapeHtml(rendered)}</pre></div></details>`;
+        card.innerHTML = head + `<details class="smart-details"><summary>Text content</summary><pre class="smart-code">${codeHtml(rendered)}</pre></details>`;
         return card;
       }
 
@@ -1982,13 +1342,13 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
       });
       card.innerHTML = head + `
         <div class="byte-actions">
-          <button type="button" class="secondary" data-byte-viewer-id="${escapeHtml(viewerId)}">Open full byte viewer in new tab</button>
+          <button type="button" class="smart-btn sm" data-byte-viewer-id="${escapeHtml(viewerId)}">Open full byte viewer in new tab</button>
           <span class="byte-viewer-note">Complete hex dump is generated as a blob URL.</span>
         </div>
         ${cborTree}
-        <details>
+        <details class="smart-details">
           <summary>Base64url</summary>
-          <div><pre>${escapeHtml(wrap(b64u, 96))}</pre></div>
+          <pre class="smart-code">${escapeHtml(wrap(b64u, 96))}</pre>
         </details>
       `;
       wireByteViewerButton(card);
@@ -1998,10 +1358,10 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
     function renderCborTree(bytes, artifactName) {
       const parsed = parseCborSafe(bytes);
       if (parsed.error) {
-        return `<details><summary>CBOR/tag decode</summary><div class="bad">${escapeHtml(parsed.error)}</div></details>`;
+        return `<details class="smart-details"><summary>CBOR/tag decode</summary><div class="smart-callout bad">${escapeHtml(parsed.error)}</div></details>`;
       }
       return `
-        <details>
+        <details class="smart-details">
           <summary>CBOR/tag decode</summary>
           <div class="tree">${renderNode(parsed.node, artifactName, "", true)}</div>
         </details>
@@ -2115,7 +1475,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
           const inner = parseCborSafe(node.child.value);
           body += `<div class="meaning">Decoded tag 24 embedded CBOR payload:</div>`;
           body += inner.error
-            ? `<div class="bad">${escapeHtml(inner.error)}</div>`
+            ? `<div class="smart-callout bad">${escapeHtml(inner.error)}</div>`
             : renderNode(inner.node, artifactName, "tag24 decoded");
         }
         return treeDetails(label, range, meaning, body, root);

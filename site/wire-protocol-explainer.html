@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,569 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
+  <link rel="stylesheet" href="./pages.css">
   <style>
-    :root {
-      color-scheme: light;
-      --ink: var(--fg-1);
-      --muted: var(--fg-2);
-      --line: var(--border);
-      --soft: var(--bg-alt);
-      --blue: var(--brand);
-      --green: var(--success);
-      --amber: #8A4F0E;
-      --red: var(--danger);
-      --code: #F6F8FA;
-      --code-fg: #1F2933;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--font-sans);
-      font-size: var(--fs-base);
-      line-height: var(--lh-relaxed);
-      color: var(--fg-1);
-      background: var(--bg);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-    code, pre, .mono, .byte-offset, .byte-hex, .byte-ascii {
-      font-family: var(--font-mono);
-    }
-    .page-head {
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
-    }
-    .wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-    .hero {
-      display: block;
-    }
-    h1, h2, h3, h4 { line-height: 1.13; margin: 0; }
-    h1 { font-size: clamp(2.4rem, 5vw, 4.7rem); letter-spacing: -0.055em; max-width: 820px; }
-    h2 { font-size: 1.8rem; margin-bottom: 12px; }
-    h3 { font-size: 1.18rem; margin-bottom: 8px; }
-    h4 { font-size: 1rem; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    p { margin: 0 0 12px; }
-    :where(main) a { color: var(--blue); }
-    .lede {
-      color: var(--muted);
-      font-size: 1.13rem;
-      max-width: 820px;
-      margin-top: 16px;
-    }
-    .badge-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .actions {
-      display: flex;
-      gap: 10px 16px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-bottom: 1px solid var(--line);
-      color: #365b82;
-      background: transparent;
-      border-radius: 0;
-      padding: 0 0 3px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .advanced-loader {
-      max-width: 760px;
-      margin-top: 22px;
-    }
-    .button-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 12px 0;
-    }
-    :where(main) button {
-      border: 1px solid #006fb7;
-      background: var(--blue);
-      color: #ffffff;
-      border-radius: 0;
-      padding: 10px 12px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-    }
-    :where(main) button.secondary {
-      background: #ffffff;
-      color: var(--blue);
-    }
-    .main-grid {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-    }
-    .sections-nav {
-      position: sticky;
-      top: 12px;
-      border-left: 3px solid var(--line);
-      padding: 4px 0 4px 12px;
-    }
-    .sections-nav a {
-      display: block;
-      padding: 8px 10px;
-      border-radius: 0;
-      text-decoration: none;
-      color: var(--ink);
-      font-weight: 650;
-    }
-    .sections-nav a:hover { background: var(--soft); }
-    section {
-      padding: 30px 0;
-      margin-bottom: 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .flow {
-      display: block;
-      margin-top: 16px;
-      margin-left: 14px;
-      border-left: 3px solid #c8d9e8;
-    }
-    .flow-step {
-      position: relative;
-      padding: 0 0 18px 24px;
-      background: transparent;
-    }
-    .flow-step::before {
-      content: "";
-      position: absolute;
-      left: -8px;
-      top: 0.35em;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--blue);
-    }
-    .flow-step strong { display: block; margin-bottom: 6px; }
-    .flow-step code { font-size: 0.86rem; }
-    .callout {
-      border-left: 4px solid var(--blue);
-      background: #f0f8ff;
-      padding: 14px 16px;
-      border-radius: 0;
-      margin: 16px 0;
-    }
-    .callout.warn {
-      border-left-color: var(--amber);
-      background: #fff8ea;
-    }
-    .callout.good {
-      border-left-color: var(--green);
-      background: #ecfbf5;
-    }
-    .two {
-      display: block;
-    }
-    .three {
-      display: block;
-    }
-    .mini {
-      margin: 18px 0;
-      padding: 0 0 0 16px;
-      border-left: 4px solid var(--line);
-      background: transparent;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 14px 0;
-      font-size: 0.95rem;
-    }
-    th, td {
-      border-bottom: 1px solid var(--line);
-      padding: 10px;
-      vertical-align: top;
-      text-align: left;
-    }
-    th {
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-size: 0.78rem;
-    }
-    code, pre, .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-    code {
-      background: #eef2f7;
-      padding: 0.12em 0.3em;
-      border-radius: 0;
-    }
-    pre {
-      margin: 0;
-      background: var(--code);
-      color: var(--code-fg);
-      padding: 14px;
-      border-radius: 0;
-      overflow: auto;
-      tab-size: 2;
-      white-space: pre;
-      font-size: 0.85rem;
-    }
-    .wrap-pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-    .byte-pre {
-      max-height: 520px;
-      border: 1px solid #E4E7EB;
-    }
-    .calc {
-      counter-reset: step;
-      display: grid;
-      gap: 10px;
-    }
-    .calc-row {
-      display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
-      gap: 12px;
-      align-items: start;
-      border-left: 4px solid var(--line);
-      padding: 4px 0 4px 12px;
-      background: transparent;
-    }
-    .calc-row:before {
-      counter-increment: step;
-      content: counter(step);
-      display: grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      color: #ffffff;
-      background: var(--blue);
-      font-weight: 800;
-    }
-    .artifact-card {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 14px;
-      margin: 12px 0;
-      background: #ffffff;
-    }
-    .artifact-card.missing {
-      background: #fafafa;
-      color: var(--muted);
-    }
-    .artifact-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .artifact-title { font-weight: 800; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 0;
-      padding: 4px 9px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      background: #eef2f7;
-      color: var(--muted);
-    }
-    .pill.good { background: #ddf8eb; color: var(--green); }
-    .pill.warn { background: #fff0ca; color: var(--amber); }
-    .path {
-      color: var(--muted);
-      font-size: 0.88rem;
-      overflow-wrap: anywhere;
-    }
-    .drill-chain {
-      display: grid;
-      gap: 12px;
-      margin: 16px 0;
-    }
-    .drill-node {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .drill-node h4 {
-      color: var(--ink);
-      letter-spacing: 0;
-      text-transform: none;
-      font-size: 1.05rem;
-      margin: 0 0 6px;
-    }
-    .fact-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .fact {
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      background: var(--soft);
-      padding: 9px;
-      min-width: 0;
-    }
-    .fact b {
-      display: block;
-      color: var(--muted);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 3px;
-    }
-    .fact span {
-      display: block;
-      overflow-wrap: anywhere;
-    }
-    .item-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .item-row {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .item-row strong { display: block; }
-    .item-row .small { overflow-wrap: anywhere; }
-    .byte-ledger {
-      display: grid;
-      gap: 10px;
-      margin: 16px 0;
-    }
-    .byte-row {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #ffffff;
-      padding: 14px;
-    }
-    .byte-row-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .byte-row-head strong { font-size: 1.02rem; }
-    .check {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 0;
-      padding: 4px 9px;
-      font-size: 0.76rem;
-      font-weight: 850;
-      white-space: nowrap;
-    }
-    .check.pass { color: var(--green); background: #ddf8eb; }
-    .check.fail { color: var(--red); background: #ffe7e5; }
-    .check.info { color: #005f9e; background: #eef8ff; }
-    .check.skip { color: var(--muted); background: #eef2f7; }
-    .byte-fields {
-      display: grid;
-      grid-template-columns: 160px minmax(0, 1fr);
-      gap: 7px 12px;
-      font-size: 0.9rem;
-    }
-    .byte-fields dt {
-      color: var(--muted);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      font-size: 0.72rem;
-    }
-    .byte-fields dd {
-      margin: 0;
-      overflow-wrap: anywhere;
-    }
-    .byte-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 12px;
-    }
-    .byte-actions button {
-      padding: 8px 10px;
-    }
-    .byte-viewer-note {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .byte-inspector {
-      display: grid;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .byte-dump-panel {
-      border: 1px solid #E4E7EB;
-      border-radius: 0;
-      overflow: auto;
-      background: var(--code);
-    }
-    .byte-dump-panel pre {
-      border-radius: 0;
-      max-height: 520px;
-      white-space: pre;
-      margin: 0;
-    }
-    .byte-anchor-list {
-      display: grid;
-      gap: 8px;
-    }
-    .byte-anchor {
-      display: grid;
-      grid-template-columns: minmax(148px, 180px) minmax(0, 1fr);
-      gap: 12px;
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .tree {
-      max-height: 640px;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 0;
-      background: #fbfdff;
-      padding: 8px;
-      margin-top: 10px;
-    }
-    .tree details { margin: 8px 0 8px 12px; }
-    .tree summary {
-      cursor: pointer;
-      padding: 4px 6px;
-      border-radius: 0;
-      font-weight: 650;
-    }
-    .tree summary:hover { background: #eef8ff; }
-    .tree .leaf {
-      padding: 4px 6px;
-      margin-left: 12px;
-      border-radius: 0;
-    }
-    .range { color: var(--muted); font-size: 0.78rem; }
-    .value-preview { color: var(--ink); overflow-wrap: anywhere; }
-    .meaning {
-      color: #005f9e;
-      font-size: 0.78rem;
-      margin-left: 4px;
-    }
-    .byte-slice {
-      display: grid;
-      grid-template-columns: minmax(148px, 180px) minmax(0, 1fr);
-      gap: 10px;
-      border: 1px solid #dce6f0;
-      border-radius: 0;
-      padding: 10px;
-      background: #fbfdff;
-    }
-    .byte-offset {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      color: var(--muted);
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .byte-hex {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      overflow-wrap: anywhere;
-      word-break: break-all;
-      margin-bottom: 5px;
-    }
-    .byte-ascii {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      color: var(--muted);
-      overflow-wrap: anywhere;
-      margin-bottom: 5px;
-    }
-    .byte-note strong {
-      display: block;
-      margin-bottom: 2px;
-    }
-    @media (max-width: 700px) {
-      .byte-anchor, .byte-slice {
-        grid-template-columns: 1fr;
-      }
-    }
-    .nested-json {
-      display: grid;
-      gap: 10px;
-    }
-    input[type="file"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px dashed #9fb6cc;
-      border-radius: 0;
-      background: #f8fbff;
-    }
-    :where(main) details {
-      border: 1px solid var(--line);
-      border-radius: 0;
-      padding: 0;
-      margin: 10px 0;
-      background: #ffffff;
-    }
-    :where(main) summary {
-      cursor: pointer;
-      padding: 12px 14px;
-      font-weight: 800;
-    }
-    :where(main) details > div { padding: 0 14px 14px; }
-    .small { color: var(--muted); font-size: 0.92rem; }
-    .nowrap { white-space: nowrap; }
-    @media (max-width: 980px) {
-      .main-grid { grid-template-columns: 1fr; }
-      .sections-nav { position: static; }
-      .wrap { padding: 18px; }
-    }
-
-    /* ----- Layout robustness: prevent grid items from blowing out at min-content ----- */
-    .main-grid > * { min-width: 0; }
-    section { min-width: 0; }
-    pre { max-width: 100%; }
-    p code, li code, td code, dd code, .note code,
-    .flow-step code, .calc-row p code, .callout code {
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-    .table-wrap { overflow-x: auto; max-width: 100%; }
-    .table-wrap > table { margin: 0; }
-
-    /* ----- Hero typography (override earlier h1 sizing) ----- */
-    .page-head h1 {
-      font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-      letter-spacing: -0.02em;
-      max-width: none;
-      margin: 4px 0 0;
-    }
-    .page-head .lede {
-      font-size: 1.04rem;
-      margin-top: 14px;
-      max-width: 760px;
-    }
-    .back-link {
-      display: inline-block;
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .back-link:hover { color: var(--blue); }
     .param-list {
       list-style: none;
       margin: 18px 0 0;
@@ -583,70 +22,101 @@
     .param-list li { display: inline-flex; align-items: baseline; gap: 6px; }
     .param-list b {
       display: inline-block;
-      color: var(--muted);
+      color: var(--fg-2);
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-weight: 800;
       font-size: 0.7rem;
     }
 
-    /* ----- Party tag (verifier / wallet next to a section heading) ----- */
-    .party {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      vertical-align: 0.22em;
-      margin-left: 10px;
+    /* Section links in a sticky column beside the steps. */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
     }
-    .party.verifier { background: #e7f1fb; color: #1e58a0; }
-    .party.wallet   { background: #e7f7ee; color: #0d6e4f; }
+    .main-grid > * { min-width: 0; }
+    .sections-nav {
+      position: sticky;
+      top: 12px;
+      border-left: 3px solid var(--border);
+      padding: 4px 0 4px 12px;
+    }
+    .sections-nav a {
+      display: block;
+      padding: 8px 10px;
+      text-decoration: none;
+      color: var(--fg-1);
+      font-weight: 650;
+    }
+    .sections-nav a:hover { background: var(--bg-alt); }
+    @media (max-width: 980px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sections-nav { position: static; }
+    }
 
-    /* ----- Per-step "note" line: encoding/keys/math callout ----- */
-    .note {
-      margin-top: 10px;
-      font-size: 0.86rem;
-      color: var(--muted);
-      line-height: 1.55;
+    /* The overall flow: a line of dots. */
+    .flow { margin: 16px 0 0 14px; border-left: 3px solid var(--border-strong); }
+    .flow-step { position: relative; padding: 0 0 18px 24px; }
+    .flow-step::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 0.35em;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--brand);
     }
-    .note b {
-      color: var(--ink);
+    .flow-step strong { display: block; margin-bottom: 6px; }
+
+    /* Numbered build steps. */
+    .calc { counter-reset: step; display: grid; gap: 10px; }
+    .calc-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      border-left: 4px solid var(--border);
+      padding: 4px 0 4px 12px;
+    }
+    .calc-row::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      color: var(--on-brand);
+      background: var(--brand);
       font-weight: 800;
-      margin-right: 4px;
     }
+
+    /* Who does a step, next to its heading. */
+    h2 > .smart-chip { margin-left: 10px; vertical-align: 0.22em; }
+
+    /* A step's note: encoding, keys, math. */
+    .note { margin-top: 10px; font-size: 0.86rem; color: var(--fg-2); line-height: 1.55; }
+    .note b { color: var(--fg-1); font-weight: 800; margin-right: 4px; }
     .note + .note { margin-top: 4px; }
 
-    /* ----- H2 sentence-case nudge ----- */
-    section > h2 {
-      font-size: 1.45rem;
-      letter-spacing: -0.005em;
-      margin-bottom: 8px;
-    }
-
-    /* ----- "next page" CTA link ----- */
     .next-link {
       display: inline-block;
       font-weight: 700;
-      color: var(--blue);
+      color: var(--brand);
       text-decoration: none;
-      border-bottom: 2px solid var(--blue);
+      border-bottom: 2px solid var(--brand);
       padding-bottom: 1px;
     }
-    .next-link:hover { color: var(--ink); border-bottom-color: var(--ink); }
-    /* Fail or warn, per spec §2 [RCV-1] and §8. */
-    .fw { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
-    .fw.fail { background: #ffe7e5; color: var(--red); }
-    .fw.warn { background: #fff0ca; color: var(--amber); }
-    a.rid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
-    td a.rid { font-size: 0.74rem; }
+    .next-link:hover { color: var(--fg-1); border-bottom-color: var(--fg-1); }
   </style>
 </head>
 <body>
   <div data-smart-topbar></div>
   <nav data-smart-breadcrumb></nav>
-  <main id="main">
+  <main id="main" class="wire smart-prose">
   <div class="page-head">
     <div class="wrap hero">
       <h1>Wire protocol</h1>
@@ -665,7 +135,7 @@
       </ul>
       <p class="lede">
         <b>Strict to build, lenient to receive.</b> Whoever builds a message builds exactly what the spec describes
-        <a class="rid" href="./spec.html#RCV-0">RCV-0</a>. Whoever receives one stops only at a step marked <span class="fw fail">fail</span>; any other problem is a <span class="fw warn">warn</span>: it keeps
+        <a class="rid" href="./spec.html#RCV-0">RCV-0</a>. Whoever receives one stops only at a step marked <span class="smart-pill bad">fail</span>; any other problem is a <span class="smart-pill warn">warn</span>: it keeps
         going and reports it <a class="rid" href="./spec.html#RCV-1">RCV-1</a> <a class="rid" href="./spec.html#RCV-2">RCV-2</a>. A bad signature is a warning, not a failure. See
         <a href="./trust-and-limits.html">Trust and limits</a> for why.
       </p>
@@ -717,7 +187,7 @@
       </section>
 
       <section id="construct-request">
-        <h2>1. Build the request <span class="party verifier">verifier</span></h2>
+        <h2>1. Build the request <span class="smart-chip info">verifier</span></h2>
         <p>Spec <a href="./spec.html#8-2-verifier-request-construction">§8.2</a>. The Verifier builds, in order:</p>
         <div class="calc">
           <div class="calc-row">
@@ -781,7 +251,7 @@ navigator.credentials.get({
       </section>
 
       <section id="bind-transcript">
-        <h2>2. SessionTranscript <span class="party verifier">verifier</span> <span class="party wallet">wallet</span></h2>
+        <h2>2. SessionTranscript <span class="smart-chip info">verifier</span> <span class="smart-chip ok">wallet</span></h2>
         <p>
           Spec <a href="./spec.html#8-3-sessiontranscript">§8.3</a>. Both sides compute it separately, and it must come out
           byte for byte the same: it is the HPKE <code>info</code>, and it is inside what reader authentication and the
@@ -799,19 +269,19 @@ SessionTranscript = [null, null, Handover]      // HPKE info = CBOR(SessionTrans
       </section>
 
       <section id="wallet-checks">
-        <h2>3. Check the request <span class="party wallet">wallet</span></h2>
-        <p>Spec <a href="./spec.html#8-4-wallet-request-handling-and-response-construction">§8.4</a>. On a <span class="fw fail">fail</span>, the wallet does not respond, and the platform ends the call with an error <a class="rid" href="./spec.html#WRQ-1">WRQ-1</a>.</p>
-        <div class="table-wrap">
+        <h2>3. Check the request <span class="smart-chip ok">wallet</span></h2>
+        <p>Spec <a href="./spec.html#8-4-wallet-request-handling-and-response-construction">§8.4</a>. On a <span class="smart-pill bad">fail</span>, the wallet does not respond, and the platform ends the call with an error <a class="rid" href="./spec.html#WRQ-1">WRQ-1</a>.</p>
+        <div class="smart-table-wrap">
           <table>
             <thead><tr><th>Step</th><th>Check</th><th>On a problem</th></tr></thead>
             <tbody>
-              <tr><td><a class="rid" href="./spec.html#WRQ-2">WRQ-2</a></td><td>Decode <code>deviceRequest</code> (base64url, CBOR)</td><td><span class="fw fail">fail</span> if it can't be decoded; <span class="fw warn">warn</span> for another protocol name or padded base64url</td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-3">WRQ-3</a></td><td><code>DeviceRequest.version</code> is <code>"1.0"</code></td><td><span class="fw warn">warn</span></td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-4">WRQ-4</a></td><td>Find the DocRequest with this profile's <code>docType</code></td><td><span class="fw fail">fail</span> if none; <span class="fw warn">warn</span> if several (use the first)</td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-5">WRQ-5</a></td><td>Take the request text from <code>requestInfo</code></td><td><span class="fw fail">fail</span> if missing; <span class="fw warn">warn</span> for other <code>nameSpaces</code> or <code>intentToRetain</code> problems</td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-6">WRQ-6</a></td><td>Validate the SMART request (<a href="./spec.html#5-clinical-request-model">spec §5</a>)</td><td><span class="fw fail">fail</span> where §5 rejects it; problems inside one item make that item <code>unsupported</code></td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-7">WRQ-7</a></td><td>Decode <code>encryptionInfo</code> and its P-256 key</td><td><span class="fw fail">fail</span> if no usable key; <span class="fw warn">warn</span> for other shape problems</td></tr>
-              <tr><td><a class="rid" href="./spec.html#WRQ-8">WRQ-8</a></td><td>Compute the SessionTranscript</td><td><span class="fw fail">fail</span> if there is no origin</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-2">WRQ-2</a></td><td>Decode <code>deviceRequest</code> (base64url, CBOR)</td><td><span class="smart-pill bad">fail</span> if it can't be decoded; <span class="smart-pill warn">warn</span> for another protocol name or padded base64url</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-3">WRQ-3</a></td><td><code>DeviceRequest.version</code> is <code>"1.0"</code></td><td><span class="smart-pill warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-4">WRQ-4</a></td><td>Find the DocRequest with this profile's <code>docType</code></td><td><span class="smart-pill bad">fail</span> if none; <span class="smart-pill warn">warn</span> if several (use the first)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-5">WRQ-5</a></td><td>Take the request text from <code>requestInfo</code></td><td><span class="smart-pill bad">fail</span> if missing; <span class="smart-pill warn">warn</span> for other <code>nameSpaces</code> or <code>intentToRetain</code> problems</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-6">WRQ-6</a></td><td>Validate the SMART request (<a href="./spec.html#5-clinical-request-model">spec §5</a>)</td><td><span class="smart-pill bad">fail</span> where §5 rejects it; problems inside one item make that item <code>unsupported</code></td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-7">WRQ-7</a></td><td>Decode <code>encryptionInfo</code> and its P-256 key</td><td><span class="smart-pill bad">fail</span> if no usable key; <span class="smart-pill warn">warn</span> for other shape problems</td></tr>
+              <tr><td><a class="rid" href="./spec.html#WRQ-8">WRQ-8</a></td><td>Compute the SessionTranscript</td><td><span class="smart-pill bad">fail</span> if there is no origin</td></tr>
               <tr><td><a class="rid" href="./spec.html#WRQ-9">WRQ-9</a></td><td>Check <code>readerAuth</code>, if present</td><td>Never fails; classified as above</td></tr>
             </tbody>
           </table>
@@ -820,7 +290,7 @@ SessionTranscript = [null, null, Handover]      // HPKE info = CBOR(SessionTrans
       </section>
 
       <section id="construct-response">
-        <h2>4. Build the response <span class="party wallet">wallet</span></h2>
+        <h2>4. Build the response <span class="smart-chip ok">wallet</span></h2>
         <p>
           Spec <a href="./spec.html#8-4-wallet-request-handling-and-response-construction">§8.4</a>. The wallet signs its
           own mdoc: it acts as the issuer and as the device, with keys it controls. The signatures make the mdoc complete
@@ -872,9 +342,9 @@ deviceSignature = COSE_Sign1(protected {1: -7}, payload null)
       </section>
 
       <section id="encrypt">
-        <h2>5. Encrypt <span class="party wallet">wallet</span></h2>
+        <h2>5. Encrypt <span class="smart-chip ok">wallet</span></h2>
         <p>Spec <a href="./spec.html#8-5-hpke-encryption-and-verifier-processing">§8.5</a> <a class="rid" href="./spec.html#HPKE-1">HPKE-1</a> <a class="rid" href="./spec.html#HPKE-2">HPKE-2</a>. One fixed suite; nothing on the wire names another <a class="rid" href="./spec.html#ALG-1">ALG-1</a>.</p>
-        <div class="table-wrap">
+        <div class="smart-table-wrap">
           <table>
             <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
             <tbody>
@@ -892,21 +362,21 @@ result        = { protocol: "org-iso-mdoc", data: { response: base64url(CBOR(dca
       </section>
 
       <section id="parse-verify">
-        <h2>6. Check the response <span class="party verifier">verifier</span></h2>
-        <p>Spec <a href="./spec.html#8-5-hpke-encryption-and-verifier-processing">§8.5</a>. On a <span class="fw fail">fail</span>, the Verifier rejects the whole response <a class="rid" href="./spec.html#VRS-1">VRS-1</a>.</p>
-        <div class="table-wrap">
+        <h2>6. Check the response <span class="smart-chip info">verifier</span></h2>
+        <p>Spec <a href="./spec.html#8-5-hpke-encryption-and-verifier-processing">§8.5</a>. On a <span class="smart-pill bad">fail</span>, the Verifier rejects the whole response <a class="rid" href="./spec.html#VRS-1">VRS-1</a>.</p>
+        <div class="smart-table-wrap">
           <table>
             <thead><tr><th>Step</th><th>Check</th><th>On a problem</th></tr></thead>
             <tbody>
-              <tr><td><a class="rid" href="./spec.html#VRS-2">VRS-2</a></td><td>Decode <code>data.response</code> as <code>["dcapi", {enc, cipherText}]</code></td><td><span class="fw fail">fail</span> if it can't be decoded; <span class="fw warn">warn</span> for another protocol name or padding</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-3">VRS-3</a></td><td>Recompute the transcript from its own origin and <code>encryptionInfo</code> string, and decrypt</td><td><span class="fw fail">fail</span> if it doesn't open. HPKE is authenticated, so this also catches tampering in transit.</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-4">VRS-4</a></td><td>Decode the DeviceResponse, find the document with this <code>docType</code></td><td><span class="fw fail">fail</span> if none; <span class="fw warn">warn</span> for version, <code>status</code>, or extra documents</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-5">VRS-5</a></td><td>Verify <code>issuerAuth</code> with the first <code>x5chain</code> certificate; check MSO fields</td><td><span class="fw warn">warn</span></td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-6">VRS-6</a></td><td>SHA-256 of <code>IssuerSignedItemBytes</code> as received equals the MSO digest for its <code>digestID</code></td><td><span class="fw warn">warn</span></td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-7">VRS-7</a></td><td>Rebuild <code>DeviceAuthenticationBytes</code>, verify the device signature</td><td><span class="fw warn">warn</span>, also for an attached payload that differs from the rebuilt bytes</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-8">VRS-8</a></td><td>Find <code>smart_health_checkin_response</code> with a text value</td><td><span class="fw fail">fail</span> if missing</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="fw fail">fail</span> only for the whole-response problems in <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">Request and response</a>)</td></tr>
-              <tr><td><a class="rid" href="./spec.html#VRS-10">VRS-10</a></td><td>MSO <code>validityInfo</code> includes now, give or take a few minutes</td><td><span class="fw warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-2">VRS-2</a></td><td>Decode <code>data.response</code> as <code>["dcapi", {enc, cipherText}]</code></td><td><span class="smart-pill bad">fail</span> if it can't be decoded; <span class="smart-pill warn">warn</span> for another protocol name or padding</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-3">VRS-3</a></td><td>Recompute the transcript from its own origin and <code>encryptionInfo</code> string, and decrypt</td><td><span class="smart-pill bad">fail</span> if it doesn't open. HPKE is authenticated, so this also catches tampering in transit.</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-4">VRS-4</a></td><td>Decode the DeviceResponse, find the document with this <code>docType</code></td><td><span class="smart-pill bad">fail</span> if none; <span class="smart-pill warn">warn</span> for version, <code>status</code>, or extra documents</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-5">VRS-5</a></td><td>Verify <code>issuerAuth</code> with the first <code>x5chain</code> certificate; check MSO fields</td><td><span class="smart-pill warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-6">VRS-6</a></td><td>SHA-256 of <code>IssuerSignedItemBytes</code> as received equals the MSO digest for its <code>digestID</code></td><td><span class="smart-pill warn">warn</span></td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-7">VRS-7</a></td><td>Rebuild <code>DeviceAuthenticationBytes</code>, verify the device signature</td><td><span class="smart-pill warn">warn</span>, also for an attached payload that differs from the rebuilt bytes</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-8">VRS-8</a></td><td>Find <code>smart_health_checkin_response</code> with a text value</td><td><span class="smart-pill bad">fail</span> if missing</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-9">VRS-9</a></td><td>Parse and validate the SMART response against the request</td><td><span class="smart-pill bad">fail</span> only for the whole-response problems in <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>; the rest affects one item or record (<a href="./smart-model-explainer.html#checks">Request and response</a>)</td></tr>
+              <tr><td><a class="rid" href="./spec.html#VRS-10">VRS-10</a></td><td>MSO <code>validityInfo</code> includes now, give or take a few minutes</td><td><span class="smart-pill warn">warn</span></td></tr>
             </tbody>
           </table>
         </div>

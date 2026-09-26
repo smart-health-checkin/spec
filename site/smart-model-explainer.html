@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,94 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
+  <link rel="stylesheet" href="./pages.css">
   <style>
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      color: var(--fg-1);
-      background: var(--bg);
-      font-family: var(--font-sans);
-      font-size: var(--fs-base);
-      line-height: var(--lh-relaxed);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .page { max-width: 960px; margin: 0 auto; padding: 36px 24px 56px; }
-    .page > header { padding-bottom: 28px; border-bottom: 1px solid var(--border); }
-
-
-    h1, h2, h3 {
-      margin: 0;
-      color: var(--fg-1);
-      line-height: var(--lh-tight);
-      letter-spacing: var(--tracking-tight);
-      text-wrap: balance;
-    }
-    h1 { max-width: 800px; font-size: clamp(2.1rem, 4.4vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; }
-    h2 { margin-bottom: var(--space-3); font-size: clamp(1.55rem, 2.8vw, 2rem); font-weight: 700; letter-spacing: var(--tracking-snug); line-height: var(--lh-snug); }
-    h3 { margin: var(--space-7) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; letter-spacing: 0; line-height: var(--lh-snug); }
-
-    p { max-width: 38em; margin: 0 0 var(--space-4); text-wrap: pretty; }
-    .lede { margin-top: var(--space-5); color: var(--fg-2); font-size: var(--fs-md); }
-
-    :where(main) a { color: var(--brand); font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; }
-    :where(main) a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
-
-    .toc { display: flex; flex-wrap: wrap; gap: 10px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
-    .toc a { color: var(--fg-2); font-size: var(--fs-sm); }
-
-    section { padding: var(--space-7) 0; border-bottom: 1px solid var(--border); }
-    section:last-child { border-bottom: 0; }
-
-    code, pre { font-family: var(--font-mono); }
-    code {
-      padding: 1px 6px;
-      background: var(--gray-50);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--gray-800);
-      font-size: 0.92em;
-      overflow-wrap: anywhere;
-    }
-    pre {
-      margin: var(--space-4) 0 var(--space-5);
-      padding: 16px 18px;
-      overflow-x: auto;
-      background: #F6F8FA; border: 1px solid #E4E7EB;
-      color: #1F2933;
-      border-radius: var(--radius-md);
-      font-size: var(--fs-sm);
-      line-height: 1.55;
-      white-space: pre;
-    }
-
-    /* Field lists: one field per row, name then meaning. */
-    .fields { margin: var(--space-4) 0 0; border-top: 1px solid var(--border); }
-    .fields > div {
-      display: grid;
-      grid-template-columns: 170px minmax(0, 1fr);
-      gap: 4px var(--space-5);
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .fields dt { font-family: var(--font-mono); color: var(--brand-ink); font-weight: 700; font-size: var(--fs-sm); }
-    .fields dd { margin: 0; color: var(--fg-2); }
-    .fields dd small { display: block; color: var(--fg-mark); font-size: var(--fs-sm); }
-
-    .note {
-      margin: var(--space-5) 0 0;
-      padding: 14px 18px;
-      border-left: 3px solid var(--brand);
-      background: var(--info-wash);
-      border-radius: var(--radius-md);
-      color: var(--gray-800);
-      font-size: var(--fs-sm);
-      max-width: none;
-    }
-    .note.warning { border-left-color: var(--warning); background: var(--warning-wash); }
+    .fields dd small { display: block; color: var(--fg-3); font-size: var(--fs-sm); }
 
     /* The overview: items, records, outcomes, linked by item id. */
     .map {
@@ -118,84 +33,25 @@
     .map li b { display: block; font-weight: 600; }
     .map li .sub { display: block; color: var(--fg-mark); overflow-wrap: anywhere; }
     .map.focus li { opacity: 0.4; }
-    .map.focus li.on { opacity: 1; border-color: var(--brand); background: var(--info-wash); }
+    .map.focus li.on { opacity: 1; border-color: var(--brand); background: var(--status-info-wash); }
     .id {
       display: inline-block;
       margin: 2px 4px 0 0;
       padding: 0 7px;
       border-radius: 999px;
-      background: var(--gray-100);
-      color: var(--gray-800);
+      background: var(--code-inline-bg);
+      color: var(--code-inline-fg);
       font-family: var(--font-mono);
       font-size: 12px;
       line-height: 20px;
       cursor: default;
     }
-    .status { font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
-    .status.fulfilled { color: #15806B; }
-    .status.partial { color: #A45F07; }
-    .status.declined, .status.unavailable, .status.unsupported, .status.error { color: #A32A22; }
 
     /* Selector tabs. Without script, every panel shows. */
-    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--space-4); }
-    .tabs button {
-      font: inherit;
-      font-size: var(--fs-sm);
-      font-weight: 600;
-      padding: 6px 12px;
-      border: 1px solid var(--border-strong);
-      border-radius: 999px;
-      background: var(--surface);
-      color: var(--fg-2);
-      cursor: pointer;
-    }
-    .tabs button[aria-selected="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+    .smart-tabs { margin-top: var(--space-4); }
     .panel { padding-top: var(--space-4); }
     .panel h4 { margin: 0 0 var(--space-2); font-size: var(--fs-base); }
 
-    .steps { margin: var(--space-5) 0 0; padding: 0; list-style: none; counter-reset: step; }
-    .steps li {
-      counter-increment: step;
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr);
-      gap: 14px;
-      padding: var(--space-3) 0;
-      border-top: 1px solid var(--border);
-    }
-    .steps li:first-child { border-top: 0; }
-    .steps li::before {
-      content: counter(step);
-      width: 30px; height: 30px;
-      display: grid; place-items: center;
-      border: 1px solid var(--border-strong);
-      border-radius: 50%;
-      color: var(--brand);
-      font-weight: 700;
-      font-size: var(--fs-sm);
-      background: var(--surface);
-    }
-
-    table { width: 100%; margin: var(--space-4) 0 0; border-collapse: collapse; font-size: var(--fs-sm); }
-    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-    th { color: var(--fg-mark); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; font-weight: 700; }
-    td:first-child { white-space: nowrap; }
-
-    /* Requirement tags: link to the rule in the spec. */
-    a.rid {
-      display: inline-block;
-      padding: 0 6px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--gray-50);
-      color: var(--brand-ink);
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      font-weight: 600;
-      line-height: 18px;
-      white-space: nowrap;
-      vertical-align: 1px;
-    }
-    a.rid:hover { border-color: var(--brand); }
     .terms { margin-top: var(--space-4); color: var(--fg-2); font-size: var(--fs-sm); }
     #checks h3 { margin-top: var(--space-6); }
     .checks { margin: var(--space-4) 0 0; padding: 0; list-style: none; border-top: 1px solid var(--border); }
@@ -203,62 +59,20 @@
     .checks li a { font-size: var(--fs-sm); font-weight: 500; white-space: nowrap; }
 
     .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
-    .pair pre { margin-top: var(--space-2); max-height: 560px; }
     .label { display: inline-block; color: var(--fg-mark); font-size: 11px; font-weight: 700; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
 
     .next { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-5); margin: var(--space-4) 0 0; padding: 0; list-style: none; }
     .next li span { display: block; color: var(--fg-2); font-size: var(--fs-sm); }
 
     @media (max-width: 760px) {
-      body { font-size: 15.5px; }
-      .page { padding: 28px 16px 48px; }
       .map, .pair, .next { grid-template-columns: minmax(0, 1fr); }
-      .fields > div { grid-template-columns: minmax(0, 1fr); }
-      pre { font-size: 13px; }
-      td:first-child { white-space: normal; }
     }
-  
-    /* Explainer diagrams (inline SVG). Colors are scoped to the figures. */
-    .xd-figure { margin: var(--space-4) 0; border: 1px solid var(--gray-200); border-radius: var(--radius-md); overflow-x: auto; background: #fff; }
-    .xd { display: block; width: 100%; min-width: 640px; height: auto;
-      --fg: #1f2933; --fg-2: #4b5563; --fg-3: #5b6675; --line: #e4e7eb; --line-2: #cbd2d9; --bg-alt: #f6f8fa; --card: #fff;
-      --brand: #0e6fb8; --brand-wash: #d6eaf7; --ok: #1b7f4b; --ok-wash: #ddf4e6; --warn: #8a5a00; --warn-wash: #fdf0d2;
-      --off: #6f7178; --off-wash: #eef1f4; --key: #b8860b;
-      --font: var(--font-sans, "Inter", system-ui, sans-serif); --mono: var(--font-mono, ui-monospace, monospace); }
-    #match [data-ids]:focus { outline: none; }
-    #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
+
+    /* The matching diagram replaces the list overview on wider screens. */
     .map-figure { display: none; }
     @media (min-width: 44rem) { .map-figure { display: block; } .map { display: none !important; } }
-    /* SVG styling, all from tokens */
-    .xd text { font-family: var(--font); fill: var(--fg); }
-    .xd .mono { font-family: var(--mono); font-size: 12px; fill: var(--fg-3); }
-    .xd .head { font-size: 13px; font-weight: 700; fill: var(--fg); }
-    .xd .sub { font-size: 12px; fill: var(--fg-3); }
-    .xd .t { font-size: 14px; font-weight: 600; }
-    .xd .s { font-size: 12.5px; fill: var(--fg-2); }
-    .xd .box { fill: var(--card); stroke: var(--line-2); stroke-width: 1.2; }
-    .xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
-    .xd .off-t { fill: var(--fg-3); }
-    .xd .pill-ok { fill: var(--ok-wash); } .xd .pill-ok-t { fill: var(--ok); font-size: 12px; font-weight: 600; }
-    .xd .pill-warn { fill: var(--warn-wash); } .xd .pill-warn-t { fill: var(--warn); font-size: 12px; font-weight: 600; }
-    .xd .pill-off { fill: var(--off-wash); } .xd .pill-off-t { fill: var(--off); font-size: 12px; font-weight: 600; }
-    .xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
-    .xd .dot { fill: var(--brand); }
-    .xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
-    .xd .rule { stroke: var(--line); stroke-width: 1; }
-    .xd .band { fill: var(--bg-alt); }
-    .xd .lane { fill: none; stroke: var(--line); stroke-dasharray: 3 5; }
-    .xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
-    .xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
-    .xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
-    .xd .num { fill: var(--brand); } .xd .num-t { fill: #fff; font-size: 12px; font-weight: 700; }
-    .xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
-    .xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-    .xd .key { fill: none; stroke: var(--key); stroke-width: 2.2; stroke-linecap: round; }
-    .xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
-    .xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand); font-size: 11.5px; font-weight: 600; }
-    .xd .qr { fill: var(--fg); }
-    
+    #match [data-ids]:focus { outline: none; }
+    #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
     /* Follow an id across: hover an item or a record */
     #match.hot .link { opacity: .12; }
     #match.hot .link.on { opacity: 1; stroke-width: 2.6; }
@@ -271,7 +85,7 @@
   <div data-smart-topbar></div>
   <nav data-smart-breadcrumb></nav>
 
-  <main class="page" id="main">
+  <main class="page smart-prose" id="main">
     <header>
       <h1>Request and response</h1>
       <p class="lede">
@@ -422,16 +236,16 @@
         <div>
           <h3>Response <code>requestStatus[]</code></h3>
           <ul>
-            <li data-ids="patient"><span class="id">patient</span> <span class="status fulfilled">fulfilled</span></li>
-            <li data-ids="insurance"><span class="id">insurance</span> <span class="status declined">declined</span><span class="sub">No record is returned for it.</span></li>
-            <li data-ids="medications"><span class="id">medications</span> <span class="status partial">partial</span><span class="sub">One medication was kept private.</span></li>
-            <li data-ids="immunizations"><span class="id">immunizations</span> <span class="status fulfilled">fulfilled</span></li>
-            <li data-ids="intake"><span class="id">intake</span> <span class="status fulfilled">fulfilled</span></li>
+            <li data-ids="patient"><span class="id">patient</span> <span class="smart-pill ok">fulfilled</span></li>
+            <li data-ids="insurance"><span class="id">insurance</span> <span class="smart-pill bad">declined</span><span class="sub">No record is returned for it.</span></li>
+            <li data-ids="medications"><span class="id">medications</span> <span class="smart-pill warn">partial</span><span class="sub">One medication was kept private.</span></li>
+            <li data-ids="immunizations"><span class="id">immunizations</span> <span class="smart-pill ok">fulfilled</span></li>
+            <li data-ids="intake"><span class="id">intake</span> <span class="smart-pill ok">fulfilled</span></li>
           </ul>
         </div>
       </div>
 
-      <p class="note">
+      <p class="smart-callout">
         Two rules hold the model together. Every item gets exactly one row in
         <code>requestStatus[]</code>. Every record lists the item ids it answers in
         <code>fulfills[]</code>. One record can answer several items, and one item
@@ -450,13 +264,13 @@
   "fhirVersions": ["4.0.1"],
   "items": [ … ]
 }</pre>
-      <dl class="fields">
-        <div><dt>type</dt><dd>Always <code>smart-health-checkin-request</code>.</dd></div>
-        <div><dt>version</dt><dd>Always <code>"1"</code>.</dd></div>
-        <div><dt>id</dt><dd>Chosen by the app. The response echoes it back as <code>requestId</code>.</dd></div>
-        <div><dt>purpose</dt><dd>Why the app is asking, shown to the patient.</dd></div>
-        <div><dt>fhirVersions</dt><dd>The FHIR releases the app can read.</dd></div>
-        <div><dt>items</dt><dd>What the app would like, one entry per thing the patient reviews.</dd></div>
+      <dl class="fields smart-fields">
+        <div><dt><code>type</code></dt><dd>Always <code>smart-health-checkin-request</code>.</dd></div>
+        <div><dt><code>version</code></dt><dd>Always <code>"1"</code>.</dd></div>
+        <div><dt><code>id</code></dt><dd>Chosen by the app. The response echoes it back as <code>requestId</code>.</dd></div>
+        <div><dt><code>purpose</code></dt><dd>Why the app is asking, shown to the patient.</dd></div>
+        <div><dt><code>fhirVersions</code></dt><dd>The FHIR releases the app can read.</dd></div>
+        <div><dt><code>items</code></dt><dd>What the app would like, one entry per thing the patient reviews.</dd></div>
       </dl>
 
       <h3>An item</h3>
@@ -472,13 +286,13 @@
   },
   "accept": ["application/fhir+json"]
 }</pre>
-      <dl class="fields">
-        <div><dt>id</dt><dd>Short and unique within the request. The response refers to the item by this id. <a class="rid" href="./spec.html#ITEM-1">ITEM-1</a></dd></div>
-        <div><dt>title</dt><dd>What the patient sees.</dd></div>
-        <div><dt>summary</dt><dd>Optional. One more line for the patient.</dd></div>
-        <div><dt>required</dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the wallet can still answer <code>unavailable</code>. <a class="rid" href="./spec.html#HOLD-3">HOLD-3</a></small></dd></div>
-        <div><dt>content</dt><dd>What is being asked for. See the next section.</dd></div>
-        <div><dt>accept</dt><dd>Media types the app can read for this item, most preferred first. <a class="rid" href="./spec.html#ACC-1">ACC-1</a></dd></div>
+      <dl class="fields smart-fields">
+        <div><dt><code>id</code></dt><dd>Short and unique within the request. The response refers to the item by this id. <a class="rid" href="./spec.html#ITEM-1">ITEM-1</a></dd></div>
+        <div><dt><code>title</code></dt><dd>What the patient sees.</dd></div>
+        <div><dt><code>summary</code></dt><dd>Optional. One more line for the patient.</dd></div>
+        <div><dt><code>required</code></dt><dd>Optional. Tells the patient the clinic needs this item.<small>It is advice only. The patient can still decline, and the wallet can still answer <code>unavailable</code>. <a class="rid" href="./spec.html#HOLD-3">HOLD-3</a></small></dd></div>
+        <div><dt><code>content</code></dt><dd>What is being asked for. See the next section.</dd></div>
+        <div><dt><code>accept</code></dt><dd>Media types the app can read for this item, most preferred first. <a class="rid" href="./spec.html#ACC-1">ACC-1</a></dd></div>
       </dl>
     </section>
 
@@ -493,12 +307,14 @@
         <code>profilesFrom</code> that is a string <a class="rid" href="./spec.html#SEL-10">SEL-10</a>.
       </p>
 
-      <div class="tabs" role="tablist" aria-label="Kinds of content" hidden>
+      <div hidden>
+      <div class="smart-tabs" role="tablist" aria-label="Kinds of content">
         <button type="button" role="tab" aria-controls="c-profile">An exact profile</button>
         <button type="button" role="tab" aria-controls="c-family">A profile family</button>
         <button type="button" role="tab" aria-controls="c-open">No filter</button>
         <button type="button" role="tab" aria-controls="c-canonical">A form by URL</button>
         <button type="button" role="tab" aria-controls="c-inline">A form, inline</button>
+      </div>
       </div>
 
       <div class="panel" id="c-profile" role="tabpanel">
@@ -513,7 +329,7 @@
   },
   "accept": ["application/fhir+json"]
 }</pre>
-        <p class="note warning">
+        <p class="smart-callout warn">
           Keep canonical strings exactly as written, including any
           <code>|version</code> <a class="rid" href="./spec.html#CAN-2">CAN-2</a>. A wallet reports
           <code>fulfilled</code> for a versioned profile only when a returned record
@@ -644,7 +460,7 @@
         item <code>declined</code>. If they close it without reviewing, nothing comes
         back and the browser call ends with an error <a class="rid" href="./spec.html#HOLD-4">HOLD-4</a>.
       </p>
-      <p class="note warning">
+      <p class="smart-callout warn">
         Text in the request is not proof of who is asking. The browser and the
         wallet's trust decisions establish that, outside the JSON, so the request
         must not carry names, logos, or URLs claiming to identify the clinic
@@ -661,10 +477,10 @@
   "artifacts": [ … ],
   "requestStatus": [ … ]
 }</pre>
-      <dl class="fields">
-        <div><dt>requestId</dt><dd>The request's <code>id</code>, exactly.</dd></div>
-        <div><dt>artifacts</dt><dd>The records the patient shared. Can be empty.</dd></div>
-        <div><dt>requestStatus</dt><dd>One outcome for every item in the request.</dd></div>
+      <dl class="fields smart-fields">
+        <div><dt><code>requestId</code></dt><dd>The request's <code>id</code>, exactly.</dd></div>
+        <div><dt><code>artifacts</code></dt><dd>The records the patient shared. Can be empty.</dd></div>
+        <div><dt><code>requestStatus</code></dt><dd>One outcome for every item in the request.</dd></div>
       </dl>
 
       <h3>A record</h3>
@@ -672,7 +488,7 @@
       <div class="pair">
         <div>
           <span class="label">FHIR JSON</span>
-<pre>{
+<pre class="smart-code tall">{
   "id": "a1",
   "mediaType": "application/fhir+json",
   "fhirVersion": "4.0.1",
@@ -686,7 +502,7 @@
         </div>
         <div>
           <span class="label">SMART Health Card</span>
-<pre>{
+<pre class="smart-code tall">{
   "id": "a2",
   "mediaType": "application/smart-health-card",
   "fulfills": ["immunizations"],
@@ -696,12 +512,12 @@
 }</pre>
         </div>
       </div>
-      <dl class="fields">
-        <div><dt>id</dt><dd>Unique within the response. <a class="rid" href="./spec.html#ART-1">ART-1</a></dd></div>
-        <div><dt>mediaType</dt><dd><code>application/fhir+json</code> or <code>application/smart-health-card</code>.<small>It must be in the <code>accept</code> list of every item the record fulfills. <a class="rid" href="./spec.html#ACC-2">ACC-2</a></small></dd></div>
-        <div><dt>fulfills</dt><dd>The item ids this record answers. At least one.</dd></div>
-        <div><dt>fhirVersion</dt><dd>FHIR JSON only, such as <code>4.0.1</code> <a class="rid" href="./spec.html#ART-2">ART-2</a>. A health card carries its FHIR version inside the signed card <a class="rid" href="./spec.html#ART-6">ART-6</a>.</dd></div>
-        <div><dt>value</dt><dd>For FHIR JSON, a resource or a Bundle. For a health card, the card file's JSON.</dd></div>
+      <dl class="fields smart-fields">
+        <div><dt><code>id</code></dt><dd>Unique within the response. <a class="rid" href="./spec.html#ART-1">ART-1</a></dd></div>
+        <div><dt><code>mediaType</code></dt><dd><code>application/fhir+json</code> or <code>application/smart-health-card</code>.<small>It must be in the <code>accept</code> list of every item the record fulfills. <a class="rid" href="./spec.html#ACC-2">ACC-2</a></small></dd></div>
+        <div><dt><code>fulfills</code></dt><dd>The item ids this record answers. At least one.</dd></div>
+        <div><dt><code>fhirVersion</code></dt><dd>FHIR JSON only, such as <code>4.0.1</code> <a class="rid" href="./spec.html#ART-2">ART-2</a>. A health card carries its FHIR version inside the signed card <a class="rid" href="./spec.html#ART-6">ART-6</a>.</dd></div>
+        <div><dt><code>value</code></dt><dd>For FHIR JSON, a resource or a Bundle. For a health card, the card file's JSON.</dd></div>
       </dl>
     </section>
 
@@ -709,18 +525,20 @@
       <h2>Outcomes</h2>
       <p>Each item gets one row, whether or not any record came back for it <a class="rid" href="./spec.html#RSP-2">RSP-2</a>.</p>
 <pre>{ "item": "medications", "status": "partial", "message": "One medication was kept private" }</pre>
+      <div class="smart-table-wrap">
       <table>
         <thead><tr><th>Status</th><th>Meaning</th><th>For example</th></tr></thead>
         <tbody>
-          <tr><td><span class="status fulfilled">fulfilled</span></td><td>Shared what was asked for.</td><td>The insurance card was shared.</td></tr>
-          <tr><td><span class="status partial">partial</span></td><td>Shared some of it.</td><td>Two of three medications were shared.</td></tr>
-          <tr><td><span class="status declined">declined</span></td><td>The patient chose not to share.</td><td>The patient turned off the insurance card.</td></tr>
-          <tr><td><span class="status unavailable">unavailable</span></td><td>The wallet has nothing that matches.</td><td>No immunizations are on file.</td></tr>
-          <tr><td><span class="status unsupported">unsupported</span></td><td>The wallet can't handle this kind of item.</td><td>An unknown <code>content.kind</code>, or a form it can't load.</td></tr>
-          <tr><td><span class="status error">error</span></td><td>It tried and failed.</td><td>The patient portal behind it timed out.</td></tr>
+          <tr><td><span class="smart-pill ok">fulfilled</span></td><td>Shared what was asked for.</td><td>The insurance card was shared.</td></tr>
+          <tr><td><span class="smart-pill warn">partial</span></td><td>Shared some of it.</td><td>Two of three medications were shared.</td></tr>
+          <tr><td><span class="smart-pill bad">declined</span></td><td>The patient chose not to share.</td><td>The patient turned off the insurance card.</td></tr>
+          <tr><td><span class="smart-pill bad">unavailable</span></td><td>The wallet has nothing that matches.</td><td>No immunizations are on file.</td></tr>
+          <tr><td><span class="smart-pill bad">unsupported</span></td><td>The wallet can't handle this kind of item.</td><td>An unknown <code>content.kind</code>, or a form it can't load.</td></tr>
+          <tr><td><span class="smart-pill bad">error</span></td><td>It tried and failed.</td><td>The patient portal behind it timed out.</td></tr>
         </tbody>
       </table>
-      <p class="note">
+      </div>
+      <p class="smart-callout">
         <code>fulfilled</code> and <code>partial</code> should come with at least one record
         that lists the item <a class="rid" href="./spec.html#ART-7">ART-7</a>. The others usually come with none.
       </p>
@@ -773,7 +591,7 @@
       <div class="pair">
         <div>
           <span class="label">Request</span>
-<pre id="example-request" data-check="request">{
+<pre class="smart-code tall" id="example-request" data-check="request">{
   "type": "smart-health-checkin-request",
   "version": "1",
   "id": "checkin-7f3a",
@@ -834,7 +652,7 @@
         </div>
         <div>
           <span class="label">Response</span>
-<pre data-check="response" data-request="example-request">{
+<pre class="smart-code tall" data-check="response" data-request="example-request">{
   "type": "smart-health-checkin-response",
   "version": "1",
   "requestId": "checkin-7f3a",
@@ -958,7 +776,7 @@
 
     // Tabs for the kinds of content. Without script every panel stays visible.
     (function () {
-      var list = document.querySelector('.tabs');
+      var list = document.querySelector('.smart-tabs');
       if (!list) return;
       var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
       function select(tab) {
@@ -980,7 +798,7 @@
           select(next); next.focus();
         });
       });
-      list.hidden = false;
+      list.parentElement.hidden = false;
       select(tabs[0]);
     })();
   </script>

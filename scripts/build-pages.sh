@@ -17,16 +17,20 @@ bun "$ROOT/scripts/check-spec-cddl.ts"
 rm -rf "$SITE_DIR"
 mkdir -p "$SITE_DIR"
 
-for page in \
+for file in \
   smart-model-explainer.html \
   kiosk-flow-explainer.html \
   wire-protocol-explainer.html \
   wire-protocol-inspector.html \
   trust-and-limits.html \
-  platform-notes.html
+  platform-notes.html \
+  pages.css \
+  inspector.css
 do
-  cp "$ROOT/site/$page" "$SITE_DIR/$page"
+  cp "$ROOT/site/$file" "$SITE_DIR/$file"
 done
+# Static JSON examples in the pages get the site's syntax colors.
+bun "$ROOT/scripts/highlight.ts" "$SITE_DIR"/*.html
 cp "$ROOT/spec.md" "$SITE_DIR/spec.md"
 # This section's menu, read by the site chrome.
 cp "$ROOT/site/nav.json" "$SITE_DIR/nav.json"

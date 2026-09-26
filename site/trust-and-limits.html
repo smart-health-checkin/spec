@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,44 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; color: var(--fg-1); background: var(--bg); font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-relaxed); }
-    .page { max-width: 860px; margin: 0 auto; padding: 36px 24px 56px; }
-    .page > header { padding-bottom: 24px; border-bottom: 1px solid var(--border); }
-    h1, h2, h3 { margin: 0; color: var(--fg-1); line-height: var(--lh-tight); text-wrap: balance; }
-    h1 { font-size: clamp(2rem, 4.2vw, 3rem); font-weight: 800; letter-spacing: -0.03em; }
-    h2 { margin-bottom: var(--space-3); font-size: clamp(1.4rem, 2.6vw, 1.8rem); font-weight: 700; }
-    h3 { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); font-weight: 600; }
-    p, li { max-width: 38em; text-wrap: pretty; }
-    p { margin: 0 0 var(--space-4); }
-    .lede { margin-top: var(--space-4); color: var(--fg-2); font-size: var(--fs-md); }
-    :where(main) a { color: var(--brand); font-weight: 600; text-decoration: none; }
-    :where(main) a:hover { text-decoration: underline; }
-    .toc { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: var(--space-4) 0; border-bottom: 1px solid var(--border); }
-    .toc a { color: var(--fg-2); font-size: var(--fs-sm); }
-    section { padding: var(--space-6) 0; border-bottom: 1px solid var(--border); }
-    section:last-child { border-bottom: 0; }
-    ul { padding-left: 22px; }
-    li { margin: 6px 0; }
-    code { padding: 1px 5px; background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.9em; overflow-wrap: anywhere; }
-    table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); margin: var(--space-3) 0 var(--space-4); }
-    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-    th { color: var(--fg-mark); font-size: 11px; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
-    .table-wrap { overflow-x: auto; }
-    .note { padding: 12px 16px; border-left: 3px solid var(--brand); background: var(--info-wash); border-radius: var(--radius-md); font-size: var(--fs-sm); max-width: none; }
-    .note.warning { border-left-color: var(--warning); background: var(--warning-wash); }
-    a.rid { display: inline-block; padding: 0 6px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--gray-50); font-family: var(--font-mono); font-size: 11.5px; line-height: 18px; white-space: nowrap; }
-    .fw { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 800; }
-    .fw.fail { background: var(--danger-wash); color: #A32A22; }
-    .fw.warn { background: var(--warning-wash); color: #8A5A08; }
-    @media (max-width: 700px) { .page { padding: 24px 16px 44px; } body { font-size: 15.5px; } }
-  </style>
+  <link rel="stylesheet" href="./pages.css">
 </head>
 <body>
   <div data-smart-topbar></div>
   <nav data-smart-breadcrumb></nav>
-  <main class="page" id="main">
+  <main class="page narrow smart-prose" id="main">
     <header>
       <h1>Trust and limits</h1>
       <p class="lede">
@@ -90,9 +58,9 @@
         when it can't go on, and reports everything else as a warning <a class="rid" href="./spec.html#RCV-1">RCV-1</a> <a class="rid" href="./spec.html#RCV-2">RCV-2</a>. This lets exchanges work
         while implementations are still being corrected, without anyone producing sloppy messages.
       </p>
-      <div class="table-wrap">
+      <div class="smart-table-wrap">
         <table>
-          <thead><tr><th>The receiver stops (<span class="fw fail">fail</span>) when</th><th>Everything else is a <span class="fw warn">warn</span>, for example</th></tr></thead>
+          <thead><tr><th>The receiver stops (<span class="smart-pill bad">fail</span>) when</th><th>Everything else is a <span class="smart-pill warn">warn</span>, for example</th></tr></thead>
           <tbody>
             <tr>
               <td>
@@ -127,6 +95,7 @@
         A Verifier may sign its request with <code>readerAuth</code> <a class="rid" href="./spec.html#RA-1">RA-1</a>. A wallet that checks it puts the result
         in exactly one of five states <a class="rid" href="./spec.html#TRUST-2">TRUST-2</a>:
       </p>
+      <div class="smart-table-wrap">
       <table>
         <thead><tr><th>State</th><th>Meaning</th></tr></thead>
         <tbody>
@@ -137,6 +106,7 @@
           <tr><td>trusted</td><td>It verifies, and a deployment trust list recognizes the certificate.</td></tr>
         </tbody>
       </table>
+      </div>
       <p>
         The wallet shows a verifier identity only for <b>trusted</b>. Without a deployment trust list,
         <b>valid but untrusted</b> is the normal result. No state stops the exchange <a class="rid" href="./spec.html#WRQ-9">WRQ-9</a>.

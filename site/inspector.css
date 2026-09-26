@@ -1,0 +1,100 @@
+/* The capture inspector's own pieces, and the byte viewer it opens in a new
+   tab (which loads this file too). Code, pills, callouts, buttons, field
+   lists, and details come from /assets/smart-design.css; this is layout, with
+   every color from its tokens. */
+
+.mono, .byte-offset, .byte-hex, .byte-ascii { font-family: var(--font-mono); }
+
+/* The capture renders after load; keep the footer below the fold until it does. */
+#inspect { min-height: 100vh; padding-top: 0; }
+#runSummary { overflow-wrap: anywhere; }
+
+.advanced-loader { max-width: 760px; margin-top: 22px; }
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  color: var(--fg-1);
+}
+
+/* Code that wraps instead of scrolling (decoded text, command lines). */
+.wrap-pre { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; }
+
+/* Cards: one per artifact, drill-down step, and ledger row. */
+.artifact-card, .drill-node, .byte-row {
+  margin: 12px 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.artifact-card.missing { background: var(--surface-alt); color: var(--fg-2); }
+.artifact-head, .byte-row-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.artifact-title { font-weight: 800; }
+.byte-row-head strong { font-size: 1.02rem; }
+.path { color: var(--fg-2); font-size: 0.88rem; }
+
+.drill-chain, .byte-ledger { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin: 16px 0; }
+.drill-chain .drill-node, .byte-ledger .byte-row { margin: 0; }
+.drill-node h4 { color: var(--fg-1); letter-spacing: 0; text-transform: none; font-size: 1.05rem; margin: 0 0 6px; }
+
+.fact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.fact { min-width: 0; padding: 9px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); }
+.fact b { display: block; margin-bottom: 3px; color: var(--fg-2); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.fact span { display: block; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .fact-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.item-list { display: grid; gap: 8px; margin-top: 10px; }
+.item-row { padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-alt); }
+.item-row strong { display: block; }
+
+.byte-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+.byte-viewer-note { color: var(--fg-2); font-size: 0.9rem; }
+
+/* Annotated bytes: the hex dump, then one row per range. */
+.byte-inspector { display: grid; gap: 12px; margin-top: 10px; }
+.byte-inspector .smart-code { margin: 0; }
+.byte-anchor-list { display: grid; gap: 8px; }
+.byte-anchor {
+  display: grid;
+  grid-template-columns: minmax(148px, 180px) minmax(0, 1fr);
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+}
+.byte-offset { color: var(--fg-2); font-weight: 800; white-space: nowrap; }
+.byte-hex { overflow-wrap: anywhere; word-break: break-all; margin-bottom: 5px; }
+.byte-ascii { color: var(--fg-2); overflow-wrap: anywhere; margin-bottom: 5px; }
+.byte-note strong { display: block; margin-bottom: 2px; }
+@media (max-width: 700px) { .byte-anchor { grid-template-columns: 1fr; } }
+
+/* The CBOR tree: nested disclosures without boxes. */
+.tree {
+  max-height: 640px;
+  overflow: auto;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+}
+.tree details { margin: 8px 0 8px 12px; }
+.tree summary { cursor: pointer; padding: 4px 6px; border-radius: var(--radius-sm); font-weight: 650; }
+.tree summary:hover { background: var(--brand-wash); }
+.tree .leaf { padding: 4px 6px; margin-left: 12px; }
+.range { color: var(--fg-2); font-size: 0.78rem; }
+.value-preview { color: var(--fg-1); overflow-wrap: anywhere; }
+.meaning { color: var(--status-info); font-size: 0.78rem; margin-left: 4px; }

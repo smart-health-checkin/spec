@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Marked, Renderer } from "marked";
+import { highlight } from "./highlight.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..");
@@ -52,8 +53,6 @@ function escapeHtml(s: string): string {
 }
 
 const renderer = new Renderer();
-const baseHeading = renderer.heading.bind(renderer);
-const baseCode = renderer.code.bind(renderer);
 
 // "Check-in" must not break at its hyphen in a heading.
 const keepCheckIn = (html: string) => html.replace(/\bCheck-in\b/g, '<span class="nowrap">Check-in</span>');
@@ -82,10 +81,12 @@ renderer.code = function ({ text, lang }) {
   if (language === "mermaid") {
     return `<div class="mermaid">${escapeHtml(text)}</div>\n`;
   }
-  if (language) {
-    return `<pre><code class="language-${escapeHtml(language)} hljs">${escapeHtml(text)}</code></pre>\n`;
-  }
-  return `<pre><code class="hljs">${escapeHtml(text)}</code></pre>\n`;
+  return highlight(text, language || "text") + "\n";
+};
+// Tables scroll sideways in the shared wrapper instead of widening the page.
+const baseTable = renderer.table.bind(renderer);
+renderer.table = function (token) {
+  return `<div class="smart-table-wrap">${baseTable(token)}</div>\n`;
 };
 
 const marked = new Marked({ gfm: true, breaks: false });
@@ -112,7 +113,7 @@ const tocItems = headings
   .join("\n");
 
 const html = `<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -122,25 +123,8 @@ const html = `<!doctype html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/smart-design.css">
 <script src="/assets/site-chrome.js" defer></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css" />
 <style>
-  :root {
-    color-scheme: light;
-    --ink: var(--fg-1);
-    --muted: var(--fg-2);
-    --soft-ink: var(--gray-800);
-    --line: var(--border);
-    --soft: var(--bg-alt);
-    --softer: var(--gray-0);
-    --blue: var(--brand);
-    --blue-soft: var(--info-wash);
-    --green: var(--success);
-    --amber: #8A4F0E;
-    --code: var(--bg-alt);
-    --code-fg: var(--fg-1);
-    --rule: var(--border);
-    --measure: 980px;
-  }
+  :root { --measure: 980px; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
@@ -148,8 +132,6 @@ const html = `<!doctype html>
     font-family: var(--font-sans);
     font-size: 16.5px;
     line-height: 1.62;
-    color: var(--fg-1);
-    background: var(--bg);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -301,8 +283,8 @@ const html = `<!doctype html>
     letter-spacing: var(--tracking-snug);
   }
   h3 { font-size: var(--fs-lg); margin: var(--space-6) 0 var(--space-2); font-weight: 600; }
-  h4 { font-size: var(--fs-md); margin: var(--space-5) 0 var(--space-2); color: var(--gray-800); font-weight: 600; }
-  h5, h6 { font-size: var(--fs-base); margin: var(--space-4) 0 var(--space-2); color: var(--gray-800); font-weight: 600; }
+  h4 { font-size: var(--fs-md); margin: var(--space-5) 0 var(--space-2); font-weight: 600; }
+  h5, h6 { font-size: var(--fs-base); margin: var(--space-4) 0 var(--space-2); font-weight: 600; }
 
   h2, h3, h4 { position: relative; }
   /* A "#" link in the left margin on hover. */
@@ -310,7 +292,7 @@ const html = `<!doctype html>
     position: absolute;
     right: 100%;
     padding-right: 6px;
-    color: var(--border-strong);
+    color: var(--fg-3);
     text-decoration: none;
     margin-right: 0;
     font-weight: 400;
@@ -324,15 +306,6 @@ const html = `<!doctype html>
   ul, ol { padding-left: 22px; margin: 0 0 var(--space-3); }
   li { margin: 4px 0; }
   li > p { margin: 0 0 6px; }
-  blockquote {
-    margin: 0 0 var(--space-4);
-    padding: 12px 18px;
-    border-left: 3px solid var(--brand);
-    background: var(--info-wash);
-    color: var(--gray-800);
-    border-radius: var(--radius-md);
-  }
-  blockquote p:last-child { margin-bottom: 0; }
 
   /* A rule right before a section heading would double its top border. */
   .spec-body > hr + h2 { border-top: 0; }
@@ -342,60 +315,7 @@ const html = `<!doctype html>
     margin: var(--space-7) 0;
   }
 
-  table {
-    border-collapse: collapse;
-    margin: 0 0 var(--space-5);
-    width: 100%;
-    font-size: var(--fs-sm);
-    overflow: auto;
-    display: block;
-  }
-  thead { background: var(--bg-alt); }
-  th, td {
-    border: 1px solid var(--border);
-    padding: 8px 12px;
-    text-align: left;
-    vertical-align: top;
-  }
-  th {
-    color: var(--fg-mark);
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: var(--tracking-caps);
-    text-transform: uppercase;
-  }
-
-  code, pre, kbd, samp { font-family: var(--font-mono); }
-  :not(pre) > code {
-    background: var(--bg-alt);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 1px 6px;
-    font-size: 0.92em;
-    color: var(--gray-800);
-    overflow-wrap: anywhere;
-  }
-  pre {
-    background: var(--bg-alt);
-    color: var(--fg-1);
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    margin: 0 0 var(--space-4);
-    font-size: var(--fs-sm);
-    line-height: 1.55;
-  }
-  pre code {
-    background: transparent !important;
-    color: inherit;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    font-size: inherit;
-  }
-  /* Keep all code and text blocks visually light to match the rendered spec. */
-  pre code.hljs { background: transparent !important; color: var(--code-fg); }
+  code, kbd, samp { font-family: var(--font-mono); }
 
   .mermaid {
     background: var(--bg-alt);
@@ -437,7 +357,7 @@ ${tocItems}
     })();
   </script>
 
-  <article class="spec-body">
+  <article class="spec-body smart-prose">
 ${body}
   </article>
 </main>
@@ -445,39 +365,12 @@ ${body}
 <div data-smart-footer></div>
 
 <script type="module">
-  // Syntax highlighting via highlight.js (CDN, ESM build)
-  import hljs from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/highlight.min.js";
-  import typescript from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/typescript.min.js";
-  import json from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/json.min.js";
-  import bash from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/bash.min.js";
-  import xml from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/xml.min.js";
-  import yaml from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/yaml.min.js";
-  import javascript from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/javascript.min.js";
-  import plaintext from "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/es/languages/plaintext.min.js";
-  hljs.registerLanguage("typescript", typescript);
-  hljs.registerLanguage("ts", typescript);
-  hljs.registerLanguage("json", json);
-  hljs.registerLanguage("bash", bash);
-  hljs.registerLanguage("sh", bash);
-  hljs.registerLanguage("xml", xml);
-  hljs.registerLanguage("html", xml);
-  hljs.registerLanguage("yaml", yaml);
-  hljs.registerLanguage("javascript", javascript);
-  hljs.registerLanguage("js", javascript);
-  hljs.registerLanguage("text", plaintext);
-  hljs.registerLanguage("plaintext", plaintext);
-  // CDDL has no first-class hljs grammar; treat as plaintext to keep formatting.
-  hljs.registerLanguage("cddl", plaintext);
-  document.querySelectorAll("pre code.hljs").forEach((el) => {
-    try { hljs.highlightElement(el); } catch (e) { console.warn("hljs failed", e); }
-  });
-</script>
-
-<script type="module">
   // Mermaid diagrams (only initialized if any .mermaid blocks are present).
   if (document.querySelector(".mermaid")) {
     const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs");
-    const isDark = matchMedia("(prefers-color-scheme: dark)").matches;
+    // Follow the page's mode: dark when forced, or when "auto" and the reader prefers dark.
+    const theme = document.documentElement.dataset.theme;
+    const isDark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
     mermaid.initialize({ startOnLoad: false, theme: isDark ? "dark" : "neutral", securityLevel: "strict" });
     try {
       await mermaid.run({ querySelector: ".mermaid" });

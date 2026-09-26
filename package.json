@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "@smart-health-checkin/client": "https://github.com/smart-health-checkin/client/releases/download/v0.4.2/smart-health-checkin-client-0.4.2.tgz",
-    "marked": "^18.0.3"
+    "marked": "^18.0.3",
+    "shiki": "^4.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest"

@@ -20,6 +20,15 @@ smart-health-checkin.org/spec/ on every push to `main`.
   `data-smart-footer`. Page CSS never styles bare `header`, `nav`, `a`, or
   `button` (scope it with a class or `:where(main)`), and sets widths in
   `em`/`rem`, not `ch`, so the webfont swap doesn't move text.
+- Every page follows the reader's light or dark mode (`data-theme="auto"`), so
+  page CSS takes every color from the shared tokens and uses the shared
+  components ([Colors and dark mode](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#colors-and-dark-mode),
+  [Components](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#components)).
+  The explainers' and wire pages' layout and the diagrams (`.xd`) are in
+  `site/pages.css`; the capture inspector's pieces in `site/inspector.css`.
+  Code is highlighted at build time by `scripts/highlight.ts` (Shiki, the
+  spec's code blocks and the explainers' JSON examples); the inspector colors
+  JSON with `/assets/smart-json.js`.
 - Every normative sentence carries a requirement ID (`[XV-2]`). IDs never
   change meaning and are never reused; conformance cases cite them.
 - Producers strict, receivers permissive (§2 RCV-0..2): §8 marks each receiver

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,148 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
+  <link rel="stylesheet" href="./pages.css">
   <style>
-    :root {
-      --ink: var(--fg-1);
-      --muted: var(--fg-2);
-      --rule: var(--border);
-      --soft: var(--bg-alt);
-      --blue: var(--brand);
-      --green: var(--success);
-      --amber: #8A4F0E;
-      --code: #F6F8FA;
-      --code-fg: #1F2933;
-      --measure: 980px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      color: var(--fg-1);
-      background: var(--bg);
-      font-family: var(--font-sans);
-      font-size: var(--fs-base);
-      line-height: var(--lh-relaxed);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .page {
-      max-width: var(--measure);
-      margin: 0 auto;
-      padding: 36px 24px 56px;
-    }
-
-    .page > header {
-      padding-bottom: 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
-
-    h1, h2, h3 {
-      margin: 0;
-      color: var(--fg-1);
-      line-height: var(--lh-tight);
-      letter-spacing: var(--tracking-tight);
-      text-wrap: balance;
-    }
-
-    h1 {
-      max-width: 820px;
-      font-size: clamp(2.2rem, 4.6vw, 3.8rem);
-      font-weight: 800;
-      letter-spacing: -0.035em;
-    }
-
-    h2 {
-      margin-bottom: var(--space-3);
-      font-size: clamp(1.55rem, 2.8vw, 2rem);
-      font-weight: 700;
-      letter-spacing: var(--tracking-snug);
-      line-height: var(--lh-snug);
-    }
-
-    h3 {
-      margin: 0 0 var(--space-2);
-      font-size: var(--fs-lg);
-      font-weight: 600;
-      letter-spacing: 0;
-      line-height: var(--lh-snug);
-    }
-
-    p {
-      max-width: 38em;
-      margin: 0 0 var(--space-4);
-      text-wrap: pretty;
-    }
-
-    .lede {
-      margin-top: var(--space-5);
-      color: var(--fg-2);
-      font-size: var(--fs-md);
-      line-height: var(--lh-relaxed);
-    }
-
-    :where(main) a {
-      color: var(--brand);
-      font-weight: 600;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
-    }
-    :where(main) a:hover { color: var(--brand-ink); border-bottom-color: currentColor; }
-
-    .actions,
-    .toc {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 16px;
-    }
-
-    .actions { margin-top: var(--space-5); }
-
-    .toc {
-      padding: var(--space-4) 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .toc a {
-      color: var(--fg-2);
-      font-size: var(--fs-sm);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    section {
-      padding: var(--space-7) 0;
-      border-bottom: 1px solid var(--border);
-    }
-    section:last-child { border-bottom: 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: var(--space-5); }
 
     .facts { margin: 12px 0 0; padding-left: 20px; }
     .facts li { margin: 8px 0; }
-    .callout {
-      margin: var(--space-5) 0;
-      padding: 14px 18px;
-      border-left: 3px solid var(--success);
-      background: var(--success-wash);
-      border-radius: var(--radius-md);
-      color: var(--gray-800);
-      font-size: var(--fs-sm);
-      line-height: var(--lh-relaxed);
-    }
-
-    .callout.warn {
-      border-left-color: var(--warning);
-      background: var(--warning-wash);
-    }
 
     .flow-grid {
       display: grid;
@@ -157,7 +21,6 @@
       gap: var(--space-5);
       margin-top: var(--space-5);
     }
-
     .flow-card {
       padding: 22px 24px;
       border: 1px solid var(--border);
@@ -165,47 +28,11 @@
       background: var(--surface);
       box-shadow: var(--shadow-sm);
     }
-
+    .flow-card h3 { margin-top: 0; }
     .flow-card.kiosk  { border-top: 3px solid var(--smart-teal); }
     .flow-card.portal { border-top: 3px solid var(--brand); }
 
-    .steps {
-      margin: var(--space-5) 0 0;
-      padding: 0;
-      list-style: none;
-      counter-reset: step;
-    }
-
-    .steps li {
-      counter-increment: step;
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr);
-      gap: 14px;
-      padding: var(--space-4) 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .steps li:first-child { border-top: 0; }
-
-    .steps li::before {
-      content: counter(step);
-      width: 32px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--border-strong);
-      border-radius: 50%;
-      color: var(--brand);
-      font-weight: 700;
-      font-size: var(--fs-sm);
-      background: var(--surface);
-    }
-
-    .steps strong {
-      display: block;
-      margin-bottom: var(--space-1);
-      color: var(--fg-1);
-    }
+    .steps strong { display: block; margin-bottom: var(--space-1); color: var(--fg-1); }
 
     .compact-flow {
       display: grid;
@@ -213,7 +40,6 @@
       gap: var(--space-2);
       margin: var(--space-5) 0;
     }
-
     .compact-step {
       min-width: 0;
       padding: 14px;
@@ -223,7 +49,6 @@
       font-size: var(--fs-sm);
       line-height: var(--lh-snug);
     }
-
     .compact-step strong {
       display: block;
       margin-bottom: var(--space-1);
@@ -234,107 +59,16 @@
       font-weight: 700;
     }
 
-    code, pre { font-family: var(--font-mono); }
-
-    code {
-      padding: 1px 6px;
-      background: var(--gray-50);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--gray-800);
-      font-size: 0.92em;
-      overflow-wrap: anywhere;
-    }
-
-    pre {
-      margin: var(--space-4) 0 var(--space-5);
-      padding: 16px 18px;
-      overflow-x: auto;
-      background: #F6F8FA; border: 1px solid #E4E7EB;
-      color: #1F2933;
-      border-radius: var(--radius-md);
-      font-size: var(--fs-sm);
-      line-height: 1.55;
-      white-space: pre;
-    }
-    pre code { background: transparent; border: 0; padding: 0; color: inherit; }
-
     @media (max-width: 760px) {
-      body {
-        font-size: 16px;
-      }
-
-      .page {
-        padding: 30px 18px 56px;
-      }
-
-      .flow-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .compact-flow {
-        grid-template-columns: 1fr;
-      }
-
-      .steps li {
-        grid-template-columns: 34px minmax(0, 1fr);
-      }
+      .flow-grid, .compact-flow { grid-template-columns: 1fr; }
     }
-  
-    /* Explainer diagrams (inline SVG). Colors are scoped to the figures. */
-    .xd-figure { margin: var(--space-4) 0; border: 1px solid var(--gray-200); border-radius: var(--radius-md); overflow-x: auto; background: #fff; }
-    .xd { display: block; width: 100%; min-width: 640px; height: auto;
-      --fg: #1f2933; --fg-2: #4b5563; --fg-3: #5b6675; --line: #e4e7eb; --line-2: #cbd2d9; --bg-alt: #f6f8fa; --card: #fff;
-      --brand: #0e6fb8; --brand-wash: #d6eaf7; --ok: #1b7f4b; --ok-wash: #ddf4e6; --warn: #8a5a00; --warn-wash: #fdf0d2;
-      --off: #6f7178; --off-wash: #eef1f4; --key: #b8860b;
-      --font: var(--font-sans, "Inter", system-ui, sans-serif); --mono: var(--font-mono, ui-monospace, monospace); }
-    #match [data-ids]:focus { outline: none; }
-    #match [data-ids]:focus-visible .box { stroke: var(--brand); stroke-width: 2.4; }
-    .map-figure { display: none; }
-    @media (min-width: 44rem) { .map-figure { display: block; } .map { display: none !important; } }
-    /* SVG styling, all from tokens */
-    .xd text { font-family: var(--font); fill: var(--fg); }
-    .xd .mono { font-family: var(--mono); font-size: 12px; fill: var(--fg-3); }
-    .xd .head { font-size: 13px; font-weight: 700; fill: var(--fg); }
-    .xd .sub { font-size: 12px; fill: var(--fg-3); }
-    .xd .t { font-size: 14px; font-weight: 600; }
-    .xd .s { font-size: 12.5px; fill: var(--fg-2); }
-    .xd .box { fill: var(--card); stroke: var(--line-2); stroke-width: 1.2; }
-    .xd .box.off { fill: var(--bg-alt); stroke-dasharray: 4 4; }
-    .xd .off-t { fill: var(--fg-3); }
-    .xd .pill-ok { fill: var(--ok-wash); } .xd .pill-ok-t { fill: var(--ok); font-size: 12px; font-weight: 600; }
-    .xd .pill-warn { fill: var(--warn-wash); } .xd .pill-warn-t { fill: var(--warn); font-size: 12px; font-weight: 600; }
-    .xd .pill-off { fill: var(--off-wash); } .xd .pill-off-t { fill: var(--off); font-size: 12px; font-weight: 600; }
-    .xd .link { fill: none; stroke: var(--brand); stroke-width: 2; opacity: .55; transition: opacity .15s, stroke-width .15s; }
-    .xd .dot { fill: var(--brand); }
-    .xd .rec-kind { font-size: 11px; font-weight: 700; letter-spacing: .05em; fill: var(--brand); }
-    .xd .rule { stroke: var(--line); stroke-width: 1; }
-    .xd .band { fill: var(--bg-alt); }
-    .xd .lane { fill: none; stroke: var(--line); stroke-dasharray: 3 5; }
-    .xd .arrow { fill: none; stroke: var(--brand); stroke-width: 2; }
-    .xd .arrow-soft { fill: none; stroke: var(--fg-3); stroke-width: 1.6; stroke-dasharray: 5 4; }
-    .xd .ah { fill: var(--brand); } .xd .ah-soft { fill: var(--fg-3); }
-    .xd .num { fill: var(--brand); } .xd .num-t { fill: #fff; font-size: 12px; font-weight: 700; }
-    .xd .step { font-size: 12px; font-weight: 700; letter-spacing: .05em; fill: var(--fg-3); }
-    .xd .ico { fill: none; stroke: var(--fg-2); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
-    .xd .key { fill: none; stroke: var(--key); stroke-width: 2.2; stroke-linecap: round; }
-    .xd .lock { fill: var(--brand-wash); stroke: var(--brand); stroke-width: 1.8; }
-    .xd .chip { fill: var(--brand-wash); } .xd .chip-t { fill: var(--brand); font-size: 11.5px; font-weight: 600; }
-    .xd .qr { fill: var(--fg); }
-    
-    /* Follow an id across: hover an item or a record */
-    #match.hot .link { opacity: .12; }
-    #match.hot .link.on { opacity: 1; stroke-width: 2.6; }
-    #match.hot [data-ids] { opacity: .45; transition: opacity .15s; }
-    #match.hot [data-ids].on { opacity: 1; }
-    #match [data-ids] { cursor: default; }
   </style>
 </head>
 <body>
   <div data-smart-topbar></div>
   <nav data-smart-breadcrumb></nav>
 
-  <main class="page" id="main">
+  <main class="page smart-prose" id="main">
     <header>
       <h1>Front-desk handoff</h1>
       <p class="lede">
@@ -363,7 +97,7 @@
         their phone. That keeps private health information off a shared clinic
         screen while still letting staff see when check-in information has arrived.
       </p>
-      <div class="callout">
+      <div class="smart-callout ok">
         <strong>The important idea:</strong> the clinic starts the request;
         the patient's phone handles wallet review and approval; the completed
         response returns to the waiting check-in session.
@@ -467,13 +201,13 @@
       <rect class="box" x="600" y="300" width="260" height="80" rx="8"/>
       <text x="616" y="323" class="t">Reviews in their wallet</text>
       <text x="616" y="342" class="s">Shares all, some, or none.</text>
-      <text x="616" y="364" class="s" style="font-weight:600;fill:var(--ok)">Private details stay on the phone</text>
+      <text x="616" y="364" class="s ok-t">Private details stay on the phone</text>
       <path class="arrow" d="M730 246 V 296" marker-end="url(#ah)"/>
 
       <!-- 4 RETURN -->
       <path class="arrow" d="M730 380 V 410 C 730 422, 720 426, 700 426 H 320" marker-end="url(#ah)"/>
       <g transform="translate(402 404)">
-        <rect class="lock" x="0" y="10" width="26" height="20" rx="3"/><path class="lock" style="fill:none" d="M6 10 v-4 a7 7 0 0 1 14 0 v4"/>
+        <rect class="lock" x="0" y="10" width="26" height="20" rx="3"/><path class="lock open" d="M6 10 v-4 a7 7 0 0 1 14 0 v4"/>
       </g>
       <text x="436" y="418" class="t" style="font-size:13px">Encrypted response</text>
       <text x="436" y="452" class="sub">can't be read or changed on the way</text>
@@ -555,12 +289,12 @@
         </div>
       </div>
 
-      <div class="callout">
+      <div class="smart-callout ok">
         <strong>What the handoff shows:</strong> the phone and kiosk are working
         on the same check-in visit, and the returned response matches the
         original request.
       </div>
-      <div class="callout warn">
+      <div class="smart-callout warn">
         <strong>Technical note for implementers:</strong> identity, clinical
         provenance, patient matching, EHR write-back, and payment or claims
         handling are still site policy and integration decisions.
@@ -591,7 +325,7 @@
         authenticated way to connect the visit and the patient's phone. The user
         experience can vary while the wallet sharing step stays the same.
       </p>
-      <div class="callout warn">
+      <div class="smart-callout warn">
         <strong>Technical note for implementers:</strong> SMART Health Check-in
         defines the request, the wallet sharing step, and the returned response.
         The handoff mechanism and completion screen are implementation choices
