@@ -22,6 +22,16 @@ const blocks = [...html.matchAll(/<pre([^>]*\bdata-check="[^"]+"[^>]*)>([\s\S]*?
 let failures = 0;
 const byId = new Map<string, unknown>();
 const fail = (line: number, msg: string) => { failures++; console.error(`line ${line}: ${msg}`); };
+// Since 0.3 a result can be ok while setting parts aside (one item unsupported,
+// one Artifact disregarded). An example has to be sound all the way through.
+const strict = (line: number, r: any) => {
+  for (const u of r.unsupportedItems ?? []) fail(line, `item ${u.id} is unsupported: ${u.message} [${u.rule}]`);
+  for (const a of r.artifacts ?? []) if (!a.usable) fail(line, `artifact ${a.id ?? a.index} is disregarded: ${a.problems.map((p: any) => `${p.message} [${p.rule}]`).join("; ")}`);
+  for (const i of r.items ?? []) {
+    if (i.status === undefined) fail(line, `item ${i.id} has no valid status`);
+    for (const p of i.problems ?? []) fail(line, `item ${i.id}: ${p.message} [${p.rule}]`);
+  }
+};
 
 for (const b of blocks) {
   let value: unknown;
@@ -30,16 +40,19 @@ for (const b of blocks) {
   if (b.check === "request") {
     const r = validateSmartCheckinRequest(value);
     if (!r.ok) fail(b.line, r.error);
+    else strict(b.line, r);
   } else if (b.check === "item") {
     const r = validateSmartCheckinRequest({
       type: "smart-health-checkin-request", version: "1", id: "x", purpose: "x", fhirVersions: ["4.0.1"], items: [value],
     });
     if (!r.ok) fail(b.line, r.error);
+    else strict(b.line, r);
   } else if (b.check === "response") {
     const request = b.request && byId.get(b.request);
     if (!request) { fail(b.line, `data-request "${b.request}" not found above`); continue; }
     const r = validateResponseAgainstRequest(request, value);
     if (!r.ok) fail(b.line, r.error);
+    else strict(b.line, r);
   } else {
     fail(b.line, `unknown data-check "${b.check}"`);
   }

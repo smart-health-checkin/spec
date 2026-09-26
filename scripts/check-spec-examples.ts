@@ -14,6 +14,16 @@ const blocks = [...md.matchAll(/^```json[ \t]+([^\n]*)\n([\s\S]*?)^```/gm)].map(
 const byId = new Map<string, unknown>();
 let failures = 0;
 const fail = (line: number, msg: string) => { failures++; console.error(`spec.md:${line}: ${msg}`); };
+// Since 0.3 a result can be ok while setting parts aside (one item unsupported,
+// one Artifact disregarded). An example has to be sound all the way through.
+const strict = (line: number, r: any) => {
+  for (const u of r.unsupportedItems ?? []) fail(line, `item ${u.id} is unsupported: ${u.message} [${u.rule}]`);
+  for (const a of r.artifacts ?? []) if (!a.usable) fail(line, `artifact ${a.id ?? a.index} is disregarded: ${a.problems.map((p: any) => `${p.message} [${p.rule}]`).join("; ")}`);
+  for (const i of r.items ?? []) {
+    if (i.status === undefined) fail(line, `item ${i.id} has no valid status`);
+    for (const p of i.problems ?? []) fail(line, `item ${i.id}: ${p.message} [${p.rule}]`);
+  }
+};
 let checked = 0;
 for (const b of blocks) {
   if (!b.attrs.check) continue;
@@ -24,11 +34,13 @@ for (const b of blocks) {
   if (b.attrs.check === "request") {
     const r = validateSmartCheckinRequest(value);
     if (!r.ok) fail(b.line, r.error);
+    else strict(b.line, r);
   } else if (b.attrs.check === "response") {
     const request = byId.get(b.attrs.request);
     if (!request) { fail(b.line, `request "${b.attrs.request}" not defined above`); continue; }
     const r = validateResponseAgainstRequest(request, value);
     if (!r.ok) fail(b.line, r.error);
+    else strict(b.line, r);
   } else fail(b.line, `unknown check "${b.attrs.check}"`);
 }
 if (failures) { console.error(`${failures} of ${checked} spec examples failed`); process.exit(1); }
