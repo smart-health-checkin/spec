@@ -19,8 +19,8 @@
       --green: var(--success);
       --amber: #8A4F0E;
       --red: var(--danger);
-      --code: var(--gray-950);
-      --code-fg: var(--gray-200);
+      --code: #F6F8FA;
+      --code-fg: #1F2933;
     }
     * { box-sizing: border-box; }
     body {
@@ -230,7 +230,7 @@
     }
     .byte-pre {
       max-height: 520px;
-      border: 1px solid #26324a;
+      border: 1px solid #E4E7EB;
     }
     .calc {
       counter-reset: step;
@@ -424,7 +424,7 @@
       margin-top: 10px;
     }
     .byte-dump-panel {
-      border: 1px solid #26324a;
+      border: 1px solid #E4E7EB;
       border-radius: 0;
       overflow: auto;
       background: var(--code);
@@ -1271,7 +1271,7 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-captur
   .check.fail { color:#b42318; background:#ffe7e5; }
   .check.skip { color:var(--muted); background:#eef2f7; }
   .byte-inspector { display:grid; gap:12px; margin-top:14px; }
-  .byte-dump-panel { border:1px solid #26324a; overflow:auto; background:var(--code); }
+  .byte-dump-panel { border: 1px solid #E4E7EB; overflow:auto; background:var(--code); }
   .byte-dump-panel pre { border-radius:0; max-height:none; margin:0; }
   .byte-anchor-list { display:grid; gap:8px; }
   .byte-anchor { display:grid; grid-template-columns:minmax(148px,180px) minmax(0,1fr); gap:12px; border:1px solid #dce6f0; padding:10px; background:#fbfdff; }
