@@ -99,6 +99,19 @@ Every requirement starts with a bold ID in brackets, such as [XV-2]. IDs are sta
 - `SessionTranscript` is a CBOR array (§8.3). Where its encoding is used as bytes, this document writes `CBOR(SessionTranscript)`.
 - In TypeScript, `NonEmptyString` is a string with at least one character, and `NonEmptyArray<T>` is an array with at least one element.
 
+**Producers and receivers**
+
+For the transport and crypto layer (§8), this specification is strict for whoever builds a message and permissive for whoever receives one. **[RCV-0]** A producer SHALL build exactly what §8 describes. A receiver checks what it receives and classifies each problem as one of:
+
+- **Fail:** the receiver stops. A Wallet does not respond; a Verifier rejects the response.
+- **Warning:** the receiver continues.
+
+**[RCV-1]** A receiver that finds a warning SHALL continue processing, and SHOULD report the finding, for example in logs, its user interface, or test output.
+
+**[RCV-2]** A receiver SHALL fail only where §8 marks a step or condition as a failure. Every other problem §8 describes is a warning.
+
+The clinical rules in §§5–6 are unaffected: they already say which problems reject a whole message and which affect one item or Artifact.
+
 ---
 
 ## 3. Architecture overview
@@ -558,11 +571,14 @@ SMART Health Check-in lets two parties exchange data when the Holder chooses to,
 
 Certificates at this layer may be self-signed. Valid but untrusted is the normal result when no deployment trust list exists.
 
+Receivers check these signals and report what they find ([RCV-1]). A failed signature or digest check is a warning: it never blocks the exchange by itself. Integrity in transit comes from the HPKE encryption, which fails if the ciphertext is altered.
+
 **Threats**
 
 | Threat | Protection | Not protected |
 | --- | --- | --- |
 | A malicious page relays a real Verifier's request | The Wallet binds the transcript to the malicious page's origin, so the real Verifier cannot open the response, and the relaying page never had the Verifier's key | The Holder can still be tricked into sharing with the malicious page itself |
+| Altering a response in transit | HPKE authenticated encryption: altered ciphertext does not decrypt, and the Verifier fails | — |
 | Replaying a captured response to a Verifier | Each session has a fresh key and nonce, so an old ciphertext does not open | — |
 | Forging content | SMART Health Card signatures, where present | Raw FHIR content and form answers. Anyone holding a SMART response can wrap it in a new, fully valid mdoc for any session. |
 | Third-party scripts on the Verifier's page | None at the protocol layer | Scripts on the calling page can read the private key and the decrypted response |
@@ -616,9 +632,9 @@ sequenceDiagram
 
 **[MD-1]** Verifiers and Wallets SHALL use the values in this table exactly.
 
-**[ALG-1]** Verifiers and Wallets SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one.
+**[ALG-1]** Producers SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one.
 
-**[ALG-2]** A receiver SHALL reject a structure in which `alg`, `kty`, `crv`, or `digestAlgorithm` has an unknown or unsupported value. It SHALL ignore other map keys it does not know.
+**[ALG-2]** A receiver that finds an unknown or unsupported value of `alg`, `kty`, `crv`, or `digestAlgorithm` SHALL treat it as a warning and report the affected check as not verified. The one exception is the recipient key in `encryptionInfo`, which the Wallet needs to respond ([WRQ-7]). A receiver SHALL ignore other map keys it does not know.
 
 ### 8.2 Verifier request construction
 
@@ -665,16 +681,16 @@ SessionTranscript = [null, null, Handover]
 
 ### 8.4 Wallet request handling and response construction
 
-**[WRQ-0]** The Wallet SHALL handle a request in these steps, in this order. **[WRQ-1]** If any validation step fails, the Wallet SHALL NOT respond, and the platform ends the call with an error.
+**[WRQ-0]** The Wallet SHALL handle a request in these steps, in this order. **[WRQ-1]** The Wallet SHALL fail (not respond, so that the platform ends the call with an error) only where a step says **fail**. Every other problem is a warning ([RCV-1]).
 
-1. **[WRQ-2]** Check that the protocol is `org-iso-mdoc`, and decode `deviceRequest` from base64url and CBOR.
-2. **[WRQ-3]** Check that `version` is `"1.0"`. A Wallet MAY also accept a later ISO version it supports.
-3. **[WRQ-4]** Find the `DocRequest` whose `ItemsRequest` has `docType` `org.smarthealthit.checkin.1`, ignoring other `docType`s. Reject the request if there is none or more than one.
-4. **[WRQ-5]** Check that `itemsRequest` is `tag24` of an `ItemsRequest` that requests `smart_health_checkin_response` in namespace `org.smarthealthit.checkin`, with a boolean `intentToRetain`, and has a text string under `requestInfo["org.smarthealthit.checkin.request"]`.
-5. **[WRQ-6]** Parse and validate that text as a SMART request (§§5.1–5.3). The request is read only from this location, never from element names or other members.
-6. **[WRQ-7]** Decode `encryptionInfo`, and check that it is `["dcapi", {...}]` with a `nonce` byte string and a P-256 `recipientPublicKey` (§8.7).
-7. **[WRQ-8]** Compute `SessionTranscript` (§8.3).
-8. **[WRQ-9]** If `readerAuth` is present and the Wallet verifies it, verify it (§8.6) and classify it (§7).
+1. **[WRQ-2]** Decode `deviceRequest` from base64url and CBOR. **Fail** if it cannot be decoded. Warn if the protocol is not `org-iso-mdoc` or the base64url has padding.
+2. **[WRQ-3]** Warn if `version` is not `"1.0"` or a later ISO version the Wallet supports.
+3. **[WRQ-4]** Find the `DocRequest` whose `ItemsRequest` has `docType` `org.smarthealthit.checkin.1`, ignoring other `docType`s. **Fail** if there is none. If there is more than one, use the first and warn.
+4. **[WRQ-5]** Decode `itemsRequest` (`tag24` of an `ItemsRequest`) and take the text string under `requestInfo["org.smarthealthit.checkin.request"]`. **Fail** if it cannot be decoded or has no such text. Warn if `nameSpaces` does not request `smart_health_checkin_response` in namespace `org.smarthealthit.checkin`, or `intentToRetain` is not a boolean.
+5. **[WRQ-6]** Parse and validate that text as a SMART request (§§5.1–5.3). **Fail** where §5 says to reject the request. The request is read only from this location, never from element names or other members.
+6. **[WRQ-7]** Decode `encryptionInfo` and take its `recipientPublicKey`. **Fail** if it cannot be decoded or has no usable P-256 public key. Warn about any other problem with its shape (§8.7), such as a missing `nonce`.
+7. **[WRQ-8]** Compute `SessionTranscript` (§8.3). **Fail** if the platform provides no origin ([TR-4]).
+8. **[WRQ-9]** If `readerAuth` is present and the Wallet verifies it, verify it (§8.6) and classify it (§7). The result never makes the Wallet fail.
 9. **[WRQ-10]** Let the Holder choose (§5.7), then build the SMART response (§6).
 
 **[WRS-0]** The Wallet SHALL then build the `DeviceResponse` in these steps, in this order.
@@ -697,18 +713,18 @@ SessionTranscript = [null, null, Handover]
 
 **[HPKE-2]** The Wallet SHALL return `dcapiResponse = ["dcapi", {"enc": enc, "cipherText": ciphertext}]`, encoded with CBOR and then base64url, as `data.response` of a result whose `protocol` is `org-iso-mdoc`. It SHALL NOT return the `DeviceResponse` or the SMART response unencrypted.
 
-**[VRS-0]** The Verifier SHALL process the result in these steps, in this order. **[VRS-1]** If any of the steps 1–7 fails, the Verifier SHALL reject the whole response.
+**[VRS-0]** The Verifier SHALL process the result in these steps, in this order. **[VRS-1]** The Verifier SHALL reject the whole response only where a step says **fail**. Every other problem is a warning ([RCV-1]).
 
-1. **[VRS-2]** Check that `protocol` is `org-iso-mdoc` and that `data.response` is base64url without padding. Decode it and check that it is `["dcapi", {enc, cipherText}]`.
-2. **[VRS-3]** Compute `SessionTranscript` from its own origin and the exact `encryptionInfo` string it sent, and open the ciphertext with its retained private key.
-3. **[VRS-4]** Decode the `DeviceResponse`, and check that `version` is `"1.0"`, `status` is `0`, and there is exactly one document with `docType` `org.smarthealthit.checkin.1`.
-4. **[VRS-5]** Verify `issuerAuth` with the public key of the first certificate in its `x5chain`, check the MSO fields (§8.7), and check that the MSO's `docType` matches the document's. Applying a trust policy to the certificate is optional (§7).
-5. **[VRS-6]** For the issuer-signed item, check that SHA-256 of its `IssuerSignedItemBytes`, as received, equals the MSO's `valueDigests` entry for its `digestID`.
-6. **[VRS-7]** Rebuild `DeviceAuthenticationBytes` and verify the device signature over them with `deviceKeyInfo.deviceKey`. If the signature carries a payload instead of `null`, reject it unless that payload is byte-for-byte equal to the rebuilt bytes.
-7. **[VRS-8]** Check that the item's `elementIdentifier` is `smart_health_checkin_response` and its `elementValue` is a text string.
-8. **[VRS-9]** Parse the text as a SMART response and validate it (§6.4).
+1. **[VRS-2]** Decode `data.response` from base64url and CBOR as `["dcapi", {enc, cipherText}]`. **Fail** if it cannot be decoded or lacks `enc` or `cipherText`. Warn if `protocol` is not `org-iso-mdoc` or the base64url has padding.
+2. **[VRS-3]** Compute `SessionTranscript` from its own origin and the exact `encryptionInfo` string it sent, and open the ciphertext with its retained private key. **Fail** if it does not open.
+3. **[VRS-4]** Decode the `DeviceResponse` and find the document with `docType` `org.smarthealthit.checkin.1`. **Fail** if it cannot be decoded or has no such document. Warn if `version` is not `"1.0"`, `status` is not `0`, or there is more than one document; use the first matching one.
+4. **[VRS-5]** Verify `issuerAuth` with the public key of the first certificate in its `x5chain`, check the MSO fields (§8.7), and check that the MSO's `docType` matches the document's. Warn on any failure. Applying a trust policy to the certificate is optional (§7).
+5. **[VRS-6]** Check that SHA-256 of the issuer-signed item's `IssuerSignedItemBytes`, as received, equals the MSO's `valueDigests` entry for its `digestID`. Warn if not.
+6. **[VRS-7]** Rebuild `DeviceAuthenticationBytes` and verify the device signature over them with `deviceKeyInfo.deviceKey`. Warn if it does not verify, or if the signature carries a payload that differs from the rebuilt bytes.
+7. **[VRS-8]** Find the issuer-signed item whose `elementIdentifier` is `smart_health_checkin_response`. **Fail** if there is none or its `elementValue` is not a text string.
+8. **[VRS-9]** Parse the text as a SMART response and validate it (§6.4). **Fail** where §6.4 rejects the whole response ([XV-1], [XV-2]).
 
-**[VRS-10]** The Verifier SHOULD reject a response whose MSO `validityInfo` does not include the current time, allowing for a few minutes of clock difference.
+**[VRS-10]** The Verifier SHALL warn if the MSO `validityInfo` does not include the current time, allowing for a few minutes of clock difference.
 
 ### 8.6 Encoding rules and signed bytes
 
@@ -722,7 +738,7 @@ Both sides produce identical bytes for everything that is hashed or signed by fo
 
 **[ENC-4]** Every COSE signature in this profile SHALL use an empty external AAD.
 
-**[ENC-5]** A receiver SHALL reject any received CBOR structure that contains a map with a duplicate key, at any depth. For the Wallet this means rejecting the request ([WRQ-1]); for the Verifier, rejecting the response ([VRS-1]).
+**[ENC-5]** Producers SHALL NOT produce a CBOR map with a duplicate key. A receiver whose decoder cannot process such a map fails at the step that decodes it; otherwise it SHALL warn.
 
 | Output | Algorithm | Covers these bytes |
 | --- | --- | --- |
@@ -743,7 +759,7 @@ Both sides produce identical bytes for everything that is hashed or signed by fo
 
 ### 8.7 Message structures
 
-This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fixed values. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
+This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fixed values. It describes what producers build. A receiver that finds a structure not matching it follows §§8.4–8.5: it fails only where a step says so, and otherwise warns. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
 
 <a id="a-2-digital-credentials-api-wrappers"></a>
 

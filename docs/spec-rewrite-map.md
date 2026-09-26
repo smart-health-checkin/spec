@@ -163,7 +163,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L682 only v1.0 flow; handoffs outside | §8 intro, §1.3 |
 | L706–716 identifiers; carrier only in `requestInfo`; no other carriers; response element issuer-signed | §8.1, [MD-1], [VRQ-2], [WRQ-6], [WRS-1], [WRS-5] |
 | L718 algorithm baseline; profiles MAY add algorithms | [ALG-1], **changed:** one fixed set (D4). No negotiation |
-| L718 reject unilateral choices; no silent downgrade | [ALG-1], [ALG-2] |
+| L718 reject unilateral choices; no silent downgrade | [ALG-1] (producers), [ALG-2]. **Changed** per D16: receivers warn on unknown algorithm values, except the recipient key |
 | L722 JSON text in `requestInfo`; ItemsRequest fields; `intentToRetain` default true; no FHIR as mdoc elements | [VRQ-1], [VRQ-2] (the `intentToRetain` rule is restated as a testable condition) |
 | L724 companion element `smart_request_b64u.…` | **removed** (D7) |
 | L726 tag-24 ItemsRequest; DeviceRequest 1.0; `readerAuthAll` profiles | [VRQ-3], [VRQ-7] (exactly one DocRequest), [WRQ-3] |
@@ -175,8 +175,8 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L742 origin from platform, never request content | [TR-2] (adds the serialization, D12), [TR-3] |
 | L742 same transcript everywhere | [TR-5] |
 | L742 no origin: "treat origin trust as absent" | [TR-4], **changed:** the Wallet does not respond (without an origin, no response can be opened) |
-| L746 Wallet validation list | [WRQ-2]–[WRQ-8] |
-| L746 invalid request: "reject, report failure, or fail safely" | [WRQ-1], **changed:** one behavior, no response |
+| L746 Wallet validation list | [WRQ-2]–[WRQ-8], each marked **fail** or warn (D16) |
+| L746 invalid request: "reject, report failure, or fail safely" | [WRQ-1], **changed:** the Wallet fails (no response) only at steps marked fail; everything else is a warning (D16) |
 | L746 don't infer semantics from mdoc names | [WRQ-6] |
 | L748 verify and classify readerAuth | [RA-2], [TRUST-2] |
 | L748 Holder review; regroup; `required` not consent; request text isn't identity | [HOLD-1]–[HOLD-3], [ID-2] |
@@ -187,10 +187,10 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L752 DeviceNameSpaces normally empty; response stays issuer-signed | [WRS-5] |
 | L752 DeviceResponse 1.0, success status | [WRS-7] (exactly one document) |
 | L756 HPKE encryption, `info`, empty `aad`, wrap and return; no plaintext | [HPKE-1], [HPKE-2] |
-| L758 Verifier checks | [VRS-0]–[VRS-9]. **Changed:** attached device payloads are rejected unless equal to the rebuilt bytes ([VRS-7], D2) |
-| L758 "reject or quarantine" | [VRS-1] (reject) |
+| L758 Verifier checks | [VRS-0]–[VRS-9]. **Changed** per D16: only decoding, decryption, finding the document and element, and the §6.4 whole-response checks fail; signatures, digests, and MSO checks are warnings. An attached device payload that differs from the rebuilt bytes is a warning ([VRS-7]) |
+| L758 "reject or quarantine" | [VRS-1] (reject, only at steps marked fail) |
 | L758 keep trust decisions distinct | [TRUST-1] |
-| (new) validity window check | [VRS-10] (SHOULD) |
+| (new) validity window check | [VRS-10] (warning) |
 | (new) call timeout | [VRQ-10] (SHOULD; from the Android size findings) |
 | L762 §8.6 validation checklist | **removed:** duplicated §§8.4–8.5 and contradicted "no separate checklist". The old anchor now points to §8.5 |
 | L762 deployment profiles SHOULD define origin, browser, size, … requirements | **removed** as a list; trust items are in [PROF-1] |
@@ -199,7 +199,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 
 | Old | New |
 | --- | --- |
-| L770 MUST NOT accept plaintext or unbound HPKE; baseline algorithms; unknown labels rejected | [VRS-3], [ALG-1], [ALG-2]. The unknown-label rule is **changed** per D11: strict only for `alg`, `kty`, `crv`, `digestAlgorithm` |
+| L770 MUST NOT accept plaintext or unbound HPKE; baseline algorithms; unknown labels rejected | [VRS-3] (unbound HPKE fails to open), [ALG-1], [ALG-2]. The unknown-label rule is **changed** per D11 (only `alg`, `kty`, `crv`, `digestAlgorithm` matter) and D16 (receivers warn) |
 | L772 freshness from session; fresh keys; "should reject stale, duplicate, superseded" | §9.1 notes, [VRQ-4], [SEC-1] (now SHOULD NOT act on completed or abandoned sessions) |
 | L774 readerAuth states (duplicate) | [TRUST-2] |
 | L776 validation doesn't prove accreditation, and so on | [TRUST-1], §7 table |
@@ -247,11 +247,13 @@ These are new. Each comes from a decision, from what every implementation alread
 | [XV-10] the Verifier checks the `QuestionnaireResponse.questionnaire` echo | the client and Testing EHR already check it; the review asked that the spec say so |
 | [HOLD-4] all-declined response | D10 |
 | [WRQ-4] exactly one DocRequest for this docType; others ignored | review gap (multiple DocRequests were undefined) |
-| [WRS-3], [VRS-10] `validityInfo` and the window check | D2; the check is SHOULD |
-| [WRS-6], [VRS-7] detached device signature | D2 |
+| [WRS-3], [VRS-10] `validityInfo` and the window check | D2; the check is a warning (D16) |
+| [WRS-6], [VRS-7] detached device signature | D2 for producers; D16 makes the receiver check a warning |
 | [ENC-1]–[ENC-4] encoding and signed-bytes rules | review gap (wire and crypto reviewer) |
 | [TR-2] origin serialization | D12 |
-| [ENC-5] duplicate CBOR map keys rejected | D15 |
+| [ENC-5] duplicate CBOR map keys | D15, relaxed by D16: producers SHALL NOT; receivers fail only if they cannot decode, else warn |
 | [TR-4] no origin, no response | review finding: the old instruction could not be followed |
 | [VRQ-10] call timeout (SHOULD) | Android response-size findings |
 | [SEC-1] no acting on completed or abandoned sessions (SHOULD NOT) | the old lowercase "should reject stale, duplicate, superseded" |
+| [RCV-0]–[RCV-2] producers strict; receivers fail only where marked, and warn otherwise | D16 |
+| (new threat row) altering a response in transit | D16: integrity rests on HPKE, since signature failures are warnings |

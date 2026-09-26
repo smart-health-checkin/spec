@@ -9,6 +9,24 @@
       "summary": "A product that does so SHALL NOT change the meaning of anything §§5–8 define."
     },
     {
+      "id": "RCV-0",
+      "section": "2",
+      "actor": "Verifier, Wallet",
+      "summary": "A producer SHALL build exactly what §8 describes. A receiver checks what it receives and classifies each problem as one of:"
+    },
+    {
+      "id": "RCV-1",
+      "section": "2",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver that finds a warning SHALL continue processing, and SHOULD report the finding, for example in logs, its user interface, or test output."
+    },
+    {
+      "id": "RCV-2",
+      "section": "2",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver SHALL fail only where §8 marks a step or condition as a failure. Every other problem §8 describes is a warning."
+    },
+    {
       "id": "CONF-2",
       "section": "4",
       "actor": "Implementer",
@@ -474,13 +492,13 @@
       "id": "ALG-1",
       "section": "8.1",
       "actor": "Verifier, Wallet",
-      "summary": "Verifiers and Wallets SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one."
+      "summary": "Producers SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one."
     },
     {
       "id": "ALG-2",
       "section": "8.1",
       "actor": "Verifier, Wallet",
-      "summary": "A receiver SHALL reject a structure in which alg, kty, crv, or digestAlgorithm has an unknown or unsupported value. It SHALL ignore other map keys it does not know."
+      "summary": "A receiver that finds an unknown or unsupported value of alg, kty, crv, or digestAlgorithm SHALL treat it as a warning and report the affected check as not verified. The one exception is the recipient key in encryptionInfo, which the Wal…"
     },
     {
       "id": "VRQ-0",
@@ -588,55 +606,55 @@
       "id": "WRQ-1",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "If any validation step fails, the Wallet SHALL NOT respond, and the platform ends the call with an error."
+      "summary": "The Wallet SHALL fail (not respond, so that the platform ends the call with an error) only where a step says fail. Every other problem is a warning ([RCV-1])."
     },
     {
       "id": "WRQ-2",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Check that the protocol is org-iso-mdoc, and decode deviceRequest from base64url and CBOR."
+      "summary": "Decode deviceRequest from base64url and CBOR. Fail if it cannot be decoded. Warn if the protocol is not org-iso-mdoc or the base64url has padding."
     },
     {
       "id": "WRQ-3",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Check that version is \"1.0\". A Wallet MAY also accept a later ISO version it supports."
+      "summary": "Warn if version is not \"1.0\" or a later ISO version the Wallet supports."
     },
     {
       "id": "WRQ-4",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Find the DocRequest whose ItemsRequest has docType org.smarthealthit.checkin.1, ignoring other docTypes. Reject the request if there is none or more than one."
+      "summary": "Find the DocRequest whose ItemsRequest has docType org.smarthealthit.checkin.1, ignoring other docTypes. Fail if there is none. If there is more than one, use the first and warn."
     },
     {
       "id": "WRQ-5",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Check that itemsRequest is tag24 of an ItemsRequest that requests smart_health_checkin_response in namespace org.smarthealthit.checkin, with a boolean intentToRetain, and has a text string under requestInfo[\"org.smarthealthit.checkin.req…"
+      "summary": "Decode itemsRequest (tag24 of an ItemsRequest) and take the text string under requestInfo[\"org.smarthealthit.checkin.request\"]. Fail if it cannot be decoded or has no such text. Warn if nameSpaces does not request smart_health_checkin_re…"
     },
     {
       "id": "WRQ-6",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Parse and validate that text as a SMART request (§§5.1–5.3). The request is read only from this location, never from element names or other members."
+      "summary": "Parse and validate that text as a SMART request (§§5.1–5.3). Fail where §5 says to reject the request. The request is read only from this location, never from element names or other members."
     },
     {
       "id": "WRQ-7",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Decode encryptionInfo, and check that it is [\"dcapi\", {...}] with a nonce byte string and a P-256 recipientPublicKey (§8.7)."
+      "summary": "Decode encryptionInfo and take its recipientPublicKey. Fail if it cannot be decoded or has no usable P-256 public key. Warn about any other problem with its shape (§8.7), such as a missing nonce."
     },
     {
       "id": "WRQ-8",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Compute SessionTranscript (§8.3)."
+      "summary": "Compute SessionTranscript (§8.3). Fail if the platform provides no origin ([TR-4])."
     },
     {
       "id": "WRQ-9",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "If readerAuth is present and the Wallet verifies it, verify it (§8.6) and classify it (§7)."
+      "summary": "If readerAuth is present and the Wallet verifies it, verify it (§8.6) and classify it (§7). The result never makes the Wallet fail."
     },
     {
       "id": "WRQ-10",
@@ -714,61 +732,61 @@
       "id": "VRS-1",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "If any of the steps 1–7 fails, the Verifier SHALL reject the whole response."
+      "summary": "The Verifier SHALL reject the whole response only where a step says fail. Every other problem is a warning ([RCV-1])."
     },
     {
       "id": "VRS-2",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Check that protocol is org-iso-mdoc and that data.response is base64url without padding. Decode it and check that it is [\"dcapi\", {enc, cipherText}]."
+      "summary": "Decode data.response from base64url and CBOR as [\"dcapi\", {enc, cipherText}]. Fail if it cannot be decoded or lacks enc or cipherText. Warn if protocol is not org-iso-mdoc or the base64url has padding."
     },
     {
       "id": "VRS-3",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Compute SessionTranscript from its own origin and the exact encryptionInfo string it sent, and open the ciphertext with its retained private key."
+      "summary": "Compute SessionTranscript from its own origin and the exact encryptionInfo string it sent, and open the ciphertext with its retained private key. Fail if it does not open."
     },
     {
       "id": "VRS-4",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Decode the DeviceResponse, and check that version is \"1.0\", status is 0, and there is exactly one document with docType org.smarthealthit.checkin.1."
+      "summary": "Decode the DeviceResponse and find the document with docType org.smarthealthit.checkin.1. Fail if it cannot be decoded or has no such document. Warn if version is not \"1.0\", status is not 0, or there is more than one document; use the fi…"
     },
     {
       "id": "VRS-5",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Verify issuerAuth with the public key of the first certificate in its x5chain, check the MSO fields (§8.7), and check that the MSO's docType matches the document's. Applying a trust policy to the certificate is optional (§7)."
+      "summary": "Verify issuerAuth with the public key of the first certificate in its x5chain, check the MSO fields (§8.7), and check that the MSO's docType matches the document's. Warn on any failure. Applying a trust policy to the certificate is optio…"
     },
     {
       "id": "VRS-6",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "For the issuer-signed item, check that SHA-256 of its IssuerSignedItemBytes, as received, equals the MSO's valueDigests entry for its digestID."
+      "summary": "Check that SHA-256 of the issuer-signed item's IssuerSignedItemBytes, as received, equals the MSO's valueDigests entry for its digestID. Warn if not."
     },
     {
       "id": "VRS-7",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Rebuild DeviceAuthenticationBytes and verify the device signature over them with deviceKeyInfo.deviceKey. If the signature carries a payload instead of null, reject it unless that payload is byte-for-byte equal to the rebuilt bytes."
+      "summary": "Rebuild DeviceAuthenticationBytes and verify the device signature over them with deviceKeyInfo.deviceKey. Warn if it does not verify, or if the signature carries a payload that differs from the rebuilt bytes."
     },
     {
       "id": "VRS-8",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Check that the item's elementIdentifier is smart_health_checkin_response and its elementValue is a text string."
+      "summary": "Find the issuer-signed item whose elementIdentifier is smart_health_checkin_response. Fail if there is none or its elementValue is not a text string."
     },
     {
       "id": "VRS-9",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "Parse the text as a SMART response and validate it (§6.4)."
+      "summary": "Parse the text as a SMART response and validate it (§6.4). Fail where §6.4 rejects the whole response ([XV-1], [XV-2])."
     },
     {
       "id": "VRS-10",
       "section": "8.5",
       "actor": "Verifier",
-      "summary": "The Verifier SHOULD reject a response whose MSO validityInfo does not include the current time, allowing for a few minutes of clock difference."
+      "summary": "The Verifier SHALL warn if the MSO validityInfo does not include the current time, allowing for a few minutes of clock difference."
     },
     {
       "id": "ENC-1",
@@ -798,7 +816,7 @@
       "id": "ENC-5",
       "section": "8.6",
       "actor": "Verifier, Wallet",
-      "summary": "A receiver SHALL reject any received CBOR structure that contains a map with a duplicate key, at any depth. For the Wallet this means rejecting the request ([WRQ-1]); for the Verifier, rejecting the response ([VRS-1])."
+      "summary": "Producers SHALL NOT produce a CBOR map with a duplicate key. A receiver whose decoder cannot process such a map fails at the step that decodes it; otherwise it SHALL warn."
     },
     {
       "id": "RA-1",
