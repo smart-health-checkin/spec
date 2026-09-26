@@ -501,13 +501,13 @@ An example response to the request in §5.2, which the build validates against i
 
 ### 6.4 Verifier cross-validation
 
-A Verifier checks a response against the request it sent before using anything in it. Some checks fail the whole response; most affect only one Artifact or one item.
+A Verifier checks a response against the request it sent before using anything in it. Only [XV-1] and [XV-2] fail the whole response; every other check affects one item or one Artifact.
 
 **[XV-1]** The Verifier SHALL reject the whole response if it fails §5.1, if `type` or `version` differs from §6.2, or if `artifacts` or `requestStatus` is not an array.
 
 **[XV-2]** The Verifier SHALL reject the whole response if `requestId` differs from the request's `id`.
 
-**[XV-3]** The Verifier SHALL reject the whole response unless `requestStatus[]` has exactly one entry for each request item, no entry for any other id, and only the six status codes.
+**[XV-3]** The Verifier SHALL treat an item as having no valid status when `requestStatus[]` has no entry for it, more than one entry for it, or an entry for it with a code other than the six in §6.2. It SHALL ignore entries naming ids that are not in the request. Neither case rejects the response.
 
 **[XV-4]** The Verifier SHALL disregard an Artifact that fails any of the checks below. It SHALL keep processing the other Artifacts, and SHALL NOT count a disregarded Artifact toward the items it lists.
 
@@ -527,9 +527,9 @@ A Verifier checks a response against the request it sent before using anything i
 
 **[XV-12]** The Verifier SHOULD flag an item with status `fulfilled` or `partial` that no valid Artifact lists.
 
-**[XV-14]** The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch.
-
 **[XV-13]** Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer.
+
+**[XV-14]** The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch.
 
 Passing these checks means the response is well formed and consistent with the request. Whether to accept the content into a chart is a separate, local decision.
 
@@ -721,6 +721,8 @@ Both sides produce identical bytes for everything that is hashed or signed by fo
 **[ENC-3]** Senders SHALL put `x5chain` (label 33) in the COSE unprotected header. Receivers SHALL accept it either as one certificate byte string or as an array of certificate byte strings, leaf first.
 
 **[ENC-4]** Every COSE signature in this profile SHALL use an empty external AAD.
+
+**[ENC-5]** A receiver SHALL reject any received CBOR structure that contains a map with a duplicate key, at any depth. For the Wallet this means rejecting the request ([WRQ-1]); for the Verifier, rejecting the response ([VRS-1]).
 
 | Output | Algorithm | Covers these bytes |
 | --- | --- | --- |

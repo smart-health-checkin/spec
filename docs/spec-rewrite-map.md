@@ -43,7 +43,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L98 "core clinical support includes …" list | **removed:** it restated §§5–6 |
 | L100 optional features: reader auth, extension selectors, extension media types | §4 list |
 | L100 compatibility rules | **removed:** the term was never defined (6 uses) |
-| L100 future status-code extensions | **removed:** [RSP-3] and [XV-3] allow only the six codes in 1.0 |
+| L100 future status-code extensions | **removed:** [RSP-3] allows only the six codes in 1.0; [XV-3] treats any other code as no valid status |
 | L100 stricter deployment profiles, fixture profiles | deployment profiles §2, [PROF-1]. "Fixture profiles" is **removed** |
 | L100 future DeviceRequest versions, `readerAuthAll` | [WRQ-3] (a Wallet MAY accept a later ISO version). The Verifier sends 1.0 ([VRQ-7]) |
 | L100 claiming a feature means implementing all of it | [CONF-3] |
@@ -124,7 +124,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L421–433 `type`, `version`; Verifier rejects | [RSP-1], [XV-1] |
 | L435–440 `requestId` exact; Verifier rejects mismatch | [RSP-1], [XV-2] |
 | L442–448 `artifacts` may be empty | shape comment, [RSP-2] |
-| L450–455 `requestStatus` exactly one per item | [RSP-2], [XV-3] |
+| L450–455 `requestStatus` exactly one per item | [RSP-2]; [XV-3] **changed** per D14: a missing, duplicate, or unknown-code row affects only that item, and rows for unknown ids are ignored |
 | L466–471 Artifact `id` unique; Verifier rejects | [ART-1], [XV-5]. **Changed** per D6: the Verifier disregards the Artifact, not the whole response |
 | L473–479 `mediaType`; no `GenericArtifact` catch-all | [XV-6], [EXT-3]. The name `GenericArtifact` is removed (never defined) |
 | L481–487 `fulfills` non-empty, real item ids, accepted by every item | [ART-1], [ACC-2], [XV-5], [XV-7] |
@@ -134,7 +134,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L530–537 `fhirVersion` non-empty; no mixing; Verifier rejects absent; SHOULD treat unaccepted as unsupported | [ART-2], [XV-8]. **Changed** per D6: per-Artifact. Format is the release version, e.g. `4.0.1` |
 | L539–546 `value` a resource or Bundle; SHOULD use Bundle; `meta.profile` preserved | [ART-4] (now says Bundle type `collection`), [ART-5] |
 | L549–562 extension Artifacts; "bounded media-type pattern" | [ACC-2], [EXT-2], [EXT-3]. The pattern form is **removed**: it contradicted exact equality |
-| L565–592 status codes; only six "unless extension" | table, [RSP-3], [XV-3]. Extensions are removed for 1.0 |
+| L565–592 status codes; only six "unless extension" | table, [RSP-3], [XV-3] (D14). Extensions are removed for 1.0 |
 | L594–600 `message` hygiene; don't parse messages | [STAT-1], [STAT-2] |
 | L608 don't infer semantics from field names | [XV-14] |
 | L608 raw FHIR is patient-mediated | §7 table |
@@ -142,7 +142,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | L608 "wrapper-level profile summaries" | **removed:** refers to fields that no longer exist |
 | L610 fulfilled or partial SHOULD have an Artifact; Verifier SHOULD flag | [ART-7], [XV-12] |
 | L614 many-to-many; exactly one status; evaluate all; multiple isn't an error | [MM-1], [RSP-2], [MM-2] |
-| L618–630 §6.4 checklist | [XV-1]–[XV-14], split into whole-response, per-Artifact (D6), and per-item checks. "Bundles do not mix releases" is **removed** as a Verifier check (a Verifier cannot detect it); [ART-2] keeps the Wallet rule. The `QuestionnaireResponse.questionnaire` echo is **added** as [XV-10] |
+| L618–630 §6.4 checklist | [XV-1]–[XV-14], split into whole-response ([XV-1], [XV-2] only, per D14), per-Artifact (D6), and per-item checks. "Bundles do not mix releases" is **removed** as a Verifier check (a Verifier cannot detect it); [ART-2] keeps the Wallet rule. The `QuestionnaireResponse.questionnaire` echo is **added** as [XV-10] |
 
 ## §7 Trust
 
@@ -230,7 +230,7 @@ Rows marked **changed** alter what implementations must do; each cites the decis
 | A.5 encryptionInfo, transcript, HPKE; "suite identifiers travel in …" | §8.7, §8.3, [HPKE-1]. The suite sentence is **removed** (D4) |
 | A.6 dcapiResponse | §8.7 |
 | A.7 DeviceResponse, IssuerSignedItem, DeviceAuthentication; not in DeviceNameSpaces | §8.7, [WRS-5] |
-| A.8 extraction reminders; profiles should pin duplicates, multiple documents, ordering, digestID, nonce | [VRS-0]–[VRS-9]. Exactly one document ([WRS-7], [VRS-4]), encoding ([ENC-1], [ENC-2]), digestID ([WRS-2], [VRS-6]), nonce ([VRQ-4]). Duplicate CBOR map keys are still unspecified (open issue) |
+| A.8 extraction reminders; profiles should pin duplicates, multiple documents, ordering, digestID, nonce | [VRS-0]–[VRS-9]. Exactly one document ([WRS-7], [VRS-4]), encoding ([ENC-1], [ENC-2]), digestID ([WRS-2], [VRS-6]), nonce ([VRQ-4]). Duplicate CBOR map keys: rejected by the receiver, [ENC-5] (D15) |
 | References | kept. Added RFC 3339, RFC 4648, RFC 9360, ISO/IEC TS 18013-7, the HTML origin serialization. DCQL is removed (unused) |
 | Companion links; companion SHALL NOT redefine | kept, plus conformance cases, `requirements.json`, rationale. The SHALL is removed (binds documents) |
 
@@ -251,6 +251,7 @@ These are new. Each comes from a decision, from what every implementation alread
 | [WRS-6], [VRS-7] detached device signature | D2 |
 | [ENC-1]–[ENC-4] encoding and signed-bytes rules | review gap (wire and crypto reviewer) |
 | [TR-2] origin serialization | D12 |
+| [ENC-5] duplicate CBOR map keys rejected | D15 |
 | [TR-4] no origin, no response | review finding: the old instruction could not be followed |
 | [VRQ-10] call timeout (SHOULD) | Android response-size findings |
 | [SEC-1] no acting on completed or abandoned sessions (SHOULD NOT) | the old lowercase "should reject stale, duplicate, superseded" |

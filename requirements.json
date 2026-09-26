@@ -384,7 +384,7 @@
       "id": "XV-3",
       "section": "6.4",
       "actor": "Verifier",
-      "summary": "The Verifier SHALL reject the whole response unless requestStatus[] has exactly one entry for each request item, no entry for any other id, and only the six status codes."
+      "summary": "The Verifier SHALL treat an item as having no valid status when requestStatus[] has no entry for it, more than one entry for it, or an entry for it with a code other than the six in §6.2. It SHALL ignore entries naming ids that are not i…"
     },
     {
       "id": "XV-4",
@@ -441,16 +441,16 @@
       "summary": "The Verifier SHOULD flag an item with status fulfilled or partial that no valid Artifact lists."
     },
     {
-      "id": "XV-14",
-      "section": "6.4",
-      "actor": "Verifier",
-      "summary": "The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch."
-    },
-    {
       "id": "XV-13",
       "section": "6.4",
       "actor": "Verifier",
       "summary": "Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer."
+    },
+    {
+      "id": "XV-14",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch."
     },
     {
       "id": "TRUST-1",
@@ -793,6 +793,12 @@
       "section": "8.6",
       "actor": "Verifier, Wallet",
       "summary": "Every COSE signature in this profile SHALL use an empty external AAD."
+    },
+    {
+      "id": "ENC-5",
+      "section": "8.6",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver SHALL reject any received CBOR structure that contains a map with a duplicate key, at any depth. For the Wallet this means rejecting the request ([WRQ-1]); for the Verifier, rejecting the response ([VRS-1])."
     },
     {
       "id": "RA-1",
