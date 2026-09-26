@@ -1,0 +1,846 @@
+{
+  "spec": "SMART Health Check-in 1.0",
+  "generatedFrom": "spec.md",
+  "requirements": [
+    {
+      "id": "CONF-1",
+      "section": "1.4",
+      "actor": "Implementer",
+      "summary": "A product that does so SHALL NOT change the meaning of anything §§5–8 define."
+    },
+    {
+      "id": "CONF-2",
+      "section": "4",
+      "actor": "Implementer",
+      "summary": "A conformance claim SHALL name the targets it covers (Verifier, Wallet, or both), the optional features it implements, this specification's version, and any deployment profile it follows."
+    },
+    {
+      "id": "CONF-3",
+      "section": "4",
+      "actor": "Implementer",
+      "summary": "A product that claims a target or an optional feature SHALL meet every requirement this document places on that target or feature."
+    },
+    {
+      "id": "JSON-1",
+      "section": "5.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A producer (the Verifier for a request, the Wallet for a response) SHALL produce an RFC 8259 JSON object, encoded as UTF-8, with no duplicate member names at any level. Every field has the type §5.2 or §6.1 gives it; the model has no num…"
+    },
+    {
+      "id": "JSON-2",
+      "section": "5.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver (the Wallet for a request, the Verifier for a response) SHALL reject a SMART request or response that is not a JSON object, cannot be parsed, or has duplicate member names at any level."
+    },
+    {
+      "id": "JSON-3",
+      "section": "5.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver SHALL ignore members this specification does not define, wherever they appear. Values of content.kind are not members; §5.4.3 covers unknown kinds."
+    },
+    {
+      "id": "JSON-4",
+      "section": "5.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A producer SHALL NOT use undefined members to change the meaning of defined ones, or to carry identity or trust claims (§5.7)."
+    },
+    {
+      "id": "JSON-5",
+      "section": "5.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A Wallet MAY reject a request larger than it can safely display or process."
+    },
+    {
+      "id": "REQ-1",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL set type to smart-health-checkin-request and version to \"1\"."
+    },
+    {
+      "id": "REQ-2",
+      "section": "5.3",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL reject a request whose type or version differs, or whose members do not have the types §5.2 gives them."
+    },
+    {
+      "id": "REQ-3",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL include at least one item."
+    },
+    {
+      "id": "ITEM-1",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL give every item an id that is unique within the request."
+    },
+    {
+      "id": "ITEM-2",
+      "section": "5.3",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL reject a request with a missing, empty, or duplicate item id. Item ids are compared as exact strings."
+    },
+    {
+      "id": "ITEM-3",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD use summary to explain broad requests, such as a whole profile family or a request with no filters."
+    },
+    {
+      "id": "SEL-1",
+      "section": "5.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL use selection.fhir, form.fhir, or a kind defined by a published extension (§9.3)."
+    },
+    {
+      "id": "SEL-2",
+      "section": "5.4",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL evaluate each item's selector on its own. §6.3 covers Artifacts that answer several items."
+    },
+    {
+      "id": "SEL-3",
+      "section": "5.4.1",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL treat profiles[] and profilesFrom[] as alternatives: a resource matches if it matches any listed profile or belongs to any listed family. When resourceTypes[] is present, a match must also have one of those resource types."
+    },
+    {
+      "id": "SEL-4",
+      "section": "5.4.1",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL list only FHIR resourceType names in resourceTypes[]."
+    },
+    {
+      "id": "SEL-5",
+      "section": "5.4.1",
+      "actor": "Wallet",
+      "summary": "A profile belongs to a family when its canonical URL, without any |version, starts with the family URL followed by /. The Wallet MAY also use other evidence of membership, such as an implementation guide's package."
+    },
+    {
+      "id": "SEL-6",
+      "section": "5.4.1",
+      "actor": "Wallet",
+      "summary": "The Wallet MAY match a resource by its meta.profile or by other evidence it holds; it need not validate the resource against the profile."
+    },
+    {
+      "id": "SEL-7",
+      "section": "5.4.1",
+      "actor": "Wallet",
+      "summary": "When an item has none of profiles[], profilesFrom[], and resourceTypes[], the Wallet and Holder decide what is relevant to the check-in. The Wallet MAY answer such an item in part."
+    },
+    {
+      "id": "SEL-8",
+      "section": "5.4.1",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL report unsupported for a selection.fhir item that also has questionnaireCanonical or questionnaire."
+    },
+    {
+      "id": "FORM-1",
+      "section": "5.4.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL report unsupported for a form.fhir item that has neither questionnaireCanonical nor questionnaire, whose questionnaire is not a Questionnaire, or that also has profiles, profilesFrom, or resourceTypes."
+    },
+    {
+      "id": "FORM-2",
+      "section": "5.4.2",
+      "actor": "Verifier",
+      "summary": "When both are present, questionnaireCanonical names the form and questionnaire is the body to show. The Verifier SHOULD make the inline Questionnaire's url and version match the canonical."
+    },
+    {
+      "id": "FORM-3",
+      "section": "5.4.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL NOT rewrite questionnaireCanonical. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report unsupported rather than collect answers."
+    },
+    {
+      "id": "FORM-4",
+      "section": "5.4.2",
+      "actor": "Wallet",
+      "summary": "When there is no inline Questionnaire, the Wallet SHALL resolve questionnaireCanonical as §5.5 describes. If it cannot resolve, show, or use the form, it SHALL report unsupported or error (§6.2) and SHALL NOT invent a form."
+    },
+    {
+      "id": "FORM-5",
+      "section": "5.4.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL answer a form with a FHIR QuestionnaireResponse in an application/fhir+json Artifact. Its questionnaire SHALL be questionnaireCanonical exactly when the item has one. Otherwise it SHALL be the inline Questionnaire's url,…"
+    },
+    {
+      "id": "SEL-9",
+      "section": "5.4.3",
+      "actor": "Wallet",
+      "summary": "A Wallet that does not support an item's content.kind SHALL report unsupported for that item and process the other items. It SHALL NOT guess the item's meaning from its title, summary, or other members."
+    },
+    {
+      "id": "CAN-1",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "Anyone parsing a canonical SHALL split it at the first |: the text before is the url, the text after is the version, and any later | is part of the version."
+    },
+    {
+      "id": "CAN-2",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "Implementations SHALL keep canonical strings exactly as written wherever they are echoed or stored: in meta.profile, in QuestionnaireResponse.questionnaire, in logs, and in test data."
+    },
+    {
+      "id": "CAN-3",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "The Verifier SHOULD NOT add |version to a profilesFrom[] entry unless it means a specific version of the family."
+    },
+    {
+      "id": "CAN-4",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "To resolve a canonical, a Wallet MAY use a configured resolver, a cache, a FHIR search (GET [base]/{ResourceType}?url={url}&version={version}), or an HTTP(S) request to the url. Whatever it uses, it SHALL then check that the resource has…"
+    },
+    {
+      "id": "CAN-5",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "For an item whose profiles[] includes a versioned canonical, the Wallet SHALL NOT report fulfilled unless a returned resource's meta.profile includes that exact versioned canonical. An unversioned canonical matches any version of the pro…"
+    },
+    {
+      "id": "CAN-6",
+      "section": "5.5",
+      "actor": "Verifier, Wallet",
+      "summary": "Software MAY ignore |version when grouping, routing, or displaying, but SHALL NOT remove it from any value it returns, stores as evidence, or validates."
+    },
+    {
+      "id": "ACC-1",
+      "section": "5.6",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL list in each item's accept[] only media types it can parse, validate, and use, most preferred first."
+    },
+    {
+      "id": "ACC-2",
+      "section": "5.6",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL NOT return an Artifact whose mediaType is missing from the accept[] of any item the Artifact fulfills."
+    },
+    {
+      "id": "ACC-3",
+      "section": "5.6",
+      "actor": "Wallet",
+      "summary": "The Wallet SHOULD use the earliest type in accept[] that it can produce."
+    },
+    {
+      "id": "ACC-4",
+      "section": "5.6",
+      "actor": "Verifier, Wallet",
+      "summary": "Verifiers and Wallets SHALL compare media types as exact, case-sensitive strings, without parameters."
+    },
+    {
+      "id": "ID-1",
+      "section": "5.7",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request: no organization names, logos, URLs, certificates, keys, or accreditation data."
+    },
+    {
+      "id": "ID-2",
+      "section": "5.7",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL NOT treat anything in the request, including purpose, title, and summary, as evidence of who is asking. That comes from the origin and, if present, reader authentication (§7)."
+    },
+    {
+      "id": "HOLD-1",
+      "section": "5.7",
+      "actor": "Wallet",
+      "summary": "Before sharing anything, the Wallet SHALL let the Holder decide item by item, unless a deployment profile defines an equivalent Holder control."
+    },
+    {
+      "id": "HOLD-2",
+      "section": "5.7",
+      "actor": "Wallet",
+      "summary": "The Wallet MAY group, reorder, or summarize items on screen, but SHALL keep each item's id in the response."
+    },
+    {
+      "id": "HOLD-3",
+      "section": "5.7",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL NOT treat required: true as consent or as a reason to skip the Holder's choice. A required item may still be declined, unavailable, unsupported, or answered in part."
+    },
+    {
+      "id": "HOLD-4",
+      "section": "5.7",
+      "actor": "Wallet",
+      "summary": "When the Holder reviews the request and declines every item, the Wallet SHALL return a response in which every item has status declined. When the Holder dismisses the Wallet without reviewing, the Wallet returns nothing, and the platform…"
+    },
+    {
+      "id": "RSP-1",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL set type to smart-health-checkin-response, version to \"1\", and requestId to the request's id, exactly."
+    },
+    {
+      "id": "RSP-2",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL include exactly one requestStatus[] entry for each request item, and no entry for anything else."
+    },
+    {
+      "id": "RSP-3",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL use only the six status codes in the table below."
+    },
+    {
+      "id": "ART-1",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL give each Artifact an id unique within the response, and list in fulfills[] only ids of items in the request."
+    },
+    {
+      "id": "ART-2",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "In an application/fhir+json Artifact, the Wallet SHALL set fhirVersion to the FHIR release version of every resource in value, such as 4.0.1, and SHALL NOT mix releases in one Artifact."
+    },
+    {
+      "id": "ART-3",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHOULD choose a FHIR release from the request's fhirVersions[], when present."
+    },
+    {
+      "id": "ART-4",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHOULD put several resources in one Artifact as a Bundle of type collection."
+    },
+    {
+      "id": "ART-5",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL keep every returned meta.profile string exactly as the source had it (§5.5)."
+    },
+    {
+      "id": "ART-6",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "In an application/smart-health-card Artifact, the Wallet SHALL put the card's JWS strings in value.verifiableCredential[] and SHALL NOT include fhirVersion; the FHIR release is inside the signed card."
+    },
+    {
+      "id": "ART-7",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "An item with status fulfilled or partial SHOULD be listed in the fulfills[] of at least one Artifact."
+    },
+    {
+      "id": "STAT-1",
+      "section": "6.2",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL NOT put secrets, access tokens, stack traces, or patient details beyond what the Holder shared in message."
+    },
+    {
+      "id": "STAT-2",
+      "section": "6.2",
+      "actor": "Verifier",
+      "summary": "A Verifier SHALL NOT derive a status's meaning from message."
+    },
+    {
+      "id": "MM-1",
+      "section": "6.3",
+      "actor": "Wallet",
+      "summary": "The Wallet MAY return one Artifact for several items, or several Artifacts for one item. Each fulfillment still has to meet §5.6 and §6.4."
+    },
+    {
+      "id": "MM-2",
+      "section": "6.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL consider every valid Artifact that lists an item. More than one Artifact for an item is not an error; the Verifier chooses which to use."
+    },
+    {
+      "id": "XV-1",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL reject the whole response if it fails §5.1, if type or version differs from §6.2, or if artifacts or requestStatus is not an array."
+    },
+    {
+      "id": "XV-2",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL reject the whole response if requestId differs from the request's id."
+    },
+    {
+      "id": "XV-3",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL reject the whole response unless requestStatus[] has exactly one entry for each request item, no entry for any other id, and only the six status codes."
+    },
+    {
+      "id": "XV-4",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL disregard an Artifact that fails any of the checks below. It SHALL keep processing the other Artifacts, and SHALL NOT count a disregarded Artifact toward the items it lists."
+    },
+    {
+      "id": "XV-5",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "An Artifact needs an id no other Artifact in the response has, a mediaType, and a non-empty fulfills[] naming only request items. When two Artifacts share an id, the Verifier SHALL disregard both."
+    },
+    {
+      "id": "XV-6",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Artifact's mediaType needs to be one of the two core types, or an extension type the Verifier supports."
+    },
+    {
+      "id": "XV-7",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Artifact's mediaType needs to be in the accept[] of every item it lists."
+    },
+    {
+      "id": "XV-8",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "An application/fhir+json Artifact needs a non-empty string fhirVersion, and a value that is an object with a string resourceType. The Verifier MAY also disregard it when the request listed fhirVersions[] and this release is not among them."
+    },
+    {
+      "id": "XV-9",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "An application/smart-health-card Artifact needs a non-empty value.verifiableCredential[] of strings and no fhirVersion."
+    },
+    {
+      "id": "XV-10",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "A QuestionnaireResponse fulfilling a form.fhir item that has questionnaireCanonical needs its questionnaire to equal that canonical exactly."
+    },
+    {
+      "id": "XV-11",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "For an item whose profiles[] includes a versioned canonical, the Verifier SHALL NOT treat a fulfilled status as met unless an Artifact listing the item contains a resource whose meta.profile includes that exact versioned canonical."
+    },
+    {
+      "id": "XV-12",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD flag an item with status fulfilled or partial that no valid Artifact lists."
+    },
+    {
+      "id": "XV-13",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer."
+    },
+    {
+      "id": "TRUST-1",
+      "section": "7",
+      "actor": "Verifier, Wallet",
+      "summary": "Verifiers and Wallets SHALL NOT treat a signal as proving anything the table says it does not, unless a deployment profile defines that relationship."
+    },
+    {
+      "id": "TRUST-2",
+      "section": "7",
+      "actor": "Wallet",
+      "summary": "A Wallet that verifies readerAuth SHALL classify it as exactly one of: absent; malformed; invalid (the signature or binding fails); valid but untrusted (it verifies, but no trusted certificate or key is recognized); or trusted. It SHALL …"
+    },
+    {
+      "id": "MD-1",
+      "section": "8.1",
+      "actor": "Verifier, Wallet",
+      "summary": "Verifiers and Wallets SHALL use the values in this table exactly."
+    },
+    {
+      "id": "ALG-1",
+      "section": "8.1",
+      "actor": "Verifier, Wallet",
+      "summary": "Verifiers and Wallets SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one."
+    },
+    {
+      "id": "ALG-2",
+      "section": "8.1",
+      "actor": "Verifier, Wallet",
+      "summary": "A receiver SHALL reject a structure in which alg, kty, crv, or digestAlgorithm has an unknown or unsupported value. It SHALL ignore other map keys it does not know."
+    },
+    {
+      "id": "VRQ-0",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL build and send a request in these steps, in this order."
+    },
+    {
+      "id": "VRQ-1",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Serialize the SMART request (§5) as UTF-8 JSON text."
+    },
+    {
+      "id": "VRQ-2",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Build an ItemsRequest with docType org.smarthealthit.checkin.1; nameSpaces requesting only the element smart_health_checkin_response in namespace org.smarthealthit.checkin; and requestInfo holding the JSON text, as a CBOR text string, un…"
+    },
+    {
+      "id": "VRQ-3",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Compute ItemsRequestBytes = tag24(CBOR(ItemsRequest))."
+    },
+    {
+      "id": "VRQ-4",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Generate a P-256 HPKE key pair and a nonce of unpredictable random bytes for this request. The nonce SHOULD be at least 16 bytes. The Verifier SHOULD NOT reuse a key pair across requests."
+    },
+    {
+      "id": "VRQ-5",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Build EncryptionInfo = [\"dcapi\", {\"nonce\": nonce, \"recipientPublicKey\": COSE_Key}], where the COSE_Key has 1: 2 (EC2), -1: 1 (P-256), and 32-byte -2 (x) and -3 (y). Encode it with CBOR and then base64url, and keep that exact string."
+    },
+    {
+      "id": "VRQ-6",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "If it uses reader authentication, compute SessionTranscript (§8.3) with its own origin, and sign ReaderAuthenticationBytes as §8.6 describes."
+    },
+    {
+      "id": "VRQ-7",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Build a DeviceRequest with version \"1.0\" and exactly one DocRequest, holding ItemsRequestBytes and, if used, readerAuth."
+    },
+    {
+      "id": "VRQ-8",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Call the Digital Credentials API with protocol org-iso-mdoc and data {deviceRequest, encryptionInfo}, both base64url:"
+    },
+    {
+      "id": "VRQ-9",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "Keep the private key and the exact encryptionInfo string until the response is processed or the session is abandoned."
+    },
+    {
+      "id": "VRQ-10",
+      "section": "8.2",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD apply its own timeout to the call. On some platforms, a response that is too large never arrives, and the call never settles."
+    },
+    {
+      "id": "TR-1",
+      "section": "8.3",
+      "actor": "Verifier, Wallet",
+      "summary": "encryptionInfoBase64url SHALL be the exact encryptionInfo string the Verifier sent, not a re-encoding of its decoded bytes."
+    },
+    {
+      "id": "TR-2",
+      "section": "8.3",
+      "actor": "Verifier, Wallet",
+      "summary": "For a web page, origin SHALL be the ASCII serialization of the calling page's origin: scheme, ://, host, and :port only for a non-default port, with no trailing slash (for example https://clinic.example). For a native app, it SHALL be ex…"
+    },
+    {
+      "id": "TR-3",
+      "section": "8.3",
+      "actor": "Verifier, Wallet",
+      "summary": "The Wallet SHALL take the origin only from the browser or platform, never from anything in the request."
+    },
+    {
+      "id": "TR-4",
+      "section": "8.3",
+      "actor": "Verifier, Wallet",
+      "summary": "If the platform provides no origin, the Wallet SHALL NOT respond."
+    },
+    {
+      "id": "TR-5",
+      "section": "8.3",
+      "actor": "Verifier, Wallet",
+      "summary": "Both sides SHALL use the same SessionTranscript for readerAuth, for the HPKE info, and for device authentication."
+    },
+    {
+      "id": "WRQ-0",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL handle a request in these steps, in this order."
+    },
+    {
+      "id": "WRQ-1",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "If any validation step fails, the Wallet SHALL NOT respond, and the platform ends the call with an error."
+    },
+    {
+      "id": "WRQ-2",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Check that the protocol is org-iso-mdoc, and decode deviceRequest from base64url and CBOR."
+    },
+    {
+      "id": "WRQ-3",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Check that version is \"1.0\". A Wallet MAY also accept a later ISO version it supports."
+    },
+    {
+      "id": "WRQ-4",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Find the DocRequest whose ItemsRequest has docType org.smarthealthit.checkin.1, ignoring other docTypes. Reject the request if there is none or more than one."
+    },
+    {
+      "id": "WRQ-5",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Check that itemsRequest is tag24 of an ItemsRequest that requests smart_health_checkin_response in namespace org.smarthealthit.checkin, with a boolean intentToRetain, and has a text string under requestInfo[\"org.smarthealthit.checkin.req…"
+    },
+    {
+      "id": "WRQ-6",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Parse and validate that text as a SMART request (§§5.1–5.3)."
+    },
+    {
+      "id": "WRQ-7",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Decode encryptionInfo, and check that it is [\"dcapi\", {...}] with a nonce byte string and a P-256 recipientPublicKey (§8.7)."
+    },
+    {
+      "id": "WRQ-8",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Compute SessionTranscript (§8.3)."
+    },
+    {
+      "id": "WRQ-9",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "If readerAuth is present and the Wallet verifies it, verify it (§8.6) and classify it (§7)."
+    },
+    {
+      "id": "WRQ-10",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Let the Holder choose (§5.7), then build the SMART response (§6)."
+    },
+    {
+      "id": "WRS-0",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL then build the DeviceResponse in these steps, in this order."
+    },
+    {
+      "id": "WRS-1",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Build an IssuerSignedItem with a digestID, a random of at least 16 random bytes, elementIdentifier smart_health_checkin_response, and elementValue set to the SMART response as UTF-8 JSON text. Compute IssuerSignedItemBytes = tag24(CBOR(I…"
+    },
+    {
+      "id": "WRS-2",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Build the MSO (§8.7) with version \"1.0\", digestAlgorithm \"SHA-256\", and docType org.smarthealthit.checkin.1. Its valueDigests maps namespace org.smarthealthit.checkin to {digestID: SHA-256(IssuerSignedItemBytes)}. Its deviceKeyInfo.devic…"
+    },
+    {
+      "id": "WRS-3",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Set the MSO's validityInfo: signed and validFrom to the signing time, and validUntil to a later time. Each is a CBOR tag 0 date-time string in UTC, without fractional seconds."
+    },
+    {
+      "id": "WRS-4",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Sign issuerAuth: a COSE_Sign1 with protected header {1: -7}, x5chain (label 33) in the unprotected header with the certificate for the signing key, and payload MobileSecurityObjectBytes = tag24(CBOR(MSO)). The certificate may be self-sig…"
+    },
+    {
+      "id": "WRS-5",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Set DeviceNameSpacesBytes = tag24(CBOR({})), an empty map, unless a deployment profile defines device-signed elements. The SMART response is always the issuer-signed element, never a device-signed one."
+    },
+    {
+      "id": "WRS-6",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Sign the session: a COSE_Sign1 with protected header {1: -7} and payload null, signed with the private key for deviceKeyInfo.deviceKey over the detached payload DeviceAuthenticationBytes (§8.6)."
+    },
+    {
+      "id": "WRS-7",
+      "section": "8.4",
+      "actor": "Wallet",
+      "summary": "Build a DeviceResponse with version \"1.0\", status 0, and exactly one document holding the issuer-signed item, issuerAuth, DeviceNameSpacesBytes, and the device signature (§8.7)."
+    },
+    {
+      "id": "HPKE-1",
+      "section": "8.5",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL encrypt CBOR(DeviceResponse) with HPKE base mode, using the suite in §8.1, to recipientPublicKey, with info = CBOR(SessionTranscript) and an empty aad. enc is the 65-byte uncompressed P-256 public key."
+    },
+    {
+      "id": "HPKE-2",
+      "section": "8.5",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL return dcapiResponse = [\"dcapi\", {\"enc\": enc, \"cipherText\": ciphertext}], encoded with CBOR and then base64url, as data.response of a result whose protocol is org-iso-mdoc. It SHALL NOT return the DeviceResponse or the S…"
+    },
+    {
+      "id": "VRS-0",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL process the result in these steps, in this order."
+    },
+    {
+      "id": "VRS-1",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "If any of the steps 1–7 fails, the Verifier SHALL reject the whole response."
+    },
+    {
+      "id": "VRS-2",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Check that protocol is org-iso-mdoc and that data.response is base64url without padding. Decode it and check that it is [\"dcapi\", {enc, cipherText}]."
+    },
+    {
+      "id": "VRS-3",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Compute SessionTranscript from its own origin and the exact encryptionInfo string it sent, and open the ciphertext with its retained private key."
+    },
+    {
+      "id": "VRS-4",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Decode the DeviceResponse, and check that version is \"1.0\", status is 0, and there is exactly one document with docType org.smarthealthit.checkin.1."
+    },
+    {
+      "id": "VRS-5",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Verify issuerAuth with the public key of the first certificate in its x5chain, check the MSO fields (§8.7), and check that the MSO's docType matches the document's. Applying a trust policy to the certificate is optional (§7)."
+    },
+    {
+      "id": "VRS-6",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "For the issuer-signed item, check that SHA-256 of its IssuerSignedItemBytes, as received, equals the MSO's valueDigests entry for its digestID."
+    },
+    {
+      "id": "VRS-7",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Rebuild DeviceAuthenticationBytes and verify the device signature over them with deviceKeyInfo.deviceKey. If the signature carries a payload instead of null, reject it unless that payload is byte-for-byte equal to the rebuilt bytes."
+    },
+    {
+      "id": "VRS-8",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Check that the item's elementIdentifier is smart_health_checkin_response and its elementValue is a text string."
+    },
+    {
+      "id": "VRS-9",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "Parse the text as a SMART response and validate it (§6.4)."
+    },
+    {
+      "id": "VRS-10",
+      "section": "8.5",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD reject a response whose MSO validityInfo does not include the current time, allowing for a few minutes of clock difference."
+    },
+    {
+      "id": "ENC-1",
+      "section": "8.6",
+      "actor": "Verifier, Wallet",
+      "summary": "Structures that both sides build independently (dcapiInfo, SessionTranscript, ReaderAuthentication, DeviceAuthentication, and each COSE Sig_structure) SHALL be encoded with RFC 8949 preferred serialization and definite lengths."
+    },
+    {
+      "id": "ENC-2",
+      "section": "8.6",
+      "actor": "Verifier, Wallet",
+      "summary": "Transmitted bytes that are signed or hashed (ItemsRequestBytes, IssuerSignedItemBytes, MobileSecurityObjectBytes, DeviceNameSpacesBytes, and COSE protected headers) SHALL be hashed and verified exactly as received, never decoded and re-e…"
+    },
+    {
+      "id": "ENC-3",
+      "section": "8.6",
+      "actor": "Verifier, Wallet",
+      "summary": "Senders SHALL put x5chain (label 33) in the COSE unprotected header. Receivers SHALL accept it either as one certificate byte string or as an array of certificate byte strings, leaf first."
+    },
+    {
+      "id": "ENC-4",
+      "section": "8.6",
+      "actor": "Verifier, Wallet",
+      "summary": "Every COSE signature in this profile SHALL use an empty external AAD."
+    },
+    {
+      "id": "RA-1",
+      "section": "8.6",
+      "actor": "Verifier",
+      "summary": "A Verifier that sends readerAuth SHALL sign it with protected header {1: -7}, payload null, and x5chain holding at least the signing certificate, over a ReaderAuthenticationBytes computed for this session and these exact ItemsRequestByte…"
+    },
+    {
+      "id": "RA-2",
+      "section": "8.6",
+      "actor": "Wallet",
+      "summary": "A Wallet that verifies readerAuth SHALL check the algorithm, rebuild ReaderAuthenticationBytes from its own SessionTranscript and the received ItemsRequestBytes, and verify the signature with the first certificate's key."
+    },
+    {
+      "id": "SEC-1",
+      "section": "9.1",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD NOT act on a response for a session it has already completed or abandoned."
+    },
+    {
+      "id": "PRIV-1",
+      "section": "9.2",
+      "actor": "Verifier, Wallet",
+      "summary": "Verifiers and Wallets SHOULD NOT put patient identifiers, account numbers, secrets, predictable sequences, or clinical facts in request ids, item ids, or Artifact ids, since these appear in logs."
+    },
+    {
+      "id": "PRIV-2",
+      "section": "9.2",
+      "actor": "Verifier, Wallet",
+      "summary": "Routine telemetry SHOULD record counts and categories, not request or response content, keys, tokens, full URLs, or Holder decisions. Full payloads belong only in controlled diagnostic or incident-response records."
+    },
+    {
+      "id": "EXT-1",
+      "section": "9.3",
+      "actor": "Extension author",
+      "summary": "An extension that defines a selector kind SHALL define its kind string, its members and their meaning, how it interacts with accept[] and fhirVersions[], which statuses it uses and when, its security and privacy considerations, and at le…"
+    },
+    {
+      "id": "EXT-2",
+      "section": "9.3",
+      "actor": "Extension author",
+      "summary": "An extension that defines an Artifact media type SHALL define its media type string, its Artifact members, how to validate it, how it handles FHIR versions (if at all), and its security and privacy considerations."
+    },
+    {
+      "id": "EXT-3",
+      "section": "9.3",
+      "actor": "Extension author",
+      "summary": "An extension SHALL NOT change the meaning of core members, core selector kinds, status codes, Holder control, or the validation in §6.4, and SHALL NOT define a catch-all Artifact type with generic payload members."
+    },
+    {
+      "id": "PROF-1",
+      "section": "9.3",
+      "actor": "Deployment profile",
+      "summary": "A deployment profile that adds trust requirements SHALL state which targets it constrains, the certificates, keys, or allow-lists it trusts, and what happens when a presentation is valid but fails its trust policy."
+    },
+    {
+      "id": "I18N-1",
+      "section": "9.4",
+      "actor": "Verifier, Wallet",
+      "summary": "Translating, reordering, or normalizing display text SHALL NOT change any protocol value, or any bytes that are signed, hashed, or encrypted."
+    },
+    {
+      "id": "I18N-2",
+      "section": "9.4",
+      "actor": "Verifier, Wallet",
+      "summary": "Language tags attached to display text SHOULD be well-formed BCP 47 tags."
+    },
+    {
+      "id": "I18N-3",
+      "section": "9.4",
+      "actor": "Verifier, Wallet",
+      "summary": "Wallet and Verifier user interfaces SHALL keep display text from the other party visually separate from origins, identities, identifiers, statuses, and controls, so that it cannot imitate them."
+    }
+  ]
+}

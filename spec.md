@@ -1,64 +1,103 @@
 # SMART Health Check-in 1.0
 
-A transport-neutral clinical request and response model for patient-mediated check-in, with a version 1.0 same-device presentation flow using direct `org-iso-mdoc` over the W3C Digital Credentials API.
+A clinic app asks a patient's wallet for check-in information and gets back the FHIR data and form answers the patient chose to share. This specification defines that request and response, and how they travel through the W3C Digital Credentials API as an ISO mdoc presentation.
 
 Short title: **SMART Health Check-in 1.0**. Suggested citation label: **SHC-Checkin-1.0**. Suggested document identifier: `smart-health-checkin-1.0`.
 
 ---
 
-## 0. Front Matter
+<a id="0-front-matter"></a>
 
-Status: editor's draft for implementer review. Version: 1.0 draft. Publication metadata, editors, contributors, IPR statements, and final governance metadata are to be supplied by the publishing organization. Example identifiers, URLs, names, keys, and clinical data are illustrative unless explicitly identified as fixed protocol values.
+## 0. Status
 
-**Editorial approach:** This candidate uses a docs-as-code style: brief narrative, TypeScript interfaces with normative JSDoc for the clinical data model, Mermaid diagrams for flow orientation, stable section numbers, and minimal examples. The main file preserves normative request/response rules, trust rules, same-device wire details, CDDL, and extension-point constraints. Tutorials, fixture indexes, byte ladders, JSON Schema artifacts, implementation notes, FHIR mapping walkthroughs, checklist extracts, and historical material are treated as companion material; normative implementation rules remain here.
+Editor's draft 1.0, for implementer review. Editors, license, and publication details are still to be settled; the text is intended for CC BY 4.0, and its TypeScript, CDDL, and examples for use in implementations and tests. Identifiers, URLs, keys, and clinical data in examples are illustrative unless this document marks them as fixed values.
 
-Copyright and license terms are to be finalized before publication. The text is intended for CC BY 4.0 or a successor open documentation license; TypeScript interfaces, CDDL, pseudocode, and test scaffolding are intended for implementation and conformance testing under final package terms.
+> **Start here**
+>
+> - A clinic web page, kiosk, or patient portal is the **Verifier**. It builds the request (§5), calls the browser (§8.2), and checks the response before using it (§6.4, §8.5).
+> - A patient's wallet app is the **Wallet**. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6).
+> - The minimum to implement: the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1). Reader authentication is optional.
+> - Every requirement has an ID such as [XV-2]. Conformance cases in the spec repository cite these IDs, and `requirements.json` lists them all.
+> - Appendix A walks one real capture byte by byte. The [explainers](#companion-material) teach the model and the wire format with examples.
 
 ---
 
 ## 1. Introduction
 
-SMART Health Check-in 1.0 defines a patient-mediated check-in profile in which a **Requester** asks a **Holder**, through a **Wallet/Responder**, to share workflow-bounded clinical or administrative content and receives a structured **SMART response**. Version 1.0 has two normative layers: the transport-neutral clinical JSON request/response model in §§5-6, and same-device direct `org-iso-mdoc` presentation over the W3C Digital Credentials API in §8.
+SMART Health Check-in 1.0 has two layers:
 
-This profile uses W3C Digital Credentials API plus direct `org-iso-mdoc` because those are the practical rails available in 2026 across modern browsers, Android, iOS, and shipping wallet ecosystems. The mdoc layer is used as an authenticated, encrypted, holder-mediated transport for SMART clinical JSON. It is not used for mdoc-style per-element clinical selective disclosure or for defining clinical credential issuance. That is an unconventional use of mdoc, but it lets healthcare use deployed wallet/browser capabilities while keeping clinical semantics in FHIR-aware JSON.
+- **The clinical model (§§5–6):** a JSON request listing the items a Verifier would like, and a JSON response carrying the records the Holder shared and one outcome per item. This layer does not depend on the transport.
+- **The same-device flow (§8):** the request and response travel through the W3C Digital Credentials API as a direct `org-iso-mdoc` presentation. The response is one mdoc element whose value is the whole response JSON.
 
-The protocol is a request model, not a limit model. Selectors express what the Requester is looking for; they do not bound what a Wallet may return. Subject to Holder choice, Wallet policy, law, available data, `accept[]`, and validation, a response may disclose more, less, or different content than the selector text anticipated, and the response accounts for this with Artifacts, `fulfills[]`, and per-item status.
+A request says what the Verifier is looking for; it does not limit what the Holder may share. The Holder can share less, more, or different content, and the response accounts for it with Artifacts, `fulfills[]`, and a status per item.
 
-### 1.1 Core Trust Rule
+### 1.1 What the mdoc layer is for
 
-SMART request and SMART response JSON are clinical content objects, not trust credentials. A component SHALL NOT treat `purpose`, item text, selector values, unknown request members, deployment handoff metadata, launch URLs, demo labels, Artifact ids, `fulfills[]`, `requestId`, successful HPKE opening, mdoc issuer/device evidence, optional `readerAuth`, Holder action, or syntactic response validity as a substitute for any other trust layer unless this specification or an explicit deployment profile defines that relationship and assurance level. Origin trust, reader/Verifier trust, issuer/device evidence, clinical-source provenance, Holder control, presentation freshness, patient matching, downstream authorization, and local clinical acceptance are separate decisions.
+The mdoc layer is an envelope. It carries the response encrypted to the Verifier, bound to the calling origin, and signed so that it is intact and well formed. Every signature and digest is real and conforms to ISO/IEC 18013-5, so strict mdoc software accepts it. The signatures do not identify a trusted issuer: the Wallet signs its own response. §7 states exactly what each signal proves.
 
-### 1.2 Why this design
+<a id="1-2-why-this-design"></a>
 
-Check-in workflows need a low-friction way for patients to move data from wallets and data sources into local clinical workflows. In 2026, browser-mediated wallet invocation and mdoc presentation are better deployed than healthcare-specific cross-vendor wallet protocols. This profile therefore standardizes the content model and the same-device presentation surface that can actually interoperate today.
+### 1.2 Design in brief
 
-The mdoc document contains one stable element, `smart_health_checkin_response`, whose value is the complete SMART response JSON. Disclosure granularity lives in the JSON layer: request items, Holder review, Artifacts, many-to-many `fulfills[]`, and the six status codes. This avoids projecting every FHIR resource, questionnaire, or status into mdoc element names and keeps FHIR validation in FHIR-aware software.
-
-Cryptographic and platform evidence is still useful: DC API supplies caller context, HPKE protects the returned DeviceResponse, `SessionTranscript` binds the exchange to origin and encryption inputs, optional `readerAuth` can authenticate a Verifier key, and mdoc issuer/device evidence can authenticate the response carrier. None of those facts by itself establishes requester identity, patient match, clinical provenance, or downstream authorization.
+- The Digital Credentials API with `org-iso-mdoc` is what browsers and phone platforms support today, so it is the interoperability surface.
+- Disclosure choices live in the JSON (items, statuses, `fulfills[]`), not in mdoc element names, so FHIR stays in FHIR-aware software.
+- The design history and the alternatives considered are in [docs/rationale.md](docs/rationale.md).
 
 ### 1.3 Handoffs as on-ramps
 
-Handoffs are deployment-defined ways to land the Holder in an authenticated web context that invokes `navigator.credentials.get` for `org-iso-mdoc`. Examples include a pre-visit SMS or email magic link, an in-clinic QR code, a patient-portal button, a kiosk pairing page, or a staff-assisted desktop sign. These mechanisms are product UX and operational workflow, not separate SMART Health Check-in wire protocols.
+A handoff gets the Holder to a web page that calls the Digital Credentials API: a text-message link, a QR code at the front desk, a portal button, or a kiosk that passes the session to a phone. Handoffs are product and workflow design, not part of this protocol. Everything before the API call can vary by deployment without changing the request, the response, or the validation rules.
 
-This boundary is deliberate. The W3C DC API call is the interoperability surface; everything before it may depend on local registration, patient-portal login, scheduling, signage, relays, or clinic workflow without changing the SMART request, SMART response, or same-device validation rules.
+<a id="1-4-deliberately-out-of-scope"></a>
 
-### 1.4 Deliberately out of scope
+### 1.4 Out of scope
 
-Version 1.0 does not standardize handoff URLs or relays, cross-device flows, credential issuance, Holder data-source synchronization, longitudinal Wallet storage, EHR write-back, payment adjudication, claims submission, patient matching, identity proofing, proxy authority, SMART App Launch replacement, general FHIR query, a trust framework, mdoc element-level clinical selective disclosure, or a new cryptographic-agility negotiation mechanism beyond existing wire-format algorithm identifiers. Products may implement these functions around the protocol, but they SHALL NOT change §§5-6 clinical semantics, §7 trust separation, or §8 same-device carriers and validation.
+Version 1.0 does not define:
+
+- handoff URLs, relays, or cross-device flows;
+- credential issuance, data-source synchronization, or Wallet storage;
+- EHR write-back, payment, claims, patient matching, identity proofing, or proxy authority;
+- a general FHIR query language or a replacement for SMART App Launch;
+- a trust framework, or algorithm negotiation.
+
+Products can build these around the protocol. **[CONF-1]** A product that does so SHALL NOT change the meaning of anything §§5–8 define.
 
 ### 1.5 Companion material
 
-Non-normative tutorials, fixture indexes, byte ladders, diagrams, platform implementation notes, worked examples, full wire captures, reference code, demo applications, detailed FHIR mapping walkthroughs, and historical captures should live as companion material outside the normative specification. Companion material MAY live in the same repository, linked documentation, a publication package, or another maintained location. It SHALL NOT redefine core fields, identifiers, algorithms, validation rules, selector semantics, status semantics, or trust boundaries.
+Explainers, captures, tools, and reference code are listed under [References and companion material](#references-and-companion-material). They are non-normative. Where they disagree with this document, this document is right.
 
 ---
 
 ## 2. Terminology and conventions
 
-The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, **MAY**, and **OPTIONAL** are interpreted as described in BCP 14, RFC 2119, and RFC 8174 when all capitals. JSON uses RFC 8259; CBOR uses RFC 8949; CDDL uses RFC 8610; COSE uses RFC 9052/9053; HPKE uses RFC 9180. Base64url fields use base64url without padding unless stated otherwise. Cryptographic operations use exact bytes named by the relevant section.
+The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL are to be interpreted as described in BCP 14 (RFC 2119, RFC 8174) when, and only when, they appear in all capitals. This document uses SHALL, SHOULD, and MAY.
 
-Key terms: **Artifact** is a response object with `id`, `mediaType`, `fulfills[]`, and media-type-defined payload fields. **Requester** constructs the SMART request and consumes the SMART response. **Verifier** invokes, opens, validates, and extracts from a presentation flow. **Holder** controls disclosure. **Wallet/Responder** reviews requests and returns responses. **SMART request** and **SMART response** are the JSON objects in §§5-6. **Same-device presentation flow** is the §8 direct `org-iso-mdoc` flow. **In-person handoff** is deployment UX that loads a same-device Verifier page, not a v1.0 wire format.
+Every requirement starts with a bold ID in brackets, such as [XV-2]. IDs are stable across edits; a removed requirement's ID is not reused. The ID's prefix names its topic, not its section.
 
-TypeScript interfaces and their accompanying JSDoc comments define the normative data model and field-level constraints. The TypeScript syntax expresses object shape, required versus optional members, literal discriminators, and discriminated unions; JSDoc comments carry normative processing requirements that TypeScript alone cannot enforce.
+**Roles**
+
+- **Verifier:** the software that builds a request, invokes the Wallet, and validates and uses the response. A clinic web page, kiosk, or patient portal. Earlier drafts called it the Requester.
+- **Wallet:** the software that receives a request, shows it to the Holder, and builds and returns the response. Earlier drafts called it the Responder.
+- **Holder:** the patient, or a person acting for them, who decides what to share.
+- **Deployment profile:** a document that constrains this specification for one deployment, for example by requiring reader authentication or naming trusted certificates.
+- **Extension author:** the author of an extension selector kind or media type (§9.3).
+
+**Terms**
+
+- **SMART request** and **SMART response:** the JSON objects of §5 and §6.
+- **Item:** one entry in `items[]`. It is one thing the Holder decides about and one row in `requestStatus[]`.
+- **Artifact:** one entry in `artifacts[]`: shared content with an `id`, a `mediaType`, and the item ids it answers in `fulfills[]`.
+- **Fulfillment:** an Artifact listing an item in `fulfills[]`. One Artifact can fulfill several items, and one item can be fulfilled by several Artifacts.
+- **Selector:** an item's `content`, identified by `content.kind`.
+- **Canonical:** a FHIR canonical URL, optionally followed by `|version`.
+- **Origin:** the calling web page's origin, or for a native app the equivalent string its platform reports (§8.3).
+
+**Notation**
+
+- JSON is RFC 8259. CBOR is RFC 8949 and CDDL is RFC 8610. COSE is RFC 9052 and 9053. HPKE is RFC 9180.
+- **base64url** means RFC 4648 base64url without padding.
+- `CBOR(x)` is the CBOR encoding of `x`. `tag24(b)` is CBOR tag 24 wrapping the byte string `b` (`#6.24(bstr)`). A name ending in `Bytes`, such as `ItemsRequestBytes`, is `tag24(CBOR(x))` of the structure named without the suffix, following ISO/IEC 18013-5.
+- `SessionTranscript` is a CBOR array (§8.3). Where its encoding is used as bytes, this document writes `CBOR(SessionTranscript)`.
+- In TypeScript, `NonEmptyString` is a string with at least one character, and `NonEmptyArray<T>` is an array with at least one element.
 
 ---
 
@@ -66,700 +105,776 @@ TypeScript interfaces and their accompanying JSDoc comments define the normative
 
 ### 3.1 What this profile standardizes
 
-| Layer or role | Standardized here | Deployment policy or companion material |
+| Layer | Defined here | Left to deployments |
 | --- | --- | --- |
-| Clinical request (§5) | `SmartHealthCheckinRequest`, items, display fields, `selection.fhir`, `form.fhir`, `accept[]`, canonical handling. | Workflow rationale, local UI copy, stricter profile limits. |
-| Clinical response (§6) | `SmartHealthCheckinResponse`, Artifacts, media types, `fulfills[]`, status codes, many-to-many fulfillment, cross-validation. | Downstream ingestion, reconciliation, deduplication, retention, clinical sufficiency. |
-| Trust (§7) | Separation of origin, reader, issuer/device, clinical-source, identifier, and deployment-policy layers. | Trust anchors, registries, allow-lists, assurance labels, patient matching, failure policy. |
-| Same-device flow (§8) | Direct `org-iso-mdoc`, `docType`, namespace, stable element, request carrier, `SessionTranscript`, HPKE, mdoc validation, extraction. | Browser/wallet UX, production issuer onboarding, platform APIs, optional stricter constraints. |
+| Request (§5) | Items, selectors, accepted media types, canonical handling | Which items to ask for, UI text, stricter limits |
+| Response (§6) | Artifacts, media types, `fulfills[]`, statuses, validation | Ingestion, reconciliation, retention, clinical review |
+| Trust (§7) | What each signal proves, and what it doesn't | Trusted certificates, allow-lists, patient matching |
+| Same-device flow (§8) | Identifiers, byte structures, transcript, encryption, signatures, processing steps | Browser and wallet UX, platform registration |
 
-The profile uses FHIR-native selectors where they fit: exact profile canonicals in `profiles[]`, profile-family canonicals in `profilesFrom[]`, official FHIR `resourceType` names in `resourceTypes[]`, and FHIR Questionnaire selection through `form.fhir`. `profiles[]` and `profilesFrom[]` are additive selectors, not narrowing selectors. Canonical `|version` handling is defined in §5.5.
+Selectors use FHIR's own terms: exact profile canonicals in `profiles[]`, profile families in `profilesFrom[]`, FHIR resource type names in `resourceTypes[]`, and Questionnaires through `form.fhir`.
 
 ### 3.2 mdoc primer for this profile
 
-An mdoc is a CBOR-based mobile document format originally designed for mobile driver's licenses. It can carry issuer signatures over disclosed element values through a Mobile Security Object (MSO), bind disclosed values to value digests, and prove that the presenter possesses a device key bound into the document. ISO/IEC 18013-5 also defines request/response structures and authentication inputs used by wallet presentations.
+An mdoc is the CBOR document format from ISO/IEC 18013-5, built for mobile driver's licenses. In a usual mdoc, an issuer such as a licensing agency signs a Mobile Security Object (MSO) that holds digests of the data elements. The presenting device then proves it holds a key named in the MSO by signing the session.
 
-SMART Health Check-in uses those presentation properties, but not mdoc's usual clinical data modeling. The Wallet places the complete SMART response JSON in one issuer-signed element named `smart_health_checkin_response`. The issuer signature therefore authenticates the wallet-side response carrier; clinical-source provenance remains inside Artifacts such as SMART Health Card JWS, FHIR Provenance, signed payloads, or deployment-approved source evidence.
+This profile uses that structure differently. The Wallet puts the whole SMART response JSON into one element, `smart_health_checkin_response`. At presentation time, the Wallet builds the MSO for that element and signs it itself, as the mdoc issuer, with keys it controls. It also signs the session as the device. The result is a complete, verifiable mdoc presentation. Its signatures show that the bytes are intact and well formed. They do not show who issued the content. Evidence about where clinical content came from lives inside Artifacts, for example a SMART Health Card's signature (§7).
 
-Complete annotated byte ladders and worked captures are companion material. §8 contains the normative same-device construction and validation rules; Appendix A is only a diagnostic bridge for implementers who need to inspect CBOR boundaries.
+---
 
 ## 4. Conformance
 
-A conformance claim SHALL identify target(s), optional features, specification version, and any deployment profile that changes policy choices left open by this specification. One product MAY implement multiple targets, but it SHALL satisfy every requirement for each claimed target and optional feature.
+**[CONF-2]** A conformance claim SHALL name the targets it covers (Verifier, Wallet, or both), the optional features it implements, this specification's version, and any deployment profile it follows.
 
-| Target | Required behavior |
+**[CONF-3]** A product that claims a target or an optional feature SHALL meet every requirement this document places on that target or feature.
+
+| Target | Must implement |
 | --- | --- |
-| Requester | Constructs §5 requests and asks only for Artifact media types it can parse, validate, and route. It keeps clinical request fields distinct from trust evidence and follows §5.2 request-body identity and trust-metadata constraints. |
-| Verifier | Packages a SMART request, validates returned presentation artifacts, extracts the SMART response, and applies §6.4 against the original request before use. Direct `org-iso-mdoc` claims satisfy §8 Verifier obligations. |
-| Wallet/Responder | Validates §5 requests, applies Holder control and Wallet policy at item granularity, preserves item ids, constructs §6 responses, and sets `requestId` to request `id`. Direct `org-iso-mdoc` claims satisfy §8 Wallet obligations. |
-| Deployment/profile author | States constrained targets, required optional features, trust layers, and added validation/security/privacy/fixture expectations without redefining core clinical semantics, same-device carriers, trust-layer separation, or handoff UX. |
-| Conformance/fixture author | Derives tests and fixtures from normative requirements and identifies target, optional feature, section, expected outcome, comparison mode, and demo trust status. |
+| Verifier | Build requests (§5), send them (§8.2), process responses (§8.5), and validate them against the request (§6.4) |
+| Wallet | Validate requests (§§5, 8.4), give the Holder the choice (§5.7), and build, sign, and encrypt responses (§§6, 8.4, 8.5) |
 
-Core clinical support includes fixed request/response `type` and `version`; request ids; item ids; display fields; `selection.fhir`; `form.fhir` with `questionnaireCanonical` and/or `questionnaire`; `profilesFrom[]` as an array; additive `profiles[]` plus `profilesFrom[]`; canonical `|version` handling; per-item `accept[]`; Artifact `mediaType`; no generic Artifact catch-all; `application/fhir+json` with `fhirVersion`; `application/smart-health-card` with `value.verifiableCredential[]` and no outer `fhirVersion`; exact `requestStatus[]` coverage; many-to-many fulfillment; and §6.4 cross-validation.
+Optional features:
 
-Optional features include reader authentication, extension selector kinds, extension Artifact media types, compatibility rules, future status-code extensions, stricter deployment validation profiles, fixture profiles, future `DeviceRequest` versions such as profile-defined `readerAuthAll`, and future bindings. An implementation claiming an optional feature SHALL implement its construction, processing, validation, unsupported behavior, security, privacy, and conformance rules. `readerAuth` is optional unless a deployment profile requires it; if present, Verifier SHALL construct it as §8 defines, and Wallet/Responder that supports or relies on it SHALL verify and classify it under §§7-8 and policy.
+- **Reader authentication:** a Verifier signing requests with `readerAuth`, and a Wallet verifying it (§§7, 8.2, 8.4).
+- **Extension selector kinds** and **extension media types** (§9.3).
 
-| Kind | Value |
-| --- | --- |
-| Request discriminator | `smart-health-checkin-request` |
-| Response discriminator | `smart-health-checkin-response` |
-| Request/response model version | `1` |
-| Core selector kinds | `selection.fhir`, `form.fhir` |
-| Core Artifact media types | `application/fhir+json`, `application/smart-health-card` |
-| Core status codes | `fulfilled`, `partial`, `unavailable`, `declined`, `unsupported`, `error` |
-| DC API protocol id | `org-iso-mdoc` |
-| mdoc `docType` | `org.smarthealthit.checkin.1` |
-| mdoc namespace | `org.smarthealthit.checkin` |
-| mdoc stable response element | `smart_health_checkin_response` |
-| SMART request carrier key | `org.smarthealthit.checkin.request` |
-
-SMART Health Check-in 1.0 does not maintain a separate normative conformance checklist. Testable obligations can be extracted directly from §§5-9; conformance test authors are encouraged to derive assertions and fixtures from those requirements while identifying target, optional feature, section, expected outcome, comparison mode, and deployment-policy inputs.
+The fixed identifiers are listed in §8.1.
 
 ---
 
 ## 5. Clinical Request Model
 
-A SMART request is the transport-neutral clinical JSON object by which a Requester asks a Holder, through a Wallet/Responder, to share workflow-bounded content. Presentation transports may add origin, reader authentication, signatures, encryption, freshness, device evidence, routing identifiers, and validation artifacts; they do not change `purpose`, items, selectors, `accept[]`, item ids, or `required`.
+A SMART request is a JSON object that asks for a list of items. §8 defines how it travels; transports add origin, signatures, and encryption around it but never change its fields.
 
 ### 5.1 Encoding rules
 
-A SMART request SHALL be an RFC 8259 JSON object and, when serialized by a transport, SHALL be UTF-8. A Requester SHALL NOT include comments, trailing commas, duplicate object member names, `NaN`, `Infinity`, `-Infinity`, or non-JSON values. A Wallet/Responder or Verifier parsing a request SHALL reject a non-object top-level value or unparsable representation.
+These rules apply to both the SMART request and the SMART response.
 
-JSON member names SHALL be unique; duplicate names detected during parsing or validation SHALL cause rejection. Object member order has no clinical meaning. `fhirVersions[]` and `accept[]` are preference-ordered; `items[]` is preferred display/workflow order. The model defines no numeric fields; identifiers, versions, booleans, arrays, media types, FHIR canonicals, and display strings SHALL NOT be encoded as numbers. A Requester SHOULD keep values no larger than needed. Wallet/Responder MAY reject requests exceeding implementation, transport, safety, display, or policy limits.
+**[JSON-1]** A producer (the Verifier for a request, the Wallet for a response) SHALL produce an RFC 8259 JSON object, encoded as UTF-8, with no duplicate member names at any level. Every field has the type §5.2 or §6.1 gives it; the model has no numeric fields.
 
-A Wallet/Responder MAY ignore unknown members when they do not change known required-member meaning. A Requester SHALL NOT rely on unknown members to carry §5.2-prohibited identity/trust metadata, override Holder control, change `accept[]`, selector semantics, `required`, or transport/trust/consent behavior. Unknown `content.kind` values identify extension selector kinds and are not ignorable.
+**[JSON-2]** A receiver (the Wallet for a request, the Verifier for a response) SHALL reject a SMART request or response that is not a JSON object, cannot be parsed, or has duplicate member names at any level.
+
+**[JSON-3]** A receiver SHALL ignore members this specification does not define, wherever they appear. Values of `content.kind` are not members; §5.4.3 covers unknown kinds.
+
+**[JSON-4]** A producer SHALL NOT use undefined members to change the meaning of defined ones, or to carry identity or trust claims (§5.7).
+
+**[JSON-5]** A Wallet MAY reject a request larger than it can safely display or process.
+
+Member order carries no meaning. `fhirVersions[]` and `accept[]` are in order of preference, and `items[]` is in display order.
 
 ### 5.2 Normative TypeScript model
 
+The TypeScript below defines the request's shape: which members exist, their types, and which are optional. The rules for processing it are in §§5.3–5.7.
+
 ```typescript
-export type NonEmptyString = string;
-export type NonEmptyArray<T> = [T, ...T[]];
-export type FhirCanonical = NonEmptyString;
-export type FhirCanonicalUrl = NonEmptyString;
-export type FhirRelease = NonEmptyString;
-export type FhirResourceType = NonEmptyString;
-export type MediaTypeString = NonEmptyString;
+type NonEmptyString = string;
+type NonEmptyArray<T> = [T, ...T[]];
+type FhirCanonical = NonEmptyString;   // canonical URL, optionally with |version
+type FhirRelease = NonEmptyString;     // FHIR release version, e.g. "4.0.1"
+type MediaType = NonEmptyString;       // e.g. "application/fhir+json"
 
-export interface SmartHealthCheckinRequest {
-  /**
-   * Request discriminator.
-   * Requester SHALL set exactly "smart-health-checkin-request".
-   * Wallet/Responder SHALL reject absent or different values.
-   */
+interface SmartHealthCheckinRequest {
   type: "smart-health-checkin-request";
-
-  /**
-   * SMART request model version.
-   * Requester SHALL set exactly "1".
-   * Wallet/Responder SHALL reject absent or different values unless a future
-   * compatibility rule applies.
-   */
   version: "1";
-
-  /**
-   * Opaque Requester-generated request id.
-   * SHALL be non-empty. Wallet/Responder SHALL preserve it exactly as response
-   * `requestId`. Verifier SHALL compare it by exact string equality. It is a
-   * correlation and referential-integrity value only.
-   */
-  id: NonEmptyString;
-
-  /**
-   * Optional Holder-facing workflow context.
-   * SHALL NOT carry requester identity, organization, origin, logo/contact URL,
-   * legal attestation, authority proof, consent language, trust status, or
-   * persistent authorization. Wallet/Responder MAY display it but SHALL NOT
-   * treat it as identity or trust.
-   */
-  purpose?: string;
-
-  /**
-   * Ordered FHIR release-version preferences, most preferred first.
-   * Requester accepting `application/fhir+json` SHOULD include at least one
-   * unless it can process any conforming version. Wallet/Responder SHOULD use
-   * this list when choosing raw FHIR JSON versions, subject to Holder choice,
-   * data, capability, policy, and `accept[]`.
-   */
-  fhirVersions?: FhirRelease[];
-
-  /**
-   * Request items in preferred display/workflow order.
-   * Requester SHALL include an array and SHOULD include at least one item.
-   * Wallet/Responder SHALL process items as Holder-review and
-   * response-accounting granularity and MAY group, summarize, or reorder
-   * display while preserving item ids.
-   */
+  id: NonEmptyString;             // chosen by the Verifier; echoed as requestId
+  purpose?: string;               // why the Verifier is asking, shown to the Holder
+  fhirVersions?: FhirRelease[];   // FHIR releases the Verifier can read, preferred first
   items: SmartHealthCheckinRequestItem[];
-
-  /**
-   * Unknown members MAY be ignored only when they do not alter known semantics.
-   * They SHALL NOT be used for requester identity, Holder-control override,
-   * selector changes, media negotiation, consent, transport, or trust.
-   */
-  [extensionMember: string]: unknown;
 }
 
-export interface SmartHealthCheckinRequestItem {
-  /**
-   * Item id scoped to one request.
-   * SHALL be a non-empty string unique within the request. Wallet/Responder and
-   * Verifier SHALL compare by exact string equality and SHALL reject missing,
-   * non-string, empty, or duplicate ids.
-   */
-  id: NonEmptyString;
-
-  /**
-   * Non-empty Holder-facing display title.
-   * SHALL NOT substitute for authenticated requester identity.
-   */
-  title: NonEmptyString;
-
-  /**
-   * Optional Holder-facing explanation.
-   * SHOULD clarify broad selectors, profile-family requests, or questionnaire
-   * purpose. SHALL NOT substitute for authenticated requester identity.
-   */
-  summary?: string;
-
-  /**
-   * Advisory workflow context. Omitted means false.
-   * SHALL NOT be treated as consent, authorization, a Wallet command, or a
-   * fulfillment guarantee. Wallet/Responder SHALL NOT use `required: true` to
-   * bypass Holder control, Wallet policy, law, or consent UX, and MAY return
-   * declined, unavailable, unsupported, partial, or error for required items.
-   */
-  required?: boolean;
-
-  /**
-   * Selector object with a string `kind` discriminator.
-   * Version 1.0 defines `selection.fhir` and `form.fhir`. Wallet/Responder
-   * SHALL NOT infer unsupported selector semantics from display text or
-   * unrelated fields; it SHALL reject the request or report `unsupported`.
-   */
+interface SmartHealthCheckinRequestItem {
+  id: NonEmptyString;             // unique within the request
+  title: NonEmptyString;          // shown to the Holder
+  summary?: string;               // one more line for the Holder
+  required?: boolean;             // advice to the Holder; default false
   content: Selector;
-
-  /**
-   * Accepted Artifact media types, most preferred first.
-   * SHALL be a non-empty ordered array. Requester SHALL list only media types it
-   * can parse, validate, and route. Wallet/Responder SHALL NOT return an
-   * Artifact for this item unless its `mediaType` appears here, except under a
-   * explicitly supported compatibility rule.
-   */
-  accept: NonEmptyArray<MediaTypeString>;
-
-  [extensionMember: string]: unknown;
+  accept: NonEmptyArray<MediaType>;   // media types the Verifier can read, preferred first
 }
 
-export type Selector =
-  | SelectionFhirSelector
-  | FormFhirSelector
-  | ExtensionSelector;
+type Selector = SelectionFhirSelector | FormFhirSelector | ExtensionSelector;
 
-export interface SelectionFhirSelector {
-  /**
-   * SHALL be exactly "selection.fhir".
-   * This selector requests existing patient-specific FHIR resources.
-   */
+interface SelectionFhirSelector {       // share existing FHIR resources
   kind: "selection.fhir";
-
-  /**
-   * Exact FHIR StructureDefinition canonical URLs.
-   * Values MAY include `|version`. Wallet/Responder MAY match by `meta.profile`
-   * or equivalent local/trusted conformance evidence; full profile validation
-   * during matching is not required.
-   */
-  profiles?: NonEmptyArray<FhirCanonical>;
-
-  /**
-   * Canonical profile-family URL strings.
-   * SHALL be a non-empty array when present. SHALL NOT be encoded as a string,
-   * object, package descriptor, implementation-guide object, package id/version,
-   * npm package name, registry alias, local topic vocabulary, or URN unless a
-   * future version or extension defines that value space.
-   */
-  profilesFrom?: NonEmptyArray<FhirCanonicalUrl>;
-
-  /**
-   * Official FHIR resourceType names only.
-   * SHALL NOT use local topic labels. With profile selectors this is an
-   * additional constraint; without profile selectors it requests
-   * patient-specific resources of the listed types.
-   */
-  resourceTypes?: NonEmptyArray<FhirResourceType>;
-
-  /** SHALL NOT be present; use a separate `form.fhir` item for form completion. */
-  questionnaireCanonical?: never;
-
-  /** SHALL NOT be present; use a separate `form.fhir` item for form completion. */
-  questionnaire?: never;
-
-  [extensionMember: string]: unknown;
+  profiles?: NonEmptyArray<FhirCanonical>;       // exact StructureDefinitions
+  profilesFrom?: NonEmptyArray<FhirCanonical>;   // profile families, e.g. an IG
+  resourceTypes?: NonEmptyArray<NonEmptyString>; // FHIR resourceType names
 }
 
-export interface FhirQuestionnaire {
-  /** SHALL be exactly "Questionnaire". */
-  resourceType: "Questionnaire";
-
-  /** Optional FHIR canonical URL used when comparing to `questionnaireCanonical`. */
-  url?: string;
-
-  /** Optional FHIR version used when comparing to versioned canonicals. */
-  version?: string;
-
-  [fhirMember: string]: unknown;
-}
-
-interface FormFhirSelectorBase {
-  /** SHALL be exactly "form.fhir". */
+interface FormFhirSelector {            // fill in a Questionnaire
   kind: "form.fhir";
-
-  /** SHALL NOT be present on `form.fhir`; use a separate `selection.fhir` item. */
-  profiles?: never;
-
-  /** SHALL NOT be present on `form.fhir`; use a separate `selection.fhir` item. */
-  profilesFrom?: never;
-
-  /** SHALL NOT be present on `form.fhir`; use a separate `selection.fhir` item. */
-  resourceTypes?: never;
-
-  [extensionMember: string]: unknown;
-}
-
-export interface FormFhirSelectorWithCanonical extends FormFhirSelectorBase {
-  /**
-   * Requester's explicit Questionnaire identity.
-   * SHALL be non-empty when present and MAY include `|version`. Wallet/Responder
-   * SHALL preserve it for canonical-version handling and generated
-   * `QuestionnaireResponse.questionnaire` when known.
-   */
-  questionnaireCanonical: FhirCanonical;
-
-  /**
-   * Optional inline FHIR Questionnaire body to render or use.
-   * If both fields are present, Requester SHOULD keep this resource's `url` and
-   * `version` consistent with `questionnaireCanonical`.
-   */
-  questionnaire?: FhirQuestionnaire;
-}
-
-export interface FormFhirSelectorWithQuestionnaire extends FormFhirSelectorBase {
-  /** Optional explicit Questionnaire identity; see `FormFhirSelectorWithCanonical`. */
   questionnaireCanonical?: FhirCanonical;
-
-  /**
-   * Inline FHIR Questionnaire body to render or use.
-   * SHALL be a FHIR Questionnaire resource object with `resourceType`
-   * "Questionnaire".
-   */
-  questionnaire: FhirQuestionnaire;
+  questionnaire?: { resourceType: "Questionnaire"; url?: string; version?: string; [member: string]: unknown };
+  // at least one of questionnaireCanonical and questionnaire is present
 }
 
-export type FormFhirSelector =
-  | FormFhirSelectorWithCanonical
-  | FormFhirSelectorWithQuestionnaire;
-
-export interface ExtensionSelector {
-  /**
-   * Registered extension selector kind.
-   * SHALL be a non-empty string other than "selection.fhir" or "form.fhir" and
-   * SHALL be defined by a recognized extension before interoperable use.
-   */
-  kind: string;
-
-  [extensionMember: string]: unknown;
+interface ExtensionSelector {           // defined by an extension (§9.3)
+  kind: NonEmptyString;                 // any value other than the two above
+  [member: string]: unknown;
 }
 ```
 
-A Requester SHALL NOT include self-asserted requester identity metadata in the SMART request body, including organization/facility names, logos/branding, URLs/callbacks/domains/origins/package names/app ids/certificates, signed-request/reader/Verifier/trust-framework/issuer/accreditation/legal-entity metadata, or pointer/relay/completion/encryption/nonce/handoff/wrapper metadata. Wallet/Responder SHALL NOT treat any request body field as authenticated requester identity unless established outside the body by presentation flow, trust processing, or policy.
+An example request, which the build validates:
+
+```json check=request id=example-request
+{
+  "type": "smart-health-checkin-request",
+  "version": "1",
+  "id": "checkin-7f3a",
+  "purpose": "Clinic check-in",
+  "fhirVersions": ["4.0.1"],
+  "items": [
+    {
+      "id": "patient",
+      "title": "Patient demographics",
+      "required": true,
+      "content": {
+        "kind": "selection.fhir",
+        "profiles": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+      },
+      "accept": ["application/fhir+json"]
+    },
+    {
+      "id": "immunizations",
+      "title": "Immunizations",
+      "content": {
+        "kind": "selection.fhir",
+        "profilesFrom": ["http://hl7.org/fhir/us/core"],
+        "resourceTypes": ["Immunization"]
+      },
+      "accept": ["application/smart-health-card", "application/fhir+json"]
+    },
+    {
+      "id": "intake",
+      "title": "Depression screening (PHQ-2)",
+      "content": {
+        "kind": "form.fhir",
+        "questionnaireCanonical": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json|1"
+      },
+      "accept": ["application/fhir+json"]
+    }
+  ]
+}
+```
 
 ### 5.3 Request item constraints
 
-The TypeScript model in §5.2 defines request item fields, cardinality, and field-level constraints. Each request item is one unit of requested content or action and one unit of Holder review and response accounting. Requester SHALL include `id`, `title`, `content`, and non-empty `accept[]` on every item and MAY include `summary` and `required`.
+**[REQ-1]** The Verifier SHALL set `type` to `smart-health-checkin-request` and `version` to `"1"`.
+
+**[REQ-2]** The Wallet SHALL reject a request whose `type` or `version` differs, or whose members do not have the types §5.2 gives them.
+
+**[REQ-3]** The Verifier SHALL include at least one item.
+
+**[ITEM-1]** The Verifier SHALL give every item an `id` that is unique within the request.
+
+**[ITEM-2]** The Wallet SHALL reject a request with a missing, empty, or duplicate item `id`. Item ids are compared as exact strings.
+
+**[ITEM-3]** The Verifier SHOULD use `summary` to explain broad requests, such as a whole profile family or a request with no filters.
 
 ### 5.4 Content selectors
 
-Selectors express what the Requester is looking for; they do not bound what a Holder may disclose. Request breadth is deployment policy: broad or no-selector requests are valid protocol constructs when the Holder can make a meaningful choice. A Holder, through Wallet policy and choice, can disclose more, less, or different content than a selector names, but every returned Artifact-item edge still has to satisfy `accept[]`, status, validation, and §6.4. Selectors are not a general FHIR query language, authorization policy, patient-matching rule, requester identity channel, or clinical decision support expression. A Requester SHALL use a selector defined here or an explicitly supported extension. A Wallet/Responder SHALL evaluate selector semantics independently per item while allowing §6 many-to-many Artifact fulfillment.
+A selector says what the Verifier is looking for. It is not a query language, an authorization rule, or a limit on what the Holder may share.
+
+**[SEL-1]** The Verifier SHALL use `selection.fhir`, `form.fhir`, or a kind defined by a published extension (§9.3).
+
+**[SEL-2]** The Wallet SHALL evaluate each item's selector on its own. §6.3 covers Artifacts that answer several items.
 
 #### 5.4.1 `selection.fhir`
 
-For `selection.fhir`, if both `profiles[]` and `profilesFrom[]` are present, Wallet/Responder SHALL treat them as additive profile selectors: a resource matches if it matches any exact profile or any profile in any requested family, subject to `resourceTypes[]` and the rest of the item. Requester SHALL NOT rely on `profiles[]` to narrow `profilesFrom[]`; Wallet/Responder SHALL NOT interpret it that way.
+**[SEL-3]** The Wallet SHALL treat `profiles[]` and `profilesFrom[]` as alternatives: a resource matches if it matches any listed profile or belongs to any listed family. When `resourceTypes[]` is present, a match must also have one of those resource types.
 
-If all `selection.fhir` selector arrays are omitted, the item asks the Wallet/Responder and Holder to decide what patient-specific FHIR resources, if any, are responsive for the check-in workflow, subject to `accept[]`, `fhirVersions[]` where applicable, capability, policy, and Holder decision. Wallet/Responder MAY fulfill it partially and is not required to disclose all resources.
+**[SEL-4]** The Verifier SHALL list only FHIR `resourceType` names in `resourceTypes[]`.
+
+**[SEL-5]** A profile belongs to a family when its canonical URL, without any `|version`, starts with the family URL followed by `/`. The Wallet MAY also use other evidence of membership, such as an implementation guide's package.
+
+**[SEL-6]** The Wallet MAY match a resource by its `meta.profile` or by other evidence it holds; it need not validate the resource against the profile.
+
+**[SEL-7]** When an item has none of `profiles[]`, `profilesFrom[]`, and `resourceTypes[]`, the Wallet and Holder decide what is relevant to the check-in. The Wallet MAY answer such an item in part.
+
+**[SEL-8]** The Wallet SHALL report `unsupported` for a `selection.fhir` item that also has `questionnaireCanonical` or `questionnaire`.
 
 #### 5.4.2 `form.fhir`
 
-For `form.fhir`, a Wallet/Responder SHALL reject or report `unsupported` when neither form field is present, `questionnaireCanonical` is non-string or blank, `questionnaire` is not a Questionnaire, or `selection.fhir` fields are mixed in. Wallet/Responder MAY resolve `questionnaireCanonical` using configured resolvers, FHIR search, cache, Holder data source, or local mechanisms satisfying §5.4. Direct HTTP dereference is permitted only for unversioned canonicals. If it cannot resolve, render, or use the Questionnaire, it SHALL report an outcome under §6 rather than fabricating one. When both form fields are supplied, `questionnaireCanonical` is the Requester's explicit Questionnaire identity and the inline resource is the body to render or use. Wallet/Responder SHALL NOT silently merge conflicting definitions or silently rewrite the Requester's canonical. If it detects material disagreement, it SHOULD report `unsupported` or `error` rather than collecting ambiguous answers.
+**[FORM-1]** The Wallet SHALL report `unsupported` for a `form.fhir` item that has neither `questionnaireCanonical` nor `questionnaire`, whose `questionnaire` is not a Questionnaire, or that also has `profiles`, `profilesFrom`, or `resourceTypes`.
+
+**[FORM-2]** When both are present, `questionnaireCanonical` names the form and `questionnaire` is the body to show. The Verifier SHOULD make the inline Questionnaire's `url` and `version` match the canonical.
+
+**[FORM-3]** The Wallet SHALL NOT rewrite `questionnaireCanonical`. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report `unsupported` rather than collect answers.
+
+**[FORM-4]** When there is no inline Questionnaire, the Wallet SHALL resolve `questionnaireCanonical` as §5.5 describes. If it cannot resolve, show, or use the form, it SHALL report `unsupported` or `error` (§6.2) and SHALL NOT invent a form.
+
+**[FORM-5]** The Wallet SHALL answer a form with a FHIR `QuestionnaireResponse` in an `application/fhir+json` Artifact. Its `questionnaire` SHALL be `questionnaireCanonical` exactly when the item has one. Otherwise it SHALL be the inline Questionnaire's `url`, followed by `|` and its `version` when it has one; if the inline Questionnaire has no `url`, the Wallet omits `questionnaire`.
 
 #### 5.4.3 Extension selectors
 
-An extension/profile author SHALL define exact kind string, TypeScript/JSON shape, members, clinical meaning, content-satisfaction rules, interaction with `accept[]`, `fhirVersions[]`, canonicals, status and fulfillment, unsupported/unavailable/partial/error behavior, unknown-member handling, security and privacy considerations, and at least one example. It SHALL NOT redefine core fields, core selector kinds, Holder control, requester identity handling, canonical-version handling, or trust boundaries. Requester SHALL NOT use unsupported or private extension selectors when interoperable processing by unrelated Wallets/Responders is expected. Wallet/Responder that does not support an extension selector SHALL NOT guess semantics; it SHALL reject or report `unsupported`.
+**[SEL-9]** A Wallet that does not support an item's `content.kind` SHALL report `unsupported` for that item and process the other items. It SHALL NOT guess the item's meaning from its title, summary, or other members.
 
 ### 5.5 Canonical `|version` handling
 
-A Requester MAY include `|version` where this section permits FHIR canonicals and SHOULD NOT include it in `profilesFrom[]` unless identifying a versioned profile family. Any processor of a FHIR canonical SHALL parse it into non-empty `url` and optional `version`: `url` is before the first `|`, or the entire string if absent; `version` is after the first `|`, with further `|` characters part of the opaque version. Implementations SHALL preserve the original wire string exactly for echoing, logging, response construction, fixtures, returned `Resource.meta.profile`, and generated `QuestionnaireResponse.questionnaire` when that canonical is the answered Questionnaire identity.
+**[CAN-1]** Anyone parsing a canonical SHALL split it at the first `|`: the text before is the `url`, the text after is the `version`, and any later `|` is part of the version.
 
-A Wallet/Responder or Verifier resolving a canonical SHALL use a configured resolver, package cache, terminology service, IG resolver, or FHIR search when available. FHIR search uses `GET [base]/{ResourceType}?url={url}&version={version}` for versioned canonicals and `GET [base]/{ResourceType}?url={url}` for unversioned. Direct HTTP dereference is permitted only for unversioned canonicals and only if returned resources pass verification. An implementation SHALL NOT satisfy a versioned canonical by stripping `|version` and directly dereferencing the bare URL.
+**[CAN-2]** Implementations SHALL keep canonical strings exactly as written wherever they are echoed or stored: in `meta.profile`, in `QuestionnaireResponse.questionnaire`, in logs, and in test data.
 
-After resolution, the implementation SHALL verify expected `resourceType`, `url` equal to parsed request `url`, and, for versioned requests, `version` equal to parsed request `version`; failure SHALL produce `unsupported` or `error` under §6. For versioned `profiles[]`, Wallet/Responder SHALL NOT report `fulfilled` unless returned `meta.profile` includes the same versioned canonical or equivalent exact-version evidence exists; Verifier SHALL apply the same exact-version rule. For unversioned `profiles[]`, matching any supported version of the base canonical is allowed subject to evidence and validation. Routing, grouping, profile-family lookup, and display MAY ignore `|version` only locally; they SHALL NOT rewrite exact-version evidence, response fields, diagnostics, or validation inputs.
+**[CAN-3]** The Verifier SHOULD NOT add `|version` to a `profilesFrom[]` entry unless it means a specific version of the family.
+
+**[CAN-4]** To resolve a canonical, a Wallet MAY use a configured resolver, a cache, a FHIR search (`GET [base]/{ResourceType}?url={url}&version={version}`), or an HTTP(S) request to the `url`. Whatever it uses, it SHALL then check that the resource has the expected `resourceType`, that its `url` equals the parsed `url`, and, for a versioned canonical, that its `version` equals the parsed `version`. A resource that fails these checks does not resolve the canonical.
+
+**[CAN-5]** For an item whose `profiles[]` includes a versioned canonical, the Wallet SHALL NOT report `fulfilled` unless a returned resource's `meta.profile` includes that exact versioned canonical. An unversioned canonical matches any version of the profile.
+
+**[CAN-6]** Software MAY ignore `|version` when grouping, routing, or displaying, but SHALL NOT remove it from any value it returns, stores as evidence, or validates.
 
 ### 5.6 Accepted media types
 
-Requester SHALL include non-empty ordered `accept[]` on every item, encode each value as a media type string, order from most to least preferred, and list only media types it can parse, validate, and route. Wallet/Responder MAY return any listed type and SHOULD choose the earliest equivalent producible type. Wallet/Responder and Verifier SHALL enforce that every Artifact `mediaType` is accepted by every fulfilled item, except under an explicitly supported compatibility rule.
+**[ACC-1]** The Verifier SHALL list in each item's `accept[]` only media types it can parse, validate, and use, most preferred first.
 
-Core media types are `application/fhir+json` for raw FHIR JSON Resource or Bundle and `application/smart-health-card` for SMART Health Card file JSON. For `form.fhir` items, `application/fhir+json` normally carries a FHIR `QuestionnaireResponse`. Extension media types MAY be used when defined by an extension or agreed by deployment. Extension/profile authors SHALL define media type string, Artifact shape, processing, validation, security, privacy, FHIR-version handling if any, and compatibility with core media types if any.
+**[ACC-2]** The Wallet SHALL NOT return an Artifact whose `mediaType` is missing from the `accept[]` of any item the Artifact fulfills.
+
+**[ACC-3]** The Wallet SHOULD use the earliest type in `accept[]` that it can produce.
+
+**[ACC-4]** Verifiers and Wallets SHALL compare media types as exact, case-sensitive strings, without parameters.
+
+| Media type | Artifact carries |
+| --- | --- |
+| `application/fhir+json` | A FHIR resource or Bundle in `value`, and `fhirVersion`. For `form.fhir` items, a `QuestionnaireResponse`. |
+| `application/smart-health-card` | A SMART Health Card file's JSON in `value`, with `verifiableCredential[]`; no `fhirVersion`. |
+
+### 5.7 Identity, trust, and Holder control
+
+**[ID-1]** The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request: no organization names, logos, URLs, certificates, keys, or accreditation data.
+
+**[ID-2]** The Wallet SHALL NOT treat anything in the request, including `purpose`, `title`, and `summary`, as evidence of who is asking. That comes from the origin and, if present, reader authentication (§7).
+
+**[HOLD-1]** Before sharing anything, the Wallet SHALL let the Holder decide item by item, unless a deployment profile defines an equivalent Holder control.
+
+**[HOLD-2]** The Wallet MAY group, reorder, or summarize items on screen, but SHALL keep each item's `id` in the response.
+
+**[HOLD-3]** The Wallet SHALL NOT treat `required: true` as consent or as a reason to skip the Holder's choice. A required item may still be declined, unavailable, unsupported, or answered in part.
+
+**[HOLD-4]** When the Holder reviews the request and declines every item, the Wallet SHALL return a response in which every item has status `declined`. When the Holder dismisses the Wallet without reviewing, the Wallet returns nothing, and the platform ends the call with its cancellation error.
 
 ---
 
 ## 6. Clinical Response Model
 
-A SMART response is the transport-neutral JSON object by which a Wallet/Responder answers after Holder review, Wallet policy, and data-source availability. Transports may wrap, encrypt, authenticate, retain, or relay it, but do not change `requestId`, `artifacts[]`, `mediaType`, `fulfills[]`, or `requestStatus[]`.
+A SMART response carries the Artifacts the Holder chose to share and one status for every requested item.
 
 ### 6.1 Normative TypeScript model
 
 ```typescript
-export interface SmartHealthCheckinResponse {
-  /**
-   * Response discriminator.
-   * Wallet/Responder SHALL set exactly "smart-health-checkin-response".
-   * Verifier SHALL reject absent or different values.
-   */
+interface SmartHealthCheckinResponse {
   type: "smart-health-checkin-response";
-
-  /**
-   * SMART response model version.
-   * Wallet/Responder SHALL set exactly "1". Verifier SHALL reject absent or
-   * different values unless a future compatibility rule applies.
-   */
   version: "1";
-
-  /**
-   * Correlates this response to the accepted request.
-   * Wallet/Responder SHALL set exactly to `SmartHealthCheckinRequest.id`.
-   * Verifier SHALL compare by exact string equality and reject mismatch.
-   */
-  requestId: NonEmptyString;
-
-  /**
-   * Returned clinical Artifacts.
-   * MAY be empty when no item returns content, if `requestStatus[]` accounts for
-   * every original request item. Each Artifact SHALL follow the common and
-   * media-type-specific rules below.
-   */
-  artifacts: Artifact[];
-
-  /**
-   * Per-item outcomes.
-   * SHALL include exactly one entry for every original request item and no
-   * duplicate or unknown item ids, even when every item is fulfilled.
-   */
-  requestStatus: RequestItemStatus[];
-
-  [extensionMember: string]: unknown;
+  requestId: NonEmptyString;         // the request's id, exactly
+  artifacts: Artifact[];             // may be empty
+  requestStatus: RequestItemStatus[];// one per request item
 }
 
-export type Artifact =
-  | SmartHealthCardArtifact
-  | RawFhirJsonArtifact
-  | ExtensionArtifact;
+type Artifact = FhirJsonArtifact | SmartHealthCardArtifact | ExtensionArtifact;
 
 interface ArtifactBase {
-  /**
-   * Artifact id scoped to one response.
-   * SHALL be non-empty and unique within the response. Verifier SHALL reject
-   * missing, non-string, empty, or duplicate ids.
-   */
-  id: NonEmptyString;
-
-  /**
-   * Clinical response form.
-   * SHALL be a non-empty media type string. Artifacts do not use a separate
-   * protocol `type`. Verifier SHALL NOT treat unrecognized media types as
-   * `GenericArtifact` or any other generic catch-all.
-   */
-  mediaType: MediaTypeString;
-
-  /**
-   * Original request item ids this Artifact fulfills.
-   * SHALL be a non-empty array. Each value SHALL exactly equal one original
-   * request item id. If one Artifact fulfills multiple items, its `mediaType`
-   * SHALL be accepted by every fulfilled item.
-   */
-  fulfills: NonEmptyArray<NonEmptyString>;
+  id: NonEmptyString;                        // unique within the response
+  mediaType: MediaType;
+  fulfills: NonEmptyArray<NonEmptyString>;   // request item ids
 }
 
-export interface SmartHealthCardArtifact extends ArtifactBase {
-  /** SHALL be exactly "application/smart-health-card". */
-  mediaType: "application/smart-health-card";
-
-  /**
-   * SMART Health Card file payload.
-   * SHALL contain a non-empty `verifiableCredential[]` array of SMART Health
-   * Card Verifiable Credential JWS strings. Verifier/receiver SHALL verify and
-   * process each JWS according to SMART Health Cards and local trust policy.
-   */
-  value: {
-    verifiableCredential: NonEmptyArray<NonEmptyString>;
-    [payloadMember: string]: unknown;
-  };
-
-  /**
-   * SHALL NOT be present on SMART Health Card Artifacts.
-   * FHIR version and issuer semantics are inside signed payloads.
-   */
-  fhirVersion?: never;
-}
-
-export interface FhirResource {
-  /** SHALL be a FHIR resource type string. */
-  resourceType: NonEmptyString;
-  [fhirMember: string]: unknown;
-}
-
-export interface FhirBundle extends FhirResource {
-  /** SHALL be exactly "Bundle" for Bundle payloads. */
-  resourceType: "Bundle";
-
-  /** Bundle entries when multiple resources are returned. */
-  entry?: Array<{ resource?: FhirResource; [entryMember: string]: unknown }>;
-}
-
-export interface RawFhirJsonArtifact extends ArtifactBase {
-  /** SHALL be exactly "application/fhir+json". */
+interface FhirJsonArtifact extends ArtifactBase {
   mediaType: "application/fhir+json";
-
-  /**
-   * FHIR release context for every resource in `value`.
-   * SHALL be non-empty. Wallet/Responder SHALL NOT mix resources requiring
-   * different FHIR releases in one Artifact. Verifier SHALL reject absent or
-   * non-string values and SHOULD treat unaccepted releases as unsupported for
-   * ingestion.
-   */
-  fhirVersion: FhirRelease;
-
-  /**
-   * Raw FHIR JSON payload.
-   * SHALL be either a single FHIR Resource object with string `resourceType` or
-   * a FHIR Bundle. Wallet/Responder SHOULD use a Bundle for multiple resources.
-   * Returned FHIR `meta.profile` strings, including `|version`, SHALL be
-   * preserved exactly and SHALL NOT be stripped or normalized.
-   */
-  value: FhirResource | FhirBundle;
+  fhirVersion: FhirRelease;                  // e.g. "4.0.1"
+  value: { resourceType: NonEmptyString; [member: string]: unknown };  // a resource or a Bundle
 }
 
-export interface ExtensionArtifact extends ArtifactBase {
-  /**
-   * Registered extension media type or bounded media-type pattern.
-   * Extension Artifacts MAY be returned only when accepted by every fulfilled
-   * item and constructed under a recognized extension definition. The extension
-   * SHALL define branded variant name, typed payload fields, encoding,
-   * dereferencing/integrity, FHIR-version handling if any, status behavior,
-   * validation, security, privacy, and compatibility. It SHALL NOT rely on
-   * `GenericArtifact`, generic `value`/`url`/`data` semantics, or redefine
-   * core response fields.
-   */
-  mediaType: string;
-
-  [mediaTypeDefinedPayloadMember: string]: unknown;
+interface SmartHealthCardArtifact extends ArtifactBase {
+  mediaType: "application/smart-health-card";
+  value: { verifiableCredential: NonEmptyArray<NonEmptyString>; [member: string]: unknown };
 }
 
-export type RequestItemStatusCode =
-  | "fulfilled"
-  | "partial"
-  | "unavailable"
-  | "declined"
-  | "unsupported"
-  | "error";
+interface ExtensionArtifact extends ArtifactBase {
+  mediaType: MediaType;                      // defined by an extension (§9.3)
+  [member: string]: unknown;
+}
 
-export interface RequestItemStatus {
-  /**
-   * Original request item id.
-   * SHALL exactly equal one `SmartHealthCheckinRequest.items[].id`.
-   */
-  item: NonEmptyString;
+type RequestItemStatusCode =
+  "fulfilled" | "partial" | "unavailable" | "declined" | "unsupported" | "error";
 
-  /**
-   * Version 1.0 item outcome code.
-   * Wallet/Responder SHALL use only these six codes unless a future explicitly
-   * supported extension is accepted by the receiving Verifier:
-   * - `fulfilled`: item believed fully satisfied.
-   * - `partial`: responsive content returned without complete fulfillment claim.
-   * - `unavailable`: item understood/supported but no matching shareable content.
-   * - `declined`: Holder declined or Wallet policy implemented Holder refusal.
-   * - `unsupported`: item, selector, media type, Questionnaire, FHIR version, or
-   *   extension semantics cannot be processed.
-   * - `error`: operational or processing failure after the item was understood.
-   */
+interface RequestItemStatus {
+  item: NonEmptyString;                      // a request item id
   status: RequestItemStatusCode;
+  message?: string;                          // short explanation for people
+}
+```
 
-  /**
-   * Optional concise explanation.
-   * Wallet/Responder SHALL NOT include secrets, access tokens, stack traces,
-   * unnecessary patient details, or unrelated Holder data. Receivers SHALL NOT
-   * rely on localized text for normative status semantics.
-   */
-  message?: string;
+An example response to the request in §5.2, which the build validates against it:
 
-  [extensionMember: string]: unknown;
+```json check=response request=example-request
+{
+  "type": "smart-health-checkin-response",
+  "version": "1",
+  "requestId": "checkin-7f3a",
+  "artifacts": [
+    {
+      "id": "a1",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": ["patient"],
+      "value": {
+        "resourceType": "Patient",
+        "meta": { "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"] },
+        "name": [{ "family": "Okafor", "given": ["Sam"] }],
+        "birthDate": "1986-04-12"
+      }
+    },
+    {
+      "id": "a2",
+      "mediaType": "application/smart-health-card",
+      "fulfills": ["immunizations"],
+      "value": { "verifiableCredential": ["eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiJ9.example.signature"] }
+    },
+    {
+      "id": "a3",
+      "mediaType": "application/fhir+json",
+      "fhirVersion": "4.0.1",
+      "fulfills": ["intake"],
+      "value": {
+        "resourceType": "QuestionnaireResponse",
+        "questionnaire": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json|1",
+        "status": "completed",
+        "item": [
+          { "linkId": "phq2-1", "answer": [{ "valueCoding": { "system": "http://loinc.org", "code": "LA6568-5", "display": "Not at all" } }] },
+          { "linkId": "phq2-2", "answer": [{ "valueCoding": { "system": "http://loinc.org", "code": "LA6569-3", "display": "Several days" } }] }
+        ]
+      }
+    }
+  ],
+  "requestStatus": [
+    { "item": "patient", "status": "fulfilled" },
+    { "item": "immunizations", "status": "partial", "message": "One vaccine record was not shared" },
+    { "item": "intake", "status": "fulfilled" }
+  ]
 }
 ```
 
 ### 6.2 Artifact and status semantics
 
-Payload fields are media-type-specific. Verifier/receiver SHALL NOT infer dereferencing, decoding, signature, freshness, integrity, retention, expiration, or generic carrier semantics from field names alone. Raw `application/fhir+json` is patient-mediated unless separate accepted provenance, signature, source attestation, authenticated retrieval evidence, or equivalent proof is present. SMART Health Card Artifacts carry their FHIR version and issuer semantics inside signed credential payloads; wrapper-level profile summaries SHALL NOT be used as selector-conformance claims.
+**[RSP-1]** The Wallet SHALL set `type` to `smart-health-checkin-response`, `version` to `"1"`, and `requestId` to the request's `id`, exactly.
 
-A `fulfilled` or `partial` status SHOULD have at least one Artifact whose `fulfills[]` includes the item unless an explicitly supported extension defines non-Artifact fulfillment. Verifier SHOULD flag inconsistent status-to-Artifact combinations under local policy.
+**[RSP-2]** The Wallet SHALL include exactly one `requestStatus[]` entry for each request item, and no entry for anything else.
+
+**[RSP-3]** The Wallet SHALL use only the six status codes in the table below.
+
+**[ART-1]** The Wallet SHALL give each Artifact an `id` unique within the response, and list in `fulfills[]` only ids of items in the request.
+
+**[ART-2]** In an `application/fhir+json` Artifact, the Wallet SHALL set `fhirVersion` to the FHIR release version of every resource in `value`, such as `4.0.1`, and SHALL NOT mix releases in one Artifact.
+
+**[ART-3]** The Wallet SHOULD choose a FHIR release from the request's `fhirVersions[]`, when present.
+
+**[ART-4]** The Wallet SHOULD put several resources in one Artifact as a Bundle of type `collection`.
+
+**[ART-5]** The Wallet SHALL keep every returned `meta.profile` string exactly as the source had it (§5.5).
+
+**[ART-6]** In an `application/smart-health-card` Artifact, the Wallet SHALL put the card's JWS strings in `value.verifiableCredential[]` and SHALL NOT include `fhirVersion`; the FHIR release is inside the signed card.
+
+**[ART-7]** An item with status `fulfilled` or `partial` SHOULD be listed in the `fulfills[]` of at least one Artifact.
+
+| Status | Meaning |
+| --- | --- |
+| `fulfilled` | The Wallet believes it shared what the item asked for. |
+| `partial` | The Wallet shared some responsive content, but not everything. |
+| `unavailable` | The Wallet understood the item but has nothing matching to share. |
+| `declined` | The Holder chose not to share this item. |
+| `unsupported` | The Wallet cannot process this item: its selector kind, media types, form, or FHIR release. |
+| `error` | The Wallet understood the item but failed while processing it. |
+
+**[STAT-1]** The Wallet SHALL NOT put secrets, access tokens, stack traces, or patient details beyond what the Holder shared in `message`.
+
+**[STAT-2]** A Verifier SHALL NOT derive a status's meaning from `message`.
 
 ### 6.3 Many-to-many fulfillment
 
-Wallet/Responder MAY return one Artifact for multiple items or multiple Artifacts for one item. Every Artifact-item fulfillment edge SHALL satisfy media-type acceptance, FHIR-version, status-accounting, and validation rules. Wallet/Responder SHALL still include exactly one status entry per item. Verifier SHALL evaluate all Artifacts that list an item. A receiver MAY choose which valid Artifacts to ingest/display under local policy and SHALL NOT treat multiple Artifacts as a protocol error by itself.
+**[MM-1]** The Wallet MAY return one Artifact for several items, or several Artifacts for one item. Each fulfillment still has to meet §5.6 and §6.4.
+
+**[MM-2]** The Verifier SHALL consider every valid Artifact that lists an item. More than one Artifact for an item is not an error; the Verifier chooses which to use.
 
 ### 6.4 Verifier cross-validation
 
-Shape validation alone is insufficient. Verifier SHALL validate a SMART response against the original SMART request before use:
+A Verifier checks a response against the request it sent before using anything in it. Some checks fail the whole response; most affect only one Artifact or one item.
 
-- `requestId` exactly matches the request `id`;
-- every `fulfills[]` value resolves to exactly one original item id;
-- every Artifact `mediaType` is a core or explicitly supported extension type;
-- every Artifact-item edge uses a media type accepted by that item unless a supported compatibility rule applies;
-- `requestStatus[]` covers every item exactly once and contains no unknown or duplicate item ids;
-- raw FHIR Artifacts have non-empty `fhirVersion` and FHIR object `value`;
-- Bundles do not mix FHIR releases;
-- SMART Health Card Artifacts do not carry outer `fhirVersion`;
-- any claim that an Artifact satisfies a versioned profile selector has exact-version evidence;
-- returned `meta.profile` strings are preserved exactly; and
-- response validation remains distinct from downstream clinical acceptance.
+**[XV-1]** The Verifier SHALL reject the whole response if it fails §5.1, if `type` or `version` differs from §6.2, or if `artifacts` or `requestStatus` is not an array.
+
+**[XV-2]** The Verifier SHALL reject the whole response if `requestId` differs from the request's `id`.
+
+**[XV-3]** The Verifier SHALL reject the whole response unless `requestStatus[]` has exactly one entry for each request item, no entry for any other id, and only the six status codes.
+
+**[XV-4]** The Verifier SHALL disregard an Artifact that fails any of the checks below. It SHALL keep processing the other Artifacts, and SHALL NOT count a disregarded Artifact toward the items it lists.
+
+**[XV-5]** An Artifact needs an `id` no other Artifact in the response has, a `mediaType`, and a non-empty `fulfills[]` naming only request items. When two Artifacts share an `id`, the Verifier SHALL disregard both.
+
+**[XV-6]** The Artifact's `mediaType` needs to be one of the two core types, or an extension type the Verifier supports.
+
+**[XV-7]** The Artifact's `mediaType` needs to be in the `accept[]` of every item it lists.
+
+**[XV-8]** An `application/fhir+json` Artifact needs a non-empty string `fhirVersion`, and a `value` that is an object with a string `resourceType`. The Verifier MAY also disregard it when the request listed `fhirVersions[]` and this release is not among them.
+
+**[XV-9]** An `application/smart-health-card` Artifact needs a non-empty `value.verifiableCredential[]` of strings and no `fhirVersion`.
+
+**[XV-10]** A `QuestionnaireResponse` fulfilling a `form.fhir` item that has `questionnaireCanonical` needs its `questionnaire` to equal that canonical exactly.
+
+**[XV-11]** For an item whose `profiles[]` includes a versioned canonical, the Verifier SHALL NOT treat a `fulfilled` status as met unless an Artifact listing the item contains a resource whose `meta.profile` includes that exact versioned canonical.
+
+**[XV-12]** The Verifier SHOULD flag an item with status `fulfilled` or `partial` that no valid Artifact lists.
+
+**[XV-13]** Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer.
+
+Passing these checks means the response is well formed and consistent with the request. Whether to accept the content into a chart is a separate, local decision.
 
 ---
 
+<a id="1-1-core-trust-rule"></a>
+
 ## 7. Trust Framework
 
-Presentation-layer success does not establish requester identity, organizational identity, clinical-source provenance, patient matching, downstream authorization, or EHR write-back permission. Each signal proves only what it proves, and §1.1 controls when a component is tempted to substitute one signal for another. Per §5.2, requester identity, origin, reader credentials, and trust metadata are not carried in the SMART request body.
+SMART Health Check-in lets two parties exchange data when the Holder chooses to, without first joining a shared trust framework. Each signal in the exchange proves something specific and nothing more. Deployments can add trust requirements on top (§9.3).
 
-```mermaid
-graph LR
-    subgraph Clinical["Clinical content domain"]
-      Request["SMART request JSON<br/>purpose, items, selectors, accept[]"]
-      Response["SMART response JSON<br/>Artifacts, fulfills[], requestStatus[]"]
-      Source["Clinical-source evidence<br/>SHC JWS, provenance, source attestation"]
-    end
+| Signal | Proves | Does not prove |
+| --- | --- | --- |
+| Origin, reported by the browser or platform | Which web origin or app called the Digital Credentials API | That the caller is an organization you trust |
+| HPKE encryption bound to `SessionTranscript` | Only the holder of the Verifier's private key, for this origin and this `encryptionInfo`, can read the response | Who sent it: anyone can encrypt to the Verifier's public key |
+| `readerAuth`, when present | The request was signed, for this session, by the key in its certificate | Who holds that key, unless a deployment trusts the certificate |
+| `issuerAuth` and value digests | The response element is intact, and the mdoc is well formed and verifiable | Who issued the content. The Wallet signs its own MSO with its own key. |
+| Device signature | The key named in the MSO signed this session | That the key belongs to the patient's device. Wallets may make new keys for every response. |
+| SMART Health Card signature | The card's issuer signed the clinical content | That the card is about this patient |
+| Raw `application/fhir+json` | Nothing about its source. It is what the Holder chose to share. | Provenance, unless the content carries its own evidence |
+| Request content | Nothing about who is asking | Identity, authority, or consent |
 
-    subgraph Presentation["Presentation and transport domain"]
-      Origin["Authenticated origin<br/>or approved equivalent"]
-      Reader["Optional readerAuth<br/>COSE_Sign1 + x5chain"]
-      Mdoc["mdoc issuer/device evidence<br/>MSO digest + device proof"]
-      HPKE["HPKE envelope<br/>SessionTranscript-bound ciphertext"]
-    end
+**[TRUST-1]** Verifiers and Wallets SHALL NOT treat a signal as proving anything the table says it does not, unless a deployment profile defines that relationship.
 
-    subgraph Policy["Deployment policy"]
-      Anchors["Anchors, allow-lists,<br/>assurance, failure behavior"]
-    end
+**[TRUST-2]** A Wallet that verifies `readerAuth` SHALL classify it as exactly one of: absent; malformed; invalid (the signature or binding fails); valid but untrusted (it verifies, but no trusted certificate or key is recognized); or trusted. It SHALL NOT show the Holder a verifier identity unless the result is trusted.
 
-    Origin --> Anchors
-    Reader --> Anchors
-    Mdoc --> Anchors
-    Source --> Anchors
-    Request --> Response
-    HPKE --> Mdoc
-    Mdoc --> Response
-    HPKE -. "does not prove" .-> Source
-    Mdoc -. "does not prove" .-> Source
-    Request -. "does not authenticate" .-> Origin
-```
+Certificates at this layer may be self-signed. Valid but untrusted is the normal result when no deployment trust list exists.
 
-Available signals include:
+**Threats**
 
-- **Authenticated origin or approved equivalent:** caller context supplied by the Browser/User Agent, Credential Manager, platform channel, or privileged-caller mechanism. It is not derived from request JSON, display strings, callback-looking values, handoff metadata, or Artifact payloads.
-- **Optional reader authentication:** a per-`DocRequest.readerAuth` `COSE_Sign1` over the same `SessionTranscript` and exact tag-24 `ItemsRequest` bytes. Wallet/Responder implementations that support or rely on it verify signature, detached-payload binding, `x5chain` or key evidence, and deployment policy under §8, and distinguish absent, malformed, cryptographically failed, valid-but-untrusted, and trusted states.
-- **mdoc issuer/device evidence:** validation can show that the stable response element matched an MSO value digest, that `issuerAuth` signed the MSO, and that the presenter possessed the device key for the expected `SessionTranscript`. Anchor acceptance, accreditation, revocation, and assurance labels are deployment policy.
-- **Clinical-source evidence:** SMART Health Card JWSs, FHIR `Provenance`, signed payloads, authenticated retrieval evidence, or extension-defined proofs inside Artifacts. Raw `application/fhir+json` remains patient-mediated unless separate accepted evidence supplies provenance.
-
-Protocol-layer certificates may be self-signed. SMART Health Check-in does not require both parties to belong to a shared trust framework before exchange; its job is to enable willing parties to exchange data when the end user makes that happen. Trust frameworks, anchor lists, registries, allow-lists, assurance labels, patient-matching rules, and failure behavior are deployment policy layered on top. A deployment profile adding trust requirements SHALL document constrained roles, mandatory trust layers, accepted anchors/registries/allow-lists/policies/provenance mechanisms, freshness/revocation/replay/status expectations, Holder display distinctions, and behavior when a presentation succeeds but downstream policy fails.
+| Threat | Protection | Not protected |
+| --- | --- | --- |
+| A malicious page relays a real Verifier's request | The Wallet binds the transcript to the malicious page's origin, so the real Verifier cannot open the response, and the relaying page never had the Verifier's key | The Holder can still be tricked into sharing with the malicious page itself |
+| Replaying a captured response to a Verifier | Each session has a fresh key and nonce, so an old ciphertext does not open | — |
+| Forging content | SMART Health Card signatures, where present | Raw FHIR content and form answers. Anyone holding a SMART response can wrap it in a new, fully valid mdoc for any session. |
+| Third-party scripts on the Verifier's page | None at the protocol layer | Scripts on the calling page can read the private key and the decrypted response |
+| A malicious or faulty Wallet | §6.4 validation catches malformed responses | Content the Wallet makes up |
 
 ---
 
 ## 8. Same-device Presentation Flow
 
-This section defines the base v1.0 live presentation flow; complete byte ladders and annotated wire captures are companion material. Verifier carries a §5 request through W3C Digital Credentials API direct `org-iso-mdoc`; Wallet/Responder returns a §6 response inside an mdoc `DeviceResponse` encrypted for Verifier. This is the only normative v1.0 presentation flow. Handoffs MAY load a same-device Verifier page; their URL formats, relay behavior, storage, and completion handling are outside this specification.
+The Verifier sends a §5 request through the W3C Digital Credentials API using the `org-iso-mdoc` protocol. The Wallet returns a §6 response inside an mdoc `DeviceResponse`, encrypted to the Verifier. This is the only presentation flow in version 1.0. §8.7 defines every structure named in the steps below.
 
 ```mermaid
 sequenceDiagram
-    participant R as Verifier
-    participant B as Browser / DC API
-    participant W as Wallet / Responder
+    participant V as Verifier
+    participant B as Browser / platform
+    participant W as Wallet
 
-    R->>R: Build SMART request JSON
-    R->>R: Wrap in ItemsRequest and tag-24
-    R->>R: Generate HPKE key and encryptionInfo
-    R->>B: navigator.credentials.get(org-iso-mdoc)
-    B->>W: Invoke Wallet with authenticated origin
-    W->>W: Derive SessionTranscript
-    W->>W: Validate request and classify readerAuth
-    W->>W: Holder review and SMART response JSON
-    W->>W: Build mdoc DeviceResponse
-    W->>W: HPKE-encrypt as dcapiResponse
-    W-->>B: Return org-iso-mdoc result
-    B-->>R: Resolve Promise
-    R->>R: HPKE-open and validate mdoc evidence
-    R->>R: Extract SMART response and apply §6.4
+    V->>V: Build SMART request, ItemsRequest, HPKE key, encryptionInfo
+    V->>B: navigator.credentials.get (org-iso-mdoc)
+    B->>W: Request, with the caller's origin
+    W->>W: Validate request, compute SessionTranscript
+    W->>W: Holder chooses; build SMART response
+    W->>W: Sign MSO and session; build DeviceResponse
+    W->>W: HPKE-encrypt to the Verifier's key
+    W-->>B: dcapiResponse
+    B-->>V: DigitalCredential
+    V->>V: Decrypt, verify signatures and digests, validate (§6.4)
 ```
+
+<a id="a-1-fixed-identifiers"></a>
 
 ### 8.1 Identifiers and constants
 
-| Purpose | Value |
+| Name | Value |
 | --- | --- |
-| DC API protocol | `org-iso-mdoc` |
+| Request `type` | `smart-health-checkin-request` |
+| Response `type` | `smart-health-checkin-response` |
+| Request and response `version` | `1` |
+| Core selector kinds | `selection.fhir`, `form.fhir` |
+| Core media types | `application/fhir+json`, `application/smart-health-card` |
+| Status codes | `fulfilled`, `partial`, `unavailable`, `declined`, `unsupported`, `error` |
+| Digital Credentials API protocol | `org-iso-mdoc` |
 | mdoc `docType` | `org.smarthealthit.checkin.1` |
 | mdoc namespace | `org.smarthealthit.checkin` |
-| Element | `smart_health_checkin_response` |
+| Response element identifier | `smart_health_checkin_response` |
 | Request carrier | `ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]` |
+| `DeviceRequest` and `DeviceResponse` version | `1.0` |
+| Signatures (`readerAuth`, `issuerAuth`, device signature) | ES256: COSE `alg` `-7`, ECDSA P-256 with SHA-256 |
+| MSO `digestAlgorithm` | `SHA-256` |
+| HPKE | Base mode; KEM DHKEM(P-256, HKDF-SHA256) `0x0010`; KDF HKDF-SHA256 `0x0001`; AEAD AES-128-GCM `0x0001` |
 
-Verifier SHALL use the protocol, `docType`, namespace, element, and request-carrier identifiers in this table exactly. Except for the temporary platform-mediation compatibility duplicate in §8.2, Verifier SHALL carry the SMART request only as a JSON string in the request carrier. Wallet/Responder SHALL NOT treat other dynamic element names, wrappers, archived experiments, or other locations as v1.0 request carriers. Wallet/Responder SHALL carry the SMART response as `elementValue` of an issuer-signed item in namespace `org.smarthealthit.checkin` with element identifier `smart_health_checkin_response`.
+**[MD-1]** Verifiers and Wallets SHALL use the values in this table exactly.
 
-Baseline algorithm support is separate from fixed protocol identifiers. Implementations claiming same-device support SHALL support ES256 / COSE `alg` `-7`, SHA-256 MSO value digests, and HPKE DHKEM(P-256, HKDF-SHA256), HKDF-SHA256, AES-128-GCM. A deployment profile MAY allow other COSE, digest, or HPKE algorithms when both parties support them through the corresponding COSE, MSO, HPKE, `encryptionInfo`, and `dcapiResponse` identifiers. Unsupported or unilateral choices SHALL be rejected; implementations SHALL NOT silently downgrade, ignore labels, or substitute defaults.
+**[ALG-1]** Verifiers and Wallets SHALL use exactly these algorithms. Nothing on the wire names or negotiates another one.
+
+**[ALG-2]** A receiver SHALL reject a structure in which `alg`, `kty`, `crv`, or `digestAlgorithm` has an unknown or unsupported value. It SHALL ignore other map keys it does not know.
 
 ### 8.2 Verifier request construction
 
-Verifier SHALL serialize the §5 SMART request as UTF-8 JSON text and place it at `ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]` as a CBOR text string, not a CBOR map or base64url JSON. Core `ItemsRequest` SHALL have `docType` `org.smarthealthit.checkin.1`, namespace `org.smarthealthit.checkin`, element `smart_health_checkin_response`, and the request carrier. The namespace boolean is mdoc `intentToRetain`; Verifier SHALL default it to `true` and MAY set `false` only for true ephemeral use when policy permits. It does not override Holder choice, Wallet policy, law, privacy, or downstream retention. Verifier SHALL NOT model FHIR profiles, items, questionnaires, media types, status codes, or resources as separate mdoc elements.
+**[VRQ-0]** The Verifier SHALL build and send a request in these steps, in this order.
 
-**Temporary platform-mediation compatibility carrier.** Some platform-mediated mdoc presentment flows expose requested `docType`, namespaces, and element identifiers to wallet code before response construction, while arbitrary `ItemsRequest.requestInfo` contents may be unavailable at that point. During this compatibility period, Verifier MAY also request a companion element in namespace `org.smarthealthit.checkin` with element identifier `smart_request_b64u.<base64url-without-padding(UTF-8 SMART request JSON)>` and `intentToRetain=false`. The canonical request carrier remains `ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]`. Wallet/Responder SHOULD prefer `requestInfo`, MAY fall back to the companion element only when `requestInfo` is unavailable, and SHALL reject the request if both carriers are present but their SMART request JSON strings differ. This companion element is a duplicate compatibility population, not a long-term replacement for `requestInfo`.
+1. **[VRQ-1]** Serialize the SMART request (§5) as UTF-8 JSON text.
+2. **[VRQ-2]** Build an `ItemsRequest` with `docType` `org.smarthealthit.checkin.1`; `nameSpaces` requesting only the element `smart_health_checkin_response` in namespace `org.smarthealthit.checkin`; and `requestInfo` holding the JSON text, as a CBOR text string, under `org.smarthealthit.checkin.request`. The element's value is `intentToRetain`: set it to `true` if the Verifier may keep the response after the session ends, otherwise `false`.
+3. **[VRQ-3]** Compute `ItemsRequestBytes = tag24(CBOR(ItemsRequest))`.
+4. **[VRQ-4]** Generate a P-256 HPKE key pair and a nonce of unpredictable random bytes for this request. The nonce SHOULD be at least 16 bytes. The Verifier SHOULD NOT reuse a key pair across requests.
+5. **[VRQ-5]** Build `EncryptionInfo = ["dcapi", {"nonce": nonce, "recipientPublicKey": COSE_Key}]`, where the COSE_Key has `1: 2` (EC2), `-1: 1` (P-256), and 32-byte `-2` (x) and `-3` (y). Encode it with CBOR and then base64url, and keep that exact string.
+6. **[VRQ-6]** If it uses reader authentication, compute `SessionTranscript` (§8.3) with its own origin, and sign `ReaderAuthenticationBytes` as §8.6 describes.
+7. **[VRQ-7]** Build a `DeviceRequest` with `version` `"1.0"` and exactly one `DocRequest`, holding `ItemsRequestBytes` and, if used, `readerAuth`.
+8. **[VRQ-8]** Call the Digital Credentials API with `protocol` `org-iso-mdoc` and `data` `{deviceRequest, encryptionInfo}`, both base64url:
 
-Verifier SHALL CBOR-encode `ItemsRequest` and wrap bytes in CBOR tag 24 before placing in `DocRequest.itemsRequest`. Verifier SHALL construct baseline `DeviceRequest` version `1.0` with a `docRequests` array containing the SMART Health Check-in `DocRequest`. Core v1.0 uses optional per-`DocRequest.readerAuth`; profiles MAY use future ISO-compatible versions such as v1.1 `readerAuthAll` when both parties support the profile and it does not change SMART JSON semantics.
+   ```js
+   navigator.credentials.get({
+     mediation: "required",
+     digital: { requests: [{ protocol: "org-iso-mdoc", data: { deviceRequest, encryptionInfo } }] }
+   })
+   ```
 
-If Verifier includes `readerAuth`, it SHALL support detached ES256 (`alg` `-7`) `COSE_Sign1` and MAY use another algorithm when both parties support it through COSE algorithm identifiers and policy. It constructs `COSE_Sign1` over `tag24(CBOR(["ReaderAuthentication", SessionTranscript, ItemsRequestBytes]))`. For the baseline ES256 profile, the protected header includes `{1: -7}`; serialized payload field SHALL be `null`; COSE signature input SHALL use empty external AAD and the ReaderAuthentication bytes as detached payload; header label `33` (`x5chain`) SHALL carry at least the leaf reader certificate. Verifier SHALL compute it for exact `SessionTranscript` and exact `ItemsRequestBytes` and SHALL NOT reuse across sessions, origins, encryption information, request serializations, or element sets.
-
-For each request, Verifier SHALL support baseline DHKEM(P-256, HKDF-SHA256) HPKE recipient key material and SHOULD use a fresh key pair. It MAY use another HPKE suite when both parties support it through the suite identifiers in `encryptionInfo`/`dcapiResponse` and policy. Reuse-permitting profiles SHALL define replay/correlation/retention/compromise handling. `encryptionInfo` SHALL be CBOR `["dcapi", {"nonce": fresh unpredictable bytes, "recipientPublicKey": <suite-appropriate recipient public key>}]`. For the baseline suite, `recipientPublicKey` is a P-256 COSE_Key with labels `1:2`, `-1:1`, `-2`, and `-3`; other profile-supported suites SHALL define the corresponding key representation. Nonce SHOULD have at least 16 bytes of entropy. Verifier SHALL retain private key and exact `encryptionInfo` CBOR until processing completes or session is abandoned. Verifier SHALL base64url-encode CBOR `DeviceRequest` and `encryptionInfo` without padding and preserve exact `encryptionInfo` base64url string for §8.3.
+9. **[VRQ-9]** Keep the private key and the exact `encryptionInfo` string until the response is processed or the session is abandoned.
+10. **[VRQ-10]** The Verifier SHOULD apply its own timeout to the call. On some platforms, a response that is too large never arrives, and the call never settles.
 
 ### 8.3 `SessionTranscript`
 
-Both sides SHALL compute direct `dcapi` transcript bytes:
+Both sides compute the same transcript:
 
 ```text
-dcapiInfo = CBOR([encryptionInfoBase64Url, origin])
-handover = ["dcapi", SHA-256(dcapiInfo)]
-SessionTranscript = CBOR([null, null, handover])
+dcapiInfo         = CBOR([encryptionInfoBase64url, origin])
+Handover          = ["dcapi", SHA-256(dcapiInfo)]
+SessionTranscript = [null, null, Handover]
 ```
 
-`encryptionInfoBase64Url` is the exact unpadded request string. `origin` is authenticated origin or deployment-approved privileged-caller origin-equivalent supplied by Browser/User Agent or platform. Wallet/Responder SHALL obtain origin from authenticated platform sources and SHALL NOT derive it from request JSON, display text, selector URLs, ids, handoff metadata, callback-looking strings, or Artifact contents. Verifier, Wallet/Responder SHALL use the same transcript for `readerAuth`, HPKE, and device authentication as applicable. If origin/equivalent is unavailable, Wallet/Responder SHALL treat origin trust as absent and SHALL NOT substitute a self-asserted request field.
+**[TR-1]** `encryptionInfoBase64url` SHALL be the exact `encryptionInfo` string the Verifier sent, not a re-encoding of its decoded bytes.
+
+**[TR-2]** For a web page, `origin` SHALL be the ASCII serialization of the calling page's origin: scheme, `://`, host, and `:port` only for a non-default port, with no trailing slash (for example `https://clinic.example`). For a native app, it SHALL be exactly the origin string its platform reports to the Wallet. Companion platform notes list the known formats.
+
+**[TR-3]** The Wallet SHALL take the origin only from the browser or platform, never from anything in the request.
+
+**[TR-4]** If the platform provides no origin, the Wallet SHALL NOT respond.
+
+**[TR-5]** Both sides SHALL use the same `SessionTranscript` for `readerAuth`, for the HPKE `info`, and for device authentication.
 
 ### 8.4 Wallet request handling and response construction
 
-Wallet/Responder receiving candidate direct `org-iso-mdoc` SHALL validate before response construction: protocol; base64url/CBOR `DeviceRequest`; supported `DeviceRequest.version` (baseline `1.0`); tag-24 `ItemsRequest`; exact tag bytes for `readerAuth`; `ItemsRequest.docType`; namespace/element and `intentToRetain`; request carrier string; §5 SMART request; base64url/CBOR direct `dcapi` `encryptionInfo`; recipient key and HPKE suite that are either baseline P-256 or a mutually supported alternative; and §8.3 transcript using exact `encryptionInfo` string and authenticated origin/equivalent. If request JSON is absent, not a string, unparsable, non-object, or invalid, Wallet/Responder SHALL reject, report failure, or fail safely and SHALL NOT infer clinical semantics from mdoc names, display strings, archived encodings, unknown fields, or wrappers.
+**[WRQ-0]** The Wallet SHALL handle a request in these steps, in this order. **[WRQ-1]** If any validation step fails, the Wallet SHALL NOT respond, and the platform ends the call with an error.
 
-If `readerAuth` is present and Wallet supports or relies on it, Wallet/Responder SHALL verify detached `COSE_Sign1`, protected algorithm, `ReaderAuthenticationBytes`, transcript, exact tag-24 `ItemsRequestBytes`, signature, `x5chain`, and deployment policy. It SHALL distinguish absent, malformed, cryptographically failed, valid-but-untrusted, and trusted states. After validation, Wallet/Responder SHALL perform Holder review or equivalent Holder-control at item granularity and preserve item ids. It MAY group/summarize/reorder/suppress display for accessibility, safety, localization, policy, or law, but SHALL NOT treat `required: true` as consent or present request text as authenticated identity.
+1. **[WRQ-2]** Check that the protocol is `org-iso-mdoc`, and decode `deviceRequest` from base64url and CBOR.
+2. **[WRQ-3]** Check that `version` is `"1.0"`. A Wallet MAY also accept a later ISO version it supports.
+3. **[WRQ-4]** Find the `DocRequest` whose `ItemsRequest` has `docType` `org.smarthealthit.checkin.1`, ignoring other `docType`s. Reject the request if there is none or more than one.
+4. **[WRQ-5]** Check that `itemsRequest` is `tag24` of an `ItemsRequest` that requests `smart_health_checkin_response` in namespace `org.smarthealthit.checkin`, with a boolean `intentToRetain`, and has a text string under `requestInfo["org.smarthealthit.checkin.request"]`.
+5. **[WRQ-6]** Parse and validate that text as a SMART request (§§5.1–5.3).
+6. **[WRQ-7]** Decode `encryptionInfo`, and check that it is `["dcapi", {...}]` with a `nonce` byte string and a P-256 `recipientPublicKey` (§8.7).
+7. **[WRQ-8]** Compute `SessionTranscript` (§8.3).
+8. **[WRQ-9]** If `readerAuth` is present and the Wallet verifies it, verify it (§8.6) and classify it (§7).
+9. **[WRQ-10]** Let the Holder choose (§5.7), then build the SMART response (§6).
 
-Wallet/Responder that proceeds SHALL construct a §6 SMART response with `requestId` exactly equal to accepted request `id`. It SHALL serialize response as UTF-8 JSON and create an `IssuerSignedItem` in namespace `org.smarthealthit.checkin` with `digestID`, `random`, `elementIdentifier: "smart_health_checkin_response"`, and `elementValue` as the JSON string. It SHALL CBOR-encode and tag-24-wrap the item, place it in `issuerSigned.nameSpaces["org.smarthealthit.checkin"]`, and compute MSO value digest over complete tag-24 bytes. `digestID` SHALL match the MSO `valueDigests` key. Wallet/Responder SHALL construct an MSO with `docType` `org.smarthealthit.checkin.1`, value digest for the stable item, and `deviceKeyInfo.deviceKey`. It SHALL support MSO value digests using SHA-256 and MAY use another digest when both parties support it through the MSO `digestAlgorithm` field and policy. It SHALL sign the MSO as `issuerAuth` using ES256 (`alg` `-7`) as baseline, or another mutually supported COSE algorithm carried in the COSE algorithm identifier.
+**[WRS-0]** The Wallet SHALL then build the `DeviceResponse` in these steps, in this order.
 
-Wallet/Responder SHALL construct `DeviceAuthentication` over `tag24(CBOR(["DeviceAuthentication", SessionTranscript, "org.smarthealthit.checkin.1", tag24(CBOR(DeviceNameSpaces))]))` and produce device `COSE_Sign1` using ES256 as baseline, or another mutually supported COSE algorithm carried in COSE algorithm identifiers, signed with the private key corresponding to `MSO.deviceKeyInfo.deviceKey`. For core profile, `DeviceNameSpaces` is normally empty unless a deployment profile defines additional device-signed elements; the SMART response remains issuer-signed. Wallet/Responder SHALL construct a `DeviceResponse` version `1.0` with success status, document `docType` `org.smarthealthit.checkin.1`, issuer-signed stable item, `issuerAuth`, device-signed namespaces, and device signature.
+10. **[WRS-1]** Build an `IssuerSignedItem` with a `digestID`, a `random` of at least 16 random bytes, `elementIdentifier` `smart_health_checkin_response`, and `elementValue` set to the SMART response as UTF-8 JSON text. Compute `IssuerSignedItemBytes = tag24(CBOR(IssuerSignedItem))`.
+11. **[WRS-2]** Build the MSO (§8.7) with `version` `"1.0"`, `digestAlgorithm` `"SHA-256"`, and `docType` `org.smarthealthit.checkin.1`. Its `valueDigests` maps namespace `org.smarthealthit.checkin` to `{digestID: SHA-256(IssuerSignedItemBytes)}`. Its `deviceKeyInfo.deviceKey` is the P-256 public key the Wallet will sign the session with.
+12. **[WRS-3]** Set the MSO's `validityInfo`: `signed` and `validFrom` to the signing time, and `validUntil` to a later time. Each is a CBOR tag 0 date-time string in UTC, without fractional seconds.
+13. **[WRS-4]** Sign `issuerAuth`: a `COSE_Sign1` with protected header `{1: -7}`, `x5chain` (label 33) in the unprotected header with the certificate for the signing key, and payload `MobileSecurityObjectBytes = tag24(CBOR(MSO))`. The certificate may be self-signed.
+14. **[WRS-5]** Set `DeviceNameSpacesBytes = tag24(CBOR({}))`, an empty map, unless a deployment profile defines device-signed elements. The SMART response is always the issuer-signed element, never a device-signed one.
+15. **[WRS-6]** Sign the session: a `COSE_Sign1` with protected header `{1: -7}` and payload `null`, signed with the private key for `deviceKeyInfo.deviceKey` over the detached payload `DeviceAuthenticationBytes` (§8.6).
+16. **[WRS-7]** Build a `DeviceResponse` with `version` `"1.0"`, `status` `0`, and exactly one document holding the issuer-signed item, `issuerAuth`, `DeviceNameSpacesBytes`, and the device signature (§8.7).
+
+<a id="8-6-validation-checklist"></a>
+
+<a id="a-8-extraction-and-validation-reminders"></a>
 
 ### 8.5 HPKE encryption and Verifier processing
 
-Wallet/Responder SHALL support encrypting CBOR `DeviceResponse` plaintext to the recipient public key from `encryptionInfo` using HPKE base mode with KEM DHKEM(P-256, HKDF-SHA256), KDF HKDF-SHA256, AEAD AES-128-GCM, `info = SessionTranscript bytes`, and empty `aad`. It MAY use another HPKE suite only when both parties support it through the suite identifiers in the wire structures and policy. It SHALL wrap HPKE output as CBOR `["dcapi", {"enc": bstr, "cipherText": bstr}]`, base64url-encode without padding, and return DC API result with `protocol: "org-iso-mdoc"` and `data.response`. Wallet/Responder SHALL NOT return plaintext `DeviceResponse`, plaintext SMART response JSON, another carrier, non-empty AAD, or unilateral/unsupported algorithm choices.
+**[HPKE-1]** The Wallet SHALL encrypt `CBOR(DeviceResponse)` with HPKE base mode, using the suite in §8.1, to `recipientPublicKey`, with `info = CBOR(SessionTranscript)` and an empty `aad`. `enc` is the 65-byte uncompressed P-256 public key.
 
-Verifier SHALL require returned protocol `org-iso-mdoc`, unpadded base64url `data.response`, direct CBOR `dcapiResponse`, expected transcript from original exact `encryptionInfo` and origin, HPKE opening with retained private key and the suite signaled by Wallet/Responder (baseline or mutually supported alternative), CBOR `DeviceResponse` version `1.0` with success status, document `docType`, valid `issuerAuth` and MSO under §7/policy, stable disclosed item, value digest over exact tag-24 item bytes, valid device signature over expected `DeviceAuthentication`, string `elementValue`, §6 SMART response validation, and §6.4 cross-validation. Verifier SHALL reject or quarantine on failure and SHALL keep HPKE, origin, readerAuth, issuer/MSO, device proof, response syntax, and clinical-source trust decisions distinct.
+**[HPKE-2]** The Wallet SHALL return `dcapiResponse = ["dcapi", {"enc": enc, "cipherText": ciphertext}]`, encoded with CBOR and then base64url, as `data.response` of a result whose `protocol` is `org-iso-mdoc`. It SHALL NOT return the `DeviceResponse` or the SMART response unencrypted.
 
-### 8.6 Validation checklist
+**[VRS-0]** The Verifier SHALL process the result in these steps, in this order. **[VRS-1]** If any of the steps 1–7 fails, the Verifier SHALL reject the whole response.
 
-Verifier implementing same-device `org-iso-mdoc` SHALL validate original §5 request, request construction identifiers, tag-24 `ItemsRequest`, direct `dcapi` `encryptionInfo`, transcript, required readerAuth if policy demands, returned wrapper, HPKE, `DeviceResponse`, issuer/MSO, digest binding, stable element, device proof, extracted §6 response, §6.4 checks, and §7 trust interpretation. Wallet/Responder SHALL validate request wrapper, DeviceRequest, ItemsRequest, request carrier, §5 request, transcript, readerAuth classification, Holder control, §6 response, stable issuer-signed element, MSO, device authentication, DeviceResponse, HPKE encryption, and outer result. Deployment profiles SHOULD define additional origin, browser, readerAuth, certificate, revocation, issuer anchor, self-attestation, nonce, replay, fixture, size, duplicate, display, logging, telemetry, and clinical-source acceptance requirements.
+1. **[VRS-2]** Check that `protocol` is `org-iso-mdoc` and that `data.response` is base64url without padding. Decode it and check that it is `["dcapi", {enc, cipherText}]`.
+2. **[VRS-3]** Compute `SessionTranscript` from its own origin and the exact `encryptionInfo` string it sent, and open the ciphertext with its retained private key.
+3. **[VRS-4]** Decode the `DeviceResponse`, and check that `version` is `"1.0"`, `status` is `0`, and there is exactly one document with `docType` `org.smarthealthit.checkin.1`.
+4. **[VRS-5]** Verify `issuerAuth` with the public key of the first certificate in its `x5chain`, check the MSO fields (§8.7), and check that the MSO's `docType` matches the document's. Applying a trust policy to the certificate is optional (§7).
+5. **[VRS-6]** For the issuer-signed item, check that SHA-256 of its `IssuerSignedItemBytes`, as received, equals the MSO's `valueDigests` entry for its `digestID`.
+6. **[VRS-7]** Rebuild `DeviceAuthenticationBytes` and verify the device signature over them with `deviceKeyInfo.deviceKey`. If the signature carries a payload instead of `null`, reject it unless that payload is byte-for-byte equal to the rebuilt bytes.
+7. **[VRS-8]** Check that the item's `elementIdentifier` is `smart_health_checkin_response` and its `elementValue` is a text string.
+8. **[VRS-9]** Parse the text as a SMART response and validate it (§6.4).
+
+**[VRS-10]** The Verifier SHOULD reject a response whose MSO `validityInfo` does not include the current time, allowing for a few minutes of clock difference.
+
+### 8.6 Encoding rules and signed bytes
+
+Both sides produce identical bytes for everything that is hashed or signed by following these rules.
+
+**[ENC-1]** Structures that both sides build independently (`dcapiInfo`, `SessionTranscript`, `ReaderAuthentication`, `DeviceAuthentication`, and each COSE `Sig_structure`) SHALL be encoded with RFC 8949 preferred serialization and definite lengths.
+
+**[ENC-2]** Transmitted bytes that are signed or hashed (`ItemsRequestBytes`, `IssuerSignedItemBytes`, `MobileSecurityObjectBytes`, `DeviceNameSpacesBytes`, and COSE protected headers) SHALL be hashed and verified exactly as received, never decoded and re-encoded.
+
+**[ENC-3]** Senders SHALL put `x5chain` (label 33) in the COSE unprotected header. Receivers SHALL accept it either as one certificate byte string or as an array of certificate byte strings, leaf first.
+
+**[ENC-4]** Every COSE signature in this profile SHALL use an empty external AAD.
+
+| Output | Algorithm | Covers these bytes |
+| --- | --- | --- |
+| `Handover[1]` | SHA-256 | `dcapiInfo` |
+| HPKE ciphertext | HPKE, §8.1 suite | `CBOR(DeviceResponse)`, with `info = CBOR(SessionTranscript)` |
+| `readerAuth` | ES256, detached | `ReaderAuthenticationBytes = tag24(CBOR(["ReaderAuthentication", SessionTranscript, ItemsRequestBytes]))` |
+| MSO value digest | SHA-256 | `IssuerSignedItemBytes`, including the tag |
+| `issuerAuth` | ES256, attached | `MobileSecurityObjectBytes` |
+| Device signature | ES256, detached | `DeviceAuthenticationBytes = tag24(CBOR(["DeviceAuthentication", SessionTranscript, docType, DeviceNameSpacesBytes]))` |
+
+`SessionTranscript` appears inside `ReaderAuthentication` and `DeviceAuthentication` as the array itself, not as a byte string. The detached signatures use `payload = null` in the `COSE_Sign1` and the bytes shown as the payload of the `Sig_structure`.
+
+**[RA-1]** A Verifier that sends `readerAuth` SHALL sign it with protected header `{1: -7}`, payload `null`, and `x5chain` holding at least the signing certificate, over a `ReaderAuthenticationBytes` computed for this session and these exact `ItemsRequestBytes`. It SHALL NOT reuse a `readerAuth` in another request.
+
+**[RA-2]** A Wallet that verifies `readerAuth` SHALL check the algorithm, rebuild `ReaderAuthenticationBytes` from its own `SessionTranscript` and the received `ItemsRequestBytes`, and verify the signature with the first certificate's key.
+
+<a id="appendix-a-same-device-diagnostic-bridge"></a>
+
+### 8.7 Message structures
+
+This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fixed values. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
+
+<a id="a-2-digital-credentials-api-wrappers"></a>
+
+The Digital Credentials API request and result, in JSON:
+
+```json
+{ "protocol": "org-iso-mdoc", "data": { "deviceRequest": "<base64url>", "encryptionInfo": "<base64url>" } }
+{ "protocol": "org-iso-mdoc", "data": { "response": "<base64url>" } }
+```
+
+<a id="a-3-devicerequest-docrequest-and-tag-24-itemsrequest"></a>
+
+```cddl
+DeviceRequest = {
+  "version" => "1.0",
+  "docRequests" => [ + DocRequest ],   ; exactly one with this profile's docType
+  * tstr => any
+}
+
+DocRequest = {
+  "itemsRequest" => ItemsRequestBytes,
+  ? "readerAuth" => COSE_Sign1,
+  * tstr => any
+}
+
+ItemsRequestBytes = #6.24(bstr .cbor ItemsRequest)
+
+ItemsRequest = {
+  "docType" => "org.smarthealthit.checkin.1",
+  "nameSpaces" => {
+    "org.smarthealthit.checkin" => { "smart_health_checkin_response" => bool }  ; intentToRetain
+  },
+  "requestInfo" => {
+    "org.smarthealthit.checkin.request" => tstr,   ; SMART request, UTF-8 JSON text
+    * tstr => any
+  },
+  * tstr => any
+}
+```
+
+<a id="a-4-optional-per-docrequest-readerauth"></a>
+
+<a id="a-5-encryptioninfo-sessiontranscript-and-hpke-context"></a>
+
+```cddl
+EncryptionInfo = [
+  "dcapi",
+  {
+    "nonce" => bstr,
+    "recipientPublicKey" => P256PublicKey,
+    * tstr => any
+  }
+]
+
+P256PublicKey = {        ; COSE_Key
+  1 => 2,                ; kty: EC2
+  -1 => 1,               ; crv: P-256
+  -2 => bstr .size 32,   ; x
+  -3 => bstr .size 32,   ; y
+  * int => any
+}
+
+SessionTranscript = [ null, null, Handover ]
+Handover = [ "dcapi", bstr .size 32 ]   ; SHA-256(dcapiInfo)
+
+ReaderAuthentication = [ "ReaderAuthentication", SessionTranscript, ItemsRequestBytes ]
+ReaderAuthenticationBytes = #6.24(bstr .cbor ReaderAuthentication)
+```
+
+<a id="a-6-direct-dcapiresponse"></a>
+
+<a id="a-7-issuer-signed-smart-response-item-and-device-authentication"></a>
+
+```cddl
+DcapiResponse = [
+  "dcapi",
+  {
+    "enc" => bstr .size 65,   ; uncompressed P-256 point
+    "cipherText" => bstr,     ; AES-128-GCM ciphertext with tag
+    * tstr => any
+  }
+]
+
+DeviceResponse = {
+  "version" => "1.0",
+  "documents" => [ Document ],   ; exactly one
+  "status" => 0,
+  * tstr => any
+}
+
+Document = {
+  "docType" => "org.smarthealthit.checkin.1",
+  "issuerSigned" => {
+    "nameSpaces" => { "org.smarthealthit.checkin" => [ IssuerSignedItemBytes ] },
+    "issuerAuth" => COSE_Sign1,   ; payload: MobileSecurityObjectBytes
+    * tstr => any
+  },
+  "deviceSigned" => {
+    "nameSpaces" => DeviceNameSpacesBytes,
+    "deviceAuth" => { "deviceSignature" => COSE_Sign1 },   ; payload: null
+    * tstr => any
+  },
+  * tstr => any
+}
+
+IssuerSignedItemBytes = #6.24(bstr .cbor IssuerSignedItem)
+IssuerSignedItem = {
+  "digestID" => uint,
+  "random" => bstr,              ; at least 16 bytes
+  "elementIdentifier" => "smart_health_checkin_response",
+  "elementValue" => tstr,        ; SMART response, UTF-8 JSON text
+}
+
+MobileSecurityObjectBytes = #6.24(bstr .cbor MobileSecurityObject)
+MobileSecurityObject = {
+  "version" => "1.0",
+  "digestAlgorithm" => "SHA-256",
+  "valueDigests" => { "org.smarthealthit.checkin" => { uint => bstr .size 32 } },
+  "deviceKeyInfo" => { "deviceKey" => P256PublicKey, * tstr => any },
+  "docType" => "org.smarthealthit.checkin.1",
+  "validityInfo" => {
+    "signed" => tdate,
+    "validFrom" => tdate,
+    "validUntil" => tdate,
+    * tstr => any
+  },
+  * tstr => any
+}
+
+DeviceNameSpacesBytes = #6.24(bstr .cbor { * tstr => any })
+
+DeviceAuthentication = [
+  "DeviceAuthentication",
+  SessionTranscript,
+  "org.smarthealthit.checkin.1",
+  DeviceNameSpacesBytes
+]
+DeviceAuthenticationBytes = #6.24(bstr .cbor DeviceAuthentication)
+```
+
+`COSE_Sign1` is `[protected: bstr, unprotected: {* int => any}, payload: bstr / null, signature: bstr]` (RFC 9052). `tdate` is CBOR tag 0 over an RFC 3339 date-time string.
 
 ---
 
@@ -767,255 +882,112 @@ Verifier implementing same-device `org-iso-mdoc` SHALL validate original §5 req
 
 ### 9.1 Security considerations
 
-Verifier MUST NOT accept plaintext `DeviceResponse`, plaintext SMART response JSON, a response whose HPKE context is not bound to the expected `SessionTranscript`, or a unilateral algorithm substitution. Baseline support is ES256 / COSE `alg` `-7`, MSO `digestAlgorithm` `SHA-256`, and HPKE DHKEM(P-256, HKDF-SHA256), HKDF-SHA256, AES-128-GCM. Profiles MAY allow additional algorithms using existing COSE, MSO, and HPKE wire identifiers when both parties support them. Unknown, unsupported, or unexpected labels SHALL be rejected; implementations SHALL NOT silently downgrade, ignore labels, or substitute library defaults.
+§7 lists what each signal proves and the threats the protocol does and does not address. In addition:
 
-Freshness is supplied by §8 session mechanisms, not request ids, item ids, Artifact ids, or handoff handles. Verifier SHOULD use a fresh HPKE recipient key pair and nonce per session; profiles that permit reuse need replay, correlation, retention, and compromise rules. Requesters/Verifiers should reject stale, duplicate, mismatched, or superseded responses.
+- A response can be opened only with the private key of the session that asked, so a Verifier's private key is as sensitive as the response itself. Anything able to run script on the Verifier's page can read both.
+- Nothing in the protocol stops a party that holds an old SMART response from presenting it again in a new, valid session. Where that matters, rely on signed content such as SMART Health Cards, or on deployment controls.
+- Request ids, item ids, and Artifact ids correlate messages; they are not secrets and give no freshness.
 
-Wallet/Responder supporting or relying on reader authentication SHALL verify signature, detached-payload binding, protected algorithm, signing key, certificate/key evidence, transcript, exact `ItemsRequest`, and policy before treating a reader as authenticated. It SHALL distinguish absent, malformed, cryptographically failed, valid-but-untrusted, and trusted states.
-
-Verifier SHALL complete §8 mdoc validation and deployment issuer/device policy before claiming production issuer trust. Syntactically valid MSO, matching digest, signature against an included certificate, device proof, HPKE success, origin binding, readerAuth validation, or request-id match does not by itself prove production accreditation, patient matching, clinical correctness, source provenance, downstream authorization, or EHR write-back permission.
-
-Per §5.2, requester identity, origin, reader credentials, and trust metadata are not carried in the SMART request body. Security decisions that depend on those signals come from presentation flow evidence, trust processing, or deployment policy.
+**[SEC-1]** The Verifier SHOULD NOT act on a response for a session it has already completed or abandoned.
 
 ### 9.2 Privacy considerations
 
-Minimization is deployment guidance that profiles may strengthen: many workflows should request narrow items, selectors, media types, and FHIR versions, while some legitimate check-in workflows need broad requests. Wallet/Responder SHALL preserve item ids and provide Holder review or equivalent Holder-control at item granularity before disclosure unless an explicit profile defines another mechanism. Non-fulfilled statuses are normal outcomes; Requesters should avoid inferring undisclosed clinical facts.
+Many workflows should ask for narrow items; some legitimately need broad ones. Statuses other than `fulfilled` are normal outcomes, and a Verifier cannot infer clinical facts from them.
 
-Selective disclosure occurs through item boundaries, Wallet policy, Holder decisions, Artifact construction, media types, `fulfills[]`, and status. The same-device binding carries one stable mdoc element; it does not model each clinical subcomponent as a separate mdoc element. Identifiers in this profile (request `id`, item ids, Artifact ids, and `requestId`) are scoped correlation and referential-integrity values. Participants should avoid embedding patient identifiers, account numbers, MRNs, source-system ids, secrets, predictable sequences, or clinical facts in protocol identifiers, since these values may appear in logs, diagnostics, audit records, and telemetry.
+**[PRIV-1]** Verifiers and Wallets SHOULD NOT put patient identifiers, account numbers, secrets, predictable sequences, or clinical facts in request ids, item ids, or Artifact ids, since these appear in logs.
 
-Telemetry SHOULD prefer aggregate counts, coarse categories, sampling, redaction, scoped identifiers, and short retention. Routine telemetry SHOULD NOT include plaintext protocol payloads, clinical content, Holder decisions, DeviceResponse plaintext, dcapi internals, HPKE values, request-opening private keys, Wallet secrets, credentials, access tokens, bearer URLs, full launch URLs, full QR images, or sensitive stack traces except under controlled diagnostic, fixture, audit, or incident-response procedures.
+**[PRIV-2]** Routine telemetry SHOULD record counts and categories, not request or response content, keys, tokens, full URLs, or Holder decisions. Full payloads belong only in controlled diagnostic or incident-response records.
 
 ### 9.3 Identifiers and extension points
 
-SMART request/response discriminators are protocol constants, not media types, mdoc identifiers, JOSE `typ`, or profile ids. Media type strings in `accept[]` and `mediaType` are compared by exact, case-sensitive equality unless an explicitly supported extension says otherwise.
+Extensions can add selector kinds and Artifact media types. A profile identifier is never a request field; a request always says what it wants with selectors.
 
-| Media type | Use |
-| --- | --- |
-| `application/fhir+json` | Core Artifact media type for raw FHIR JSON Resource or Bundle; Artifact carries `value` and outer `fhirVersion`. |
-| `application/smart-health-card` | Core Artifact media type for SMART Health Card file JSON with `value.verifiableCredential[]`; no outer `fhirVersion`. |
+**[EXT-1]** An extension that defines a selector kind SHALL define its `kind` string, its members and their meaning, how it interacts with `accept[]` and `fhirVersions[]`, which statuses it uses and when, its security and privacy considerations, and at least one example.
 
-Future Artifact media-type extensions SHALL define exact string, payload shape, fields, encoding, dereferencing/integrity, FHIR-version semantics if any, validation, status interaction, security, privacy, and compatibility. Extensions SHALL NOT introduce `GenericArtifact` or any other generic catch-all Artifact, and SHALL NOT redefine core fields.
+**[EXT-2]** An extension that defines an Artifact media type SHALL define its media type string, its Artifact members, how to validate it, how it handles FHIR versions (if at all), and its security and privacy considerations.
 
-The same-device binding uses `org-iso-mdoc`, `org.smarthealthit.checkin.1`, `org.smarthealthit.checkin`, `smart_health_checkin_response`, and `org.smarthealthit.checkin.request` exactly as §8 defines. Future incompatible carrier changes SHOULD use a new profile identifier and, when necessary, new `docType` suffix.
+**[EXT-3]** An extension SHALL NOT change the meaning of core members, core selector kinds, status codes, Holder control, or the validation in §6.4, and SHALL NOT define a catch-all Artifact type with generic payload members.
 
-Version 1.0 status codes are `fulfilled`, `partial`, `unavailable`, `declined`, `unsupported`, and `error`. Version 1.0 selector kinds are `selection.fhir` and `form.fhir`. New status codes, selector kinds, Artifact media types, profile identifiers, or future mdoc identifiers SHALL NOT redefine core semantics, Holder control, trust separation, or validation.
+**[PROF-1]** A deployment profile that adds trust requirements SHALL state which targets it constrains, the certificates, keys, or allow-lists it trusts, and what happens when a presentation is valid but fails its trust policy.
 
-Profile identifiers are not SMART request fields, response fields, selectors, media types, status codes, request presets, IPS shortcuts, all-of-the-above shortcuts, topic labels, or substitutes for §5 selectors. A profile identifier SHALL NOT be placed inside a SMART request to bypass selectors, `accept[]`, response validation, trust processing, or §8 validation.
+A future change to the mdoc carrier that older software cannot process will use a new `docType`.
 
 ### 9.4 Internationalization
 
-Human-readable display text includes `purpose`, item `title`, item `summary`, `requestStatus[].message`, Questionnaire text, FHIR displays, UI prompts/warnings/errors, and extension fields defined as display text. Protocol identifiers and machine values are not localized, including ids/constants, status codes, selector kinds and values, media types, FHIR canonicals/resource types used for validation, mdoc ids, algorithm labels, and deployment-local launch identifiers/URLs.
+Display text includes `purpose`, `title`, `summary`, `message`, Questionnaire text, and FHIR displays. Identifiers, status codes, selector kinds, media types, canonicals, and mdoc names are protocol values and are never localized. This version defines no language negotiation.
 
-SMART Health Check-in 1.0 does not define core `lang`, `locale`, `Accept-Language`, language maps, negotiated-locale members, or locale parameters. Producers associating language tags with display text SHOULD use well-formed BCP 47 tags. FHIR content follows applicable FHIR i18n/localization. Translation, grouping, reordering, or display normalization SHALL NOT change protocol values used for construction, signatures, hashing, encryption, HPKE/HKDF inputs, COSE, mdoc digests, SHC verification, FHIR canonical preservation, audit records, or byte-exact fixtures.
+**[I18N-1]** Translating, reordering, or normalizing display text SHALL NOT change any protocol value, or any bytes that are signed, hashed, or encrypted.
 
-UIs SHOULD isolate untrusted display text from adjacent labels, origins, identifiers, URLs, profile canonicals, media types, status badges, trust indicators, warnings, and action buttons. Unicode and BIDI rendering SHALL NOT allow display text to spoof or obscure protocol identifiers, origins, identities, profile URLs, FHIR canonicals, mdoc identifiers, provenance, trust, status codes, validation outcomes, Holder decisions, or consent controls.
+**[I18N-2]** Language tags attached to display text SHOULD be well-formed BCP 47 tags.
+
+**[I18N-3]** Wallet and Verifier user interfaces SHALL keep display text from the other party visually separate from origins, identities, identifiers, statuses, and controls, so that it cannot imitate them.
 
 ---
 
-## Appendix A. Same-device diagnostic bridge
+## Appendix A. Worked example
 
-This non-normative appendix visualizes byte boundaries and SMART-specific constraints already specified in §8. ISO/IEC 18013-5 owns the base CDDL; if it conflicts with §8, §8 controls. Complete wire captures and byte ladders belong in companion material.
+This appendix follows one real capture, `fixtures/*/real-chrome-android-smart-checkin-v2`: Chrome on Android, with the reference Android wallet at `wallet-v0.3.6`. `scripts/worked-example.ts` computes every value below from the fixture files and checks each step; the build fails if this text and the fixture disagree. The capture's HPKE private key is published with it so anyone can repeat each step.
 
-### A.1 Fixed identifiers
+<!-- BEGIN worked-example (generated by scripts/worked-example.ts; do not edit by hand) -->
 
-```text
-smart-protocol-id        = "org-iso-mdoc"
-smart-doc-type           = "org.smarthealthit.checkin.1"
-smart-namespace          = "org.smarthealthit.checkin"
-smart-response-element   = "smart_health_checkin_response"
-smart-request-info-key   = "org.smarthealthit.checkin.request"
-smart-request-companion-prefix = "smart_request_b64u."
-dcapi-label              = "dcapi"
-```
-
-### A.2 Digital Credentials API wrappers
-
-```json
-{
-  "protocol": "org-iso-mdoc",
-  "data": {
-    "deviceRequest": "<base64url-without-padding CBOR DeviceRequest>",
-    "encryptionInfo": "<base64url-without-padding CBOR encryptionInfo>"
-  }
-}
-```
-
-```json
-{
-  "protocol": "org-iso-mdoc",
-  "data": {
-    "response": "<base64url-without-padding CBOR dcapiResponse>"
-  }
-}
-```
-
-The exact unpadded `data.encryptionInfo` string is a `SessionTranscript` input.
-
-### A.3 `DeviceRequest`, `DocRequest`, and tag-24 `ItemsRequest`
-
-```cddl
-; Pseudo-CDDL profile constraints, not full ISO replacement CDDL.
-smart-device-request = {
-  "version" => "1.0",        ; baseline core flow; profiles may define later ISO-compatible versions
-  "docRequests" => [ + smart-doc-request ],
-  * tstr => any
-}
-
-smart-doc-request = {
-  "itemsRequest" => smart-items-request-bytes,
-  ? "readerAuth" => cose-sign1-reader-auth,
-  * tstr => any
-}
-
-smart-items-request-bytes = #6.24(bstr .cbor smart-items-request)
-
-smart-items-request = {
-  "docType" => "org.smarthealthit.checkin.1",
-  "nameSpaces" => {
-    "org.smarthealthit.checkin" => {
-      "smart_health_checkin_response" => bool,
-      ? smart-request-companion-element => false
-    }
-  },
-  "requestInfo" => {
-    "org.smarthealthit.checkin.request" => smart-request-json-text,
-    * tstr => any
-  },
-  * tstr => any
-}
-
-smart-request-json-text = tstr ; UTF-8 JSON text for SmartHealthCheckinRequest
-smart-request-companion-element = tstr ; "smart_request_b64u." + base64url-without-padding(UTF-8 smart-request-json-text)
-```
-
-### A.4 Optional per-`DocRequest.readerAuth`
-
-```cddl
-reader-authentication-bytes = #6.24(bstr .cbor [
-  "ReaderAuthentication",
-  session-transcript-bytes,
-  smart-items-request-bytes
-])
-
-cose-sign1-reader-auth = COSE_Sign1
-```
-
-Baseline reader authentication is detached ES256 (`alg` `-7`) `COSE_Sign1` with serialized payload `null`, empty external AAD, `reader-authentication-bytes` as detached payload, and header label `33` (`x5chain`) carrying at least the leaf reader certificate. Other COSE algorithms are allowed only when mutually supported by profile/policy and carried in normal COSE algorithm identifiers.
-
-### A.5 `encryptionInfo`, `SessionTranscript`, and HPKE context
-
-```cddl
-smart-encryption-info = [
-  "dcapi",
-  {
-    "nonce" => bstr,
-    "recipientPublicKey" => p256-recipient-public-key,
-    * tstr => any
-  }
-]
-
-p256-recipient-public-key = {
-   1  => 2,       ; kty = EC2
-  -1  => 1,       ; crv = P-256
-  -2  => bstr,    ; x-coordinate
-  -3  => bstr,    ; y-coordinate
-  * int => any
-}
-```
+**1. The request.** The Verifier at `http://127.0.0.1:3010` sent this `encryptionInfo` (base64url, 190 characters):
 
 ```text
-dcapiInfo = CBOR([encryptionInfoBase64Url, origin])
-handover = ["dcapi", SHA-256(dcapiInfo)]
-SessionTranscript = CBOR([null, null, handover])
+gmVkY2FwaaJlbm9uY2VYIPYWYWk-rPkMTfljh2ux1_P-Q1kpwcDtsBKCkBS0IHWZcnJlY2lwaWVudFB1YmxpY0tleaQBAiABIVgg8CaGEhavZJEXKE3i8NCRJi_EZvjca6GG2s486h_Pp4wiWCAB_jZsoAWB1obhVPxvg67w1eAJq9laeKTIc6EGF8yDvA
 ```
 
-Baseline HPKE support is:
+Decoded, it is:
 
 ```text
-KEM       = DHKEM(P-256, HKDF-SHA256)
-KDF       = HKDF-SHA256
-AEAD      = AES-128-GCM
-info      = SessionTranscript bytes
-aad       = empty byte string
-plaintext = CBOR(DeviceResponse)
+["dcapi", {"nonce": h'f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b4207599', "recipientPublicKey": {1: 2, -1: 1, -2: h'f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c', -3: h'01fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc'}}]
 ```
 
-Nonce bytes are fresh and unpredictable; at least 16 bytes of entropy is recommended. Suite identifiers travel in `encryptionInfo`/`dcapiResponse` structures and may select mutually supported profile algorithms.
+**2. `dcapiInfo` and the handover** (§8.3). `dcapiInfo = CBOR([encryptionInfoBase64url, origin])` is 215 bytes, and its SHA-256 is the handover's second element:
 
-### A.6 Direct `dcapiResponse`
-
-```cddl
-smart-dcapi-response = [
-  "dcapi",
-  {
-    "enc" => bstr,
-    "cipherText" => bstr,
-    * tstr => any
-  }
-]
+```text
+dcapiInfo          8278be676d566b5932467761614a6c626d39755932565949… (215 bytes)
+SHA-256(dcapiInfo) 5d373e34bbc5306ff28c944c2a1af663af3d503e179ed3ce9df0aa610a7ffe72
 ```
 
-`enc` is the HPKE encapsulated key and `cipherText` is the AEAD ciphertext, including tag, over `CBOR(DeviceResponse)`.
+**3. `SessionTranscript`.** `CBOR([null, null, ["dcapi", hash]])` is 44 bytes. It is the HPKE `info`, and it appears as an array inside `ReaderAuthentication` and `DeviceAuthentication`:
 
-### A.7 Issuer-signed SMART response item and device authentication
-
-```cddl
-smart-device-response = {
-  "version" => "1.0",
-  "documents" => [ + smart-document ],
-  "status" => 0,
-  * tstr => any
-}
-
-smart-document = {
-  "docType" => "org.smarthealthit.checkin.1",
-  "issuerSigned" => smart-issuer-signed,
-  "deviceSigned" => smart-device-signed,
-  * tstr => any
-}
-
-smart-issuer-signed = {
-  "nameSpaces" => {
-    "org.smarthealthit.checkin" => [ + smart-issuer-signed-item-bytes ]
-  },
-  "issuerAuth" => COSE_Sign1,
-  * tstr => any
-}
-
-smart-issuer-signed-item-bytes = #6.24(bstr .cbor smart-issuer-signed-item)
-
-smart-issuer-signed-item = {
-  "digestID" => uint,
-  "random" => bstr,
-  "elementIdentifier" => "smart_health_checkin_response",
-  "elementValue" => smart-response-json-text,
-  * tstr => any
-}
-
-smart-response-json-text = tstr ; UTF-8 JSON text for SmartHealthCheckinResponse
-
-smart-device-signed = {
-  "nameSpaces" => device-name-spaces-bytes,
-  "deviceAuth" => { "deviceSignature" => COSE_Sign1, * tstr => any },
-  * tstr => any
-}
-
-device-name-spaces-bytes = #6.24(bstr .cbor device-name-spaces)
-device-name-spaces = { * tstr => any }
-
-device-authentication-bytes = #6.24(bstr .cbor [
-  "DeviceAuthentication",
-  session-transcript-bytes,
-  "org.smarthealthit.checkin.1",
-  device-name-spaces-bytes
-])
+```text
+83f6f68265646361706958205d373e34bbc5306ff28c944c2a1af663af3d503e179ed3ce9df0aa610a7ffe72
 ```
 
-The MSO value digest covers the complete tag-24-wrapped `IssuerSignedItem` bytes. `MSO.digestAlgorithm` baseline support is `SHA-256`; alternatives require profile support and normal MSO signaling. The SMART response remains issuer-signed in `smart_health_checkin_response`; moving it into `DeviceNameSpaces` is not an equivalent carrier.
+**4. Reader authentication** (§8.6). `ItemsRequestBytes` is 2127 bytes (`d81859084aa3…`: tag 24, then a byte string). `ReaderAuthenticationBytes` is 2198 bytes, and `readerAuth` has payload `null` with `x5chain` in its unprotected header as an array holding one certificate. Its ES256 signature over those bytes verifies.
 
-### A.8 Extraction and validation reminders
+**5. Encryption** (§8.5). The Wallet's `dcapiResponse` holds a 65-byte `enc` and a 23252-byte `cipherText`:
 
-A Verifier accepting a same-device response performs the §8.5 and §8.6 pipeline: decode JSON wrapper; HPKE-open using expected transcript; parse `DeviceResponse`; validate `issuerAuth`, MSO, digest binding, and device authentication; extract the SMART response JSON string from the stable issuer-signed item; validate it under §6; and apply §6.4 against the original request. Deployment or fixture profiles should pin any additional exactness choices they need, such as duplicate CBOR handling, multiple matching documents, deterministic CBOR ordering, digestID conventions, stricter nonce sizes, or complete imported ISO map-label CDDL.
+```text
+enc 040c650525c0970c0f4780dd7c40ebd13044bb36963a1f5b05488845cdabf8a75b84984a5eda47dd9730ebbb3459adc3234afd35ed4ad2fc577210cdd579d05ad2
+```
+
+Opening it with the capture's private key and `info = CBOR(SessionTranscript)` yields the 23236-byte `DeviceResponse`.
+
+**6. The issuer-signed item and its digest** (§8.4). `IssuerSignedItemBytes` is 22208 bytes, with `digestID` 0, a 16-byte `random`, and a 22103-character `elementValue`. SHA-256 over all of it, tag included, equals the MSO's `valueDigests` entry for digestID 0:
+
+```text
+SHA-256(IssuerSignedItemBytes) 635c38c6b0909ef9ac74210fe95e58b7ef40692e9b88cc30a9dcb68fe45aa207
+```
+
+**7. The MSO and `issuerAuth`.** `issuerAuth` has protected header `a10126` (`{1: -7}`), `x5chain` in its unprotected header as an array holding one certificate, and an attached 364-byte `MobileSecurityObjectBytes` payload. The MSO holds:
+
+```text
+version          "1.0"
+digestAlgorithm  "SHA-256"
+docType          "org.smarthealthit.checkin.1"
+validityInfo     signed 0("2026-09-26T13:14:53Z")
+                 validFrom 0("2026-09-26T13:14:53Z")
+                 validUntil 0("2026-09-27T13:14:53Z")
+deviceKey        kty 2, crv 1, x 2e7d50152089600b…
+```
+
+**8. Device authentication.** `DeviceNameSpacesBytes` is `d81841a0` (tag 24 around an empty map). `DeviceAuthenticationBytes` is 103 bytes; the device signature has payload `null` and verifies over them with the MSO's `deviceKey`. Rebuilt with a different origin, the same signature fails.
+
+**9. The SMART response.** The `elementValue` parses as a SMART response with `requestId` `demo-us-core-checkin`, 4 Artifacts, and 4 status entries.
+
+<!-- END worked-example -->
 
 ---
 
@@ -1025,6 +997,8 @@ A Verifier accepting a same-device response performs the §8.5 and §8.6 pipelin
 
 - **[RFC2119]** Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119.
 - **[RFC8174]** Leiba, B. *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174.
+- **[RFC3339]** Klyne, G. and C. Newman. *Date and Time on the Internet: Timestamps*. RFC 3339.
+- **[RFC4648]** Josefsson, S. *The Base16, Base32, and Base64 Data Encodings*. RFC 4648.
 - **[RFC7515]** Jones, M., Bradley, J., and N. Sakimura. *JSON Web Signature (JWS)*. RFC 7515.
 - **[RFC8259]** Bray, T. *The JavaScript Object Notation (JSON) Data Interchange Format*. RFC 8259.
 - **[RFC8610]** Birkholz, H., Vigano, C., and C. Bormann. *Concise Data Definition Language (CDDL)*. RFC 8610.
@@ -1032,30 +1006,30 @@ A Verifier accepting a same-device response performs the §8.5 and §8.6 pipelin
 - **[RFC9052]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Structures and Process*. RFC 9052.
 - **[RFC9053]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Initial Algorithms*. RFC 9053.
 - **[RFC9180]** Barnes, R., Bhargavan, K., Lipp, B., and C. Wood. *Hybrid Public Key Encryption*. RFC 9180.
-- **[ISO18013-5]** ISO/IEC 18013-5. *Personal identification - ISO-compliant driving licence - Part 5: Mobile driving licence application*.
+- **[RFC9360]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates*. RFC 9360.
+- **[ISO18013-5]** ISO/IEC 18013-5. *Personal identification — ISO-compliant driving licence — Part 5: Mobile driving licence application*.
+- **[ISO18013-7]** ISO/IEC TS 18013-7. *Mobile driving licence add-on functions*, Annex C (Digital Credentials API).
 - **[W3C-DC-API]** W3C. *Digital Credentials API*.
+- **[HTML-ORIGIN]** WHATWG. *HTML Standard*, "ASCII serialization of an origin".
 - **[FHIR-R4]** HL7. *FHIR Release 4, Version 4.0.1*.
 - **[SMART-HEALTH-CARDS]** SMART Health IT. *SMART Health Cards Framework*.
 
 ### Informative references
 
 - **[OpenID4VP]** OpenID Foundation. *OpenID for Verifiable Presentations*.
-- **[DCQL]** IETF. *Digital Credentials Query Language*.
 - **[US-CORE]** HL7. *US Core Implementation Guide*.
 - **[CARIN-BB]** HL7. *CARIN Consumer Directed Payer Data Exchange Implementation Guide*.
-- **[MDL-ANNEX-C]** ISO/IEC 18013-5 Annex C and related mDL ecosystem implementation guidance.
-- **[SMART-APP-LAUNCH]** SMART Health IT. *SMART App Launch Framework*, for deployment background where useful.
+- **[SMART-APP-LAUNCH]** SMART Health IT. *SMART App Launch Framework*.
 
 ### Companion material
 
-Companion material is non-normative and subordinate to this specification. At the time of this editor's draft, maintained companion material is:
+Companion material is non-normative. It is maintained at:
 
 - [Model explainer](https://smart-health-checkin.org/spec/smart-model-explainer.html): the request and response JSON, with one worked example.
-- [Wire protocol explainer](https://smart-health-checkin.org/spec/wire-protocol-explainer.html) and [capture inspector](https://smart-health-checkin.org/spec/wire-protocol-inspector.html): how the same-device flow builds, seals, and verifies each structure, walked over real captured bytes.
+- [Wire protocol explainer](https://smart-health-checkin.org/spec/wire-protocol-explainer.html) and [capture inspector](https://smart-health-checkin.org/spec/wire-protocol-inspector.html): how the same-device flow builds, seals, and verifies each structure, over real captured bytes.
 - [Kiosk flow](https://smart-health-checkin.org/spec/kiosk-flow-explainer.html): the front-desk hand-off to a patient's phone.
-- [Fixtures](https://github.com/smart-health-checkin/spec/tree/main/fixtures) and [developer tools](https://github.com/smart-health-checkin/spec/tree/main/tools): captured and generated request and response bytes, tagged `fixtures-vN`, and scripts that inspect them.
-- [JavaScript client library and developer docs](https://smart-health-checkin.org/client/): verifier and wallet helpers, validation, and demos ([source](https://github.com/smart-health-checkin/client)).
-- [Android wallet](https://github.com/smart-health-checkin/android-wallet) and [Swift package](https://github.com/smart-health-checkin/swift): wallet and verifier implementations.
+- [Fixtures](https://github.com/smart-health-checkin/spec/tree/main/fixtures), [conformance cases](https://github.com/smart-health-checkin/spec/tree/main/conformance), and [developer tools](https://github.com/smart-health-checkin/spec/tree/main/tools): captured and generated bytes (tagged `fixtures-vN`), test cases citing the requirement IDs above, and scripts that inspect them.
+- [`requirements.json`](https://github.com/smart-health-checkin/spec/blob/main/requirements.json): every requirement ID with its section, actor, and summary.
+- [Design rationale](https://github.com/smart-health-checkin/spec/blob/main/docs/rationale.md): why the protocol looks the way it does.
+- [JavaScript client library and developer docs](https://smart-health-checkin.org/client/) ([source](https://github.com/smart-health-checkin/client)), the [Android wallet](https://github.com/smart-health-checkin/android-wallet), and the [Swift package](https://github.com/smart-health-checkin/swift).
 - [Connectathon](https://smart-health-checkin.org/connectathon/): test scenarios, the Testing EHR, and the SMART Testing Wallet.
-
-These materials may include tutorials, fixture indexes, byte ladders, diagrams, reference code, demo applications, implementation notes, detailed FHIR mapping walkthroughs, and historical captures. They SHALL NOT redefine core fields, identifiers, algorithms, validation rules, selector semantics, status semantics, trust boundaries, or any other normative requirement in this specification.
