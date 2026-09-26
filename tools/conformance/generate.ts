@@ -66,9 +66,11 @@ type Case = {
   pendingOn?: string;
 };
 
-// Start clean, keeping hand-written files (README.md) at the top level.
+// Start clean: remove the generated case folders, keeping hand-written files
+// (README.md, reference/).
+const CASE_FOLDERS = ["request-json", "response-json", "cross-validation", "request-cbor", "transcript", "hpke-open", "mdoc-verify", "wallet-response"];
 mkdirSync(OUT, { recursive: true });
-for (const e of readdirSync(OUT, { withFileTypes: true })) if (e.isDirectory()) rmSync(join(OUT, e.name), { recursive: true });
+for (const e of readdirSync(OUT, { withFileTypes: true })) if (e.isDirectory() && CASE_FOLDERS.includes(e.name)) rmSync(join(OUT, e.name), { recursive: true });
 
 const cases: Case[] = [];
 const enc = new TextEncoder();
@@ -82,8 +84,8 @@ function write(path: string, content: string | Uint8Array) {
 const json = (v: unknown) => JSON.stringify(v, null, 2) + "\n";
 
 function add(c: Omit<Case, "id" | "requirement" | "status"> & { slug: string; status?: Case["status"]; pendingOn?: string }) {
-  const { slug, ...rest } = c;
-  cases.push({ id: `${c.capability}/${slug}`, requirement: null, status: c.status ?? "active", ...rest });
+  const { slug, status, pendingOn, ...rest } = c;
+  cases.push({ id: `${c.capability}/${slug}`, ...rest, requirement: null, status: status ?? "active", ...(pendingOn ? { pendingOn } : {}) });
 }
 
 /** Write each input under the case's folder; strings ending .json are written as given. */

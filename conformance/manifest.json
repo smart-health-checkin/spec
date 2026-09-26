@@ -13,8 +13,6 @@
   "cases": [
     {
       "id": "request-json/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "The request from the real Chrome/Android capture.",
       "rule": "§5.2",
@@ -23,12 +21,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/minimal",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "One selection.fhir item with an exact profile.",
       "rule": "§5.2",
@@ -37,12 +35,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/no-filters",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "selection.fhir with no filter arrays: the wallet decides.",
       "rule": "§5.4.1",
@@ -51,12 +49,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/empty-items",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "An empty items array is valid (items SHOULD be non-empty).",
       "rule": "§5.2 items",
@@ -65,12 +63,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/no-fhir-versions",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "fhirVersions is optional.",
       "rule": "§5.2 fhirVersions",
@@ -79,12 +77,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/empty-fhir-versions",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "fhirVersions may be an empty array.",
       "rule": "§5.2 fhirVersions",
@@ -93,12 +91,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/form-canonical",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "form.fhir by questionnaireCanonical.",
       "rule": "§5.4.2",
@@ -107,12 +105,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/form-versioned-canonical",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "form.fhir by a versioned canonical (url|version).",
       "rule": "§5.4.2, §5.5",
@@ -121,12 +119,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/form-inline",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "form.fhir with an inline Questionnaire.",
       "rule": "§5.4.2",
@@ -135,12 +133,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/profiles-from",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "selection.fhir by profile family narrowed by resourceTypes.",
       "rule": "§5.4.1",
@@ -149,12 +147,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/unknown-kind",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "An unknown content.kind is a valid request; the wallet answers unsupported for that item (D5).",
       "rule": "D5, §5.4.3",
@@ -163,12 +161,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/legacy-members-ignored",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "Old selector members canonical and resource are ignored like any unknown member (D13).",
       "rule": "D13, §5.2 unknown members",
@@ -177,12 +175,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/unknown-top-member",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "Unknown top-level members may be ignored.",
       "rule": "§5.2 unknown members",
@@ -191,12 +189,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/wrong-type",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "type is not smart-health-checkin-request.",
       "rule": "§5.2 type",
@@ -206,12 +204,12 @@
       "expected": {
         "valid": false,
         "reason": "request-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/version-number",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "version is the number 1, not the string \"1\".",
       "rule": "§5.1, §5.2 version",
@@ -221,12 +219,12 @@
       "expected": {
         "valid": false,
         "reason": "request-version"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/missing-id",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "No request id.",
       "rule": "§5.2 id",
@@ -236,12 +234,12 @@
       "expected": {
         "valid": false,
         "reason": "request-id"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/duplicate-item-ids",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "Two items share an id.",
       "rule": "§5.3",
@@ -251,12 +249,12 @@
       "expected": {
         "valid": false,
         "reason": "item-id-duplicate"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/missing-title",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "An item without a title.",
       "rule": "§5.3",
@@ -266,12 +264,12 @@
       "expected": {
         "valid": false,
         "reason": "item-title"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/empty-accept",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "An item with an empty accept list.",
       "rule": "§5.3, §5.6",
@@ -281,12 +279,12 @@
       "expected": {
         "valid": false,
         "reason": "item-accept"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/mixed-form-with-profiles",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "form.fhir that also carries profiles.",
       "rule": "§5.4.2",
@@ -296,12 +294,12 @@
       "expected": {
         "valid": false,
         "reason": "selector-mixed"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/mixed-selection-with-questionnaire",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "selection.fhir that also carries questionnaireCanonical.",
       "rule": "§5.2 SelectionFhirSelector",
@@ -311,12 +309,12 @@
       "expected": {
         "valid": false,
         "reason": "selector-mixed"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/form-no-source",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "form.fhir with neither questionnaire nor questionnaireCanonical.",
       "rule": "§5.4.2",
@@ -326,12 +324,12 @@
       "expected": {
         "valid": false,
         "reason": "form-source"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/blank-canonical",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "questionnaireCanonical is an empty string.",
       "rule": "§5.4.2",
@@ -341,12 +339,12 @@
       "expected": {
         "valid": false,
         "reason": "form-canonical-blank"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/canonical-not-string",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "questionnaireCanonical is a number.",
       "rule": "§5.4.2",
@@ -356,12 +354,12 @@
       "expected": {
         "valid": false,
         "reason": "form-canonical-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/questionnaire-wrong-type",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "The inline questionnaire is a Patient.",
       "rule": "§5.4.2",
@@ -371,12 +369,12 @@
       "expected": {
         "valid": false,
         "reason": "form-questionnaire-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/profiles-from-string",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "profilesFrom is a string, not an array.",
       "rule": "§5.2 profilesFrom",
@@ -386,12 +384,12 @@
       "expected": {
         "valid": false,
         "reason": "selector-profiles-from"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/empty-profiles",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "profiles is an empty array (NonEmptyArray).",
       "rule": "§5.2 profiles",
@@ -401,12 +399,12 @@
       "expected": {
         "valid": false,
         "reason": "selector-profiles-empty"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/empty-resource-types",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "resourceTypes is an empty array (NonEmptyArray).",
       "rule": "§5.2 resourceTypes",
@@ -416,12 +414,12 @@
       "expected": {
         "valid": false,
         "reason": "selector-resource-types-empty"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-json/duplicate-member",
-      "requirement": null,
-      "status": "active",
       "capability": "request-json",
       "description": "The JSON text has the member id twice.",
       "rule": "§5.1",
@@ -431,12 +429,12 @@
       "expected": {
         "valid": false,
         "reason": "json-duplicate-member"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "The response from the real capture.",
       "rule": "§6.1",
@@ -445,12 +443,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/minimal",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "One FHIR Patient Artifact.",
       "rule": "§6.1",
@@ -459,12 +457,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/declined-no-artifacts",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "Everything declined, no Artifacts (D10).",
       "rule": "§6.1, D10",
@@ -473,12 +471,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/health-card",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "A SMART Health Card Artifact.",
       "rule": "§6.1 SmartHealthCardArtifact",
@@ -487,12 +485,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/all-statuses",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "Each of the six status codes once.",
       "rule": "§6.1 RequestItemStatusCode",
@@ -501,12 +499,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/wrong-type",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "type is not smart-health-checkin-response.",
       "rule": "§6.1 type",
@@ -516,12 +514,12 @@
       "expected": {
         "valid": false,
         "reason": "response-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/missing-request-status",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "No requestStatus array.",
       "rule": "§6.1",
@@ -531,12 +529,12 @@
       "expected": {
         "valid": false,
         "reason": "response-status-missing"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/empty-fulfills",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "An Artifact with an empty fulfills list.",
       "rule": "§6.1 fulfills",
@@ -546,12 +544,12 @@
       "expected": {
         "valid": false,
         "reason": "artifact-fulfills"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/fhir-missing-fhir-version",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "FHIR JSON Artifact without fhirVersion.",
       "rule": "§6.1 RawFhirJsonArtifact",
@@ -561,12 +559,12 @@
       "expected": {
         "valid": false,
         "reason": "artifact-fhir-version"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/health-card-with-fhir-version",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "A SMART Health Card Artifact with an outer fhirVersion.",
       "rule": "§6.1, §6.4",
@@ -576,12 +574,12 @@
       "expected": {
         "valid": false,
         "reason": "artifact-shc-fhir-version"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/fhir-value-not-resource",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "FHIR JSON Artifact whose value has no resourceType.",
       "rule": "§6.1 FhirResource",
@@ -591,12 +589,12 @@
       "expected": {
         "valid": false,
         "reason": "artifact-value"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/unknown-status-code",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "A status code outside the six.",
       "rule": "§6.1",
@@ -606,12 +604,12 @@
       "expected": {
         "valid": false,
         "reason": "status-code"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "response-json/duplicate-artifact-ids",
-      "requirement": null,
-      "status": "active",
       "capability": "response-json",
       "description": "Two Artifacts share an id.",
       "rule": "§6.1 id",
@@ -621,12 +619,12 @@
       "expected": {
         "valid": false,
         "reason": "artifact-id-duplicate"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "cross-validation",
       "description": "The real capture's request and response.",
       "rule": "§6.4",
@@ -636,11 +634,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/baseline",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "Three items, three Artifacts, three fulfilled.",
       "rule": "§6.4",
@@ -650,11 +649,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/one-artifact-two-items",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "One Bundle fulfills two items.",
       "rule": "§6.3",
@@ -664,11 +664,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/two-artifacts-one-item",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "Two Artifacts fulfill the same item.",
       "rule": "§6.3",
@@ -678,11 +679,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/declined-no-artifact",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "A declined item has no Artifact.",
       "rule": "§6.2",
@@ -692,11 +694,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/all-declined",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "The patient declined everything: all declined, no Artifacts (D10).",
       "rule": "D10",
@@ -706,11 +709,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/fulfilled-without-artifact",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "A fulfilled item with no Artifact is a SHOULD, not a failure.",
       "rule": "§6.2 SHOULD",
@@ -720,11 +724,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/versioned-canonical-echo",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "A versioned questionnaireCanonical is echoed exactly in QuestionnaireResponse.questionnaire.",
       "rule": "§5.5, D9",
@@ -734,11 +739,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/request-id-mismatch",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "requestId differs from the request id.",
       "rule": "§6.4 requestId",
@@ -749,11 +755,12 @@
       "expected": {
         "valid": false,
         "reason": "request-id"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/missing-status-row",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "An item has no status row.",
       "rule": "§6.4 status coverage",
@@ -764,11 +771,12 @@
       "expected": {
         "valid": false,
         "reason": "status-missing"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/duplicate-status-row",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "An item has two status rows.",
       "rule": "§6.4 status coverage",
@@ -779,11 +787,12 @@
       "expected": {
         "valid": false,
         "reason": "status-duplicate"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/unknown-status-row",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "A status row names an item the request doesn't have.",
       "rule": "§6.4 status coverage",
@@ -794,11 +803,12 @@
       "expected": {
         "valid": false,
         "reason": "status-unknown-item"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/fulfills-unknown-item",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "An Artifact fulfills an item the request doesn't have.",
       "rule": "§6.4 fulfills",
@@ -809,11 +819,12 @@
       "expected": {
         "valid": false,
         "reason": "fulfills-unknown-item"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/unaccepted-media-type",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "A SMART Health Card for an item that accepts only FHIR JSON.",
       "rule": "§5.6, §6.4",
@@ -824,11 +835,12 @@
       "expected": {
         "valid": false,
         "reason": "media-type-not-accepted"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/unknown-media-type",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "An Artifact with a media type that is neither core nor a supported extension.",
       "rule": "§6.4",
@@ -839,11 +851,12 @@
       "expected": {
         "valid": false,
         "reason": "media-type-unknown"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/questionnaire-echo-mismatch",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "QuestionnaireResponse.questionnaire differs from the requested canonical.",
       "rule": "§5.5",
@@ -854,11 +867,12 @@
       "expected": {
         "valid": false,
         "reason": "questionnaire-echo"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/fhir-version-not-requested",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "One Artifact uses a FHIR release the request didn't list: only that Artifact is unusable (D6).",
       "rule": "D6, §6.1 fhirVersion",
@@ -873,11 +887,12 @@
           "a2": "accepted",
           "a3": "accepted"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "cross-validation/fhir-version-bad-format",
-      "requirement": null,
       "capability": "cross-validation",
       "description": "One Artifact's fhirVersion is \"R4\", not a release version: only that Artifact is unusable (D6).",
       "rule": "D6",
@@ -892,12 +907,12 @@
           "a2": "accepted",
           "a3": "accepted"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "request-cbor",
       "description": "The navigator argument from the real capture.",
       "rule": "§8.2, A.3",
@@ -909,12 +924,12 @@
         "outputs": {
           "smartRequest": "request-cbor/capture-v2/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/synthetic-reader-auth",
-      "requirement": null,
-      "status": "active",
       "capability": "request-cbor",
       "description": "A request built by the reference builder, with readerAuth.",
       "rule": "§8.2",
@@ -926,12 +941,12 @@
         "outputs": {
           "smartRequest": "request-cbor/synthetic-reader-auth/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/no-reader-auth",
-      "requirement": null,
-      "status": "active",
       "capability": "request-cbor",
       "description": "No readerAuth in the DocRequest.",
       "rule": "§8.2 readerAuth optional",
@@ -943,12 +958,12 @@
         "outputs": {
           "smartRequest": "request-cbor/no-reader-auth/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/unknown-docrequest-key",
-      "requirement": null,
-      "status": "active",
       "capability": "request-cbor",
       "description": "An unknown key in the DocRequest is ignored (D11).",
       "rule": "D11",
@@ -960,12 +975,12 @@
         "outputs": {
           "smartRequest": "request-cbor/unknown-docrequest-key/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/unknown-itemsrequest-key",
-      "requirement": null,
-      "status": "active",
       "capability": "request-cbor",
       "description": "An unknown key in the ItemsRequest is ignored (D11).",
       "rule": "D11",
@@ -977,11 +992,12 @@
         "outputs": {
           "smartRequest": "request-cbor/unknown-itemsrequest-key/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/wrong-protocol",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "The request's protocol is org.iso.mdoc, not org-iso-mdoc.",
       "rule": "§8.1",
@@ -991,11 +1007,12 @@
       "expected": {
         "valid": false,
         "reason": "protocol"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/padded-base64url",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "deviceRequest is padded base64url.",
       "rule": "§2, §8.2",
@@ -1005,11 +1022,12 @@
       "expected": {
         "valid": false,
         "reason": "base64url-padding"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/wrong-doc-type",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "The ItemsRequest asks for another docType.",
       "rule": "§8.1, §8.4",
@@ -1019,11 +1037,12 @@
       "expected": {
         "valid": false,
         "reason": "doc-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/intent-not-bool",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "intentToRetain is a string.",
       "rule": "§8.4",
@@ -1033,11 +1052,12 @@
       "expected": {
         "valid": false,
         "reason": "intent-to-retain"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/missing-request-info",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "No requestInfo carrier (the request travels only there, D7).",
       "rule": "D7, §8.2",
@@ -1047,11 +1067,12 @@
       "expected": {
         "valid": false,
         "reason": "request-info-missing"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/request-info-invalid",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "requestInfo holds JSON that isn't a valid SMART request.",
       "rule": "§8.4, §5",
@@ -1061,11 +1082,12 @@
       "expected": {
         "valid": false,
         "reason": "smart-request-invalid"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/unknown-version",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "DeviceRequest version 9.0.",
       "rule": "§8.4",
@@ -1075,11 +1097,12 @@
       "expected": {
         "valid": false,
         "reason": "device-request-version"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/encryption-key-wrong-curve",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "encryptionInfo's recipient key has an unsupported crv (D11: security label).",
       "rule": "D11, §8.1",
@@ -1089,11 +1112,12 @@
       "expected": {
         "valid": false,
         "reason": "encryption-key"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/encryption-info-wrong-tag",
-      "requirement": null,
       "capability": "request-cbor",
       "description": "encryptionInfo's first entry is not \"dcapi\".",
       "rule": "A.5",
@@ -1103,14 +1127,13 @@
       "expected": {
         "valid": false,
         "reason": "encryption-info"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "request-cbor/companion-element-present",
-      "requirement": null,
-      "status": "pending",
       "capability": "request-cbor",
-      "pendingOn": "D7 follow-up: must a wallet ignore, or reject, a request that still requests a smart_request_b64u.* element?",
       "description": "The ItemsRequest also requests the removed companion element (D7).",
       "rule": "D7",
       "inputs": {
@@ -1121,12 +1144,13 @@
         "outputs": {
           "smartRequest": "request-cbor/companion-element-present/expected-smart-request.json"
         }
-      }
+      },
+      "requirement": null,
+      "status": "pending",
+      "pendingOn": "D7 follow-up: must a wallet ignore, or reject, a request that still requests a smart_request_b64u.* element?"
     },
     {
       "id": "transcript/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "transcript",
       "description": "The real capture's origin (http, non-default port) and encryptionInfo.",
       "rule": "§8.3",
@@ -1139,12 +1163,12 @@
         "outputs": {
           "sessionTranscript": "transcript/capture-v2/expected-session-transcript.cbor"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "transcript/https-default-port",
-      "requirement": null,
-      "status": "active",
       "capability": "transcript",
       "description": "An https origin with no port.",
       "rule": "§8.3",
@@ -1157,12 +1181,12 @@
         "outputs": {
           "sessionTranscript": "transcript/https-default-port/expected-session-transcript.cbor"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "transcript/https-explicit-port",
-      "requirement": null,
-      "status": "active",
       "capability": "transcript",
       "description": "An https origin with a non-default port.",
       "rule": "§8.3",
@@ -1175,12 +1199,12 @@
         "outputs": {
           "sessionTranscript": "transcript/https-explicit-port/expected-session-transcript.cbor"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/capture-v2",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "Open the real capture's response.",
       "rule": "§8.5, A.5",
@@ -1195,12 +1219,12 @@
         "outputs": {
           "deviceResponse": "hpke-open/capture-v2/expected-device-response.cbor"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/synthetic",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "Open a response sealed by the reference code.",
       "rule": "§8.5",
@@ -1215,12 +1239,12 @@
         "outputs": {
           "deviceResponse": "hpke-open/synthetic/expected-device-response.cbor"
         }
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/wrong-origin",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "Sealed with the transcript for another origin: must not open.",
       "rule": "§8.3, §8.5",
@@ -1233,12 +1257,12 @@
       "expected": {
         "valid": false,
         "reason": "hpke-open"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/tampered-ciphertext",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "One ciphertext bit flipped.",
       "rule": "§8.5",
@@ -1251,12 +1275,12 @@
       "expected": {
         "valid": false,
         "reason": "hpke-open"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/wrong-response-tag",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "The response's first entry is not \"dcapi\".",
       "rule": "A.6",
@@ -1269,12 +1293,12 @@
       "expected": {
         "valid": false,
         "reason": "dcapi-response"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/padded-base64url",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "data.response is padded base64url.",
       "rule": "§8.5",
@@ -1287,12 +1311,12 @@
       "expected": {
         "valid": false,
         "reason": "base64url-padding"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "hpke-open/wrong-protocol",
-      "requirement": null,
-      "status": "active",
       "capability": "hpke-open",
       "description": "The credential's protocol is not org-iso-mdoc.",
       "rule": "§8.5",
@@ -1305,11 +1329,12 @@
       "expected": {
         "valid": false,
         "reason": "protocol"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/capture-v2",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The real capture's DeviceResponse (detached device signature).",
       "rule": "§8.4, §8.5, D2",
@@ -1324,11 +1349,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/capture-v1-attached-equal",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The pre-fix capture: device signature payload attached but equal to the rebuilt DeviceAuthentication. Accepted (D2).",
       "rule": "D2",
@@ -1343,11 +1369,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/synthetic",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "A reference-built DeviceResponse with a detached device signature.",
       "rule": "§8.4, D2",
@@ -1362,11 +1389,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/unknown-top-level-key",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "An unknown top-level DeviceResponse key is ignored (D11).",
       "rule": "D11",
@@ -1381,11 +1409,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/unknown-unprotected-header",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "An unknown unprotected header label in issuerAuth is ignored (D11).",
       "rule": "D11",
@@ -1400,11 +1429,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/attached-payload-other-session",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "Device signature carries an attached payload built for another origin's transcript.",
       "rule": "D2, §8.5",
@@ -1420,11 +1450,12 @@
       "expected": {
         "valid": false,
         "reason": "device-signature"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/tampered-device-signature",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "One bit of the device signature flipped.",
       "rule": "§8.5",
@@ -1440,11 +1471,12 @@
       "expected": {
         "valid": false,
         "reason": "device-signature"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/tampered-issuer-signature",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "One bit of the issuer signature flipped.",
       "rule": "§8.5, D1",
@@ -1460,11 +1492,12 @@
       "expected": {
         "valid": false,
         "reason": "issuer-signature"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/missing-validity-info",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The MSO has no validityInfo.",
       "rule": "D2, ISO 18013-5 MSO",
@@ -1480,11 +1513,12 @@
       "expected": {
         "valid": false,
         "reason": "mso-validity-info"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/digest-mismatch",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The issuer-signed item changed after the MSO was signed.",
       "rule": "§8.5",
@@ -1500,11 +1534,12 @@
       "expected": {
         "valid": false,
         "reason": "digest"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/digest-missing",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The MSO has no digest for the item's digestID.",
       "rule": "§8.5",
@@ -1520,11 +1555,12 @@
       "expected": {
         "valid": false,
         "reason": "digest"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/document-doc-type",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The document's docType isn't org.smarthealthit.checkin.1.",
       "rule": "§8.1, §8.5",
@@ -1540,11 +1576,12 @@
       "expected": {
         "valid": false,
         "reason": "doc-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/mso-doc-type-mismatch",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The MSO's docType differs from the document's.",
       "rule": "ISO 18013-5, §8.5",
@@ -1560,11 +1597,12 @@
       "expected": {
         "valid": false,
         "reason": "doc-type"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/status-not-ok",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "DeviceResponse status is 10.",
       "rule": "§8.5",
@@ -1580,11 +1618,12 @@
       "expected": {
         "valid": false,
         "reason": "device-response-status"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/version-unknown",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "DeviceResponse version is 9.0.",
       "rule": "§8.5",
@@ -1600,11 +1639,12 @@
       "expected": {
         "valid": false,
         "reason": "device-response-version"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/unknown-alg",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "issuerAuth's protected alg is an unknown value (D11: security label).",
       "rule": "D11, §8.1",
@@ -1620,11 +1660,12 @@
       "expected": {
         "valid": false,
         "reason": "alg"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/unsupported-digest-algorithm",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The MSO's digestAlgorithm is SHA-512 (D11: security label; 1.0 uses SHA-256).",
       "rule": "D11, §8.1",
@@ -1640,11 +1681,12 @@
       "expected": {
         "valid": false,
         "reason": "digest-algorithm"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/missing-response-element",
-      "requirement": null,
       "capability": "mdoc-verify",
       "description": "The document carries another element instead of smart_health_checkin_response.",
       "rule": "§8.1, §8.5",
@@ -1660,16 +1702,15 @@
       "expected": {
         "valid": false,
         "reason": "response-element"
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "mdoc-verify/two-documents",
-      "requirement": null,
-      "status": "pending",
       "capability": "mdoc-verify",
       "description": "Two documents in the DeviceResponse.",
       "rule": "A.7",
-      "pendingOn": "Exactly one document: the rewritten §8 has to say so.",
       "inputs": {
         "deviceResponse": "mdoc-verify/two-documents/device-response.cbor",
         "credential": "mdoc-verify/two-documents/credential.json",
@@ -1682,16 +1723,16 @@
       "expected": {
         "valid": false,
         "reason": "documents"
-      }
+      },
+      "requirement": null,
+      "status": "pending",
+      "pendingOn": "Exactly one document: the rewritten §8 has to say so."
     },
     {
       "id": "mdoc-verify/expired",
-      "requirement": null,
-      "status": "pending",
       "capability": "mdoc-verify",
       "description": "Checked after the MSO's validUntil.",
       "rule": "ISO 18013-5 validityInfo",
-      "pendingOn": "Whether verifiers check the validity window.",
       "inputs": {
         "deviceResponse": "mdoc-verify/expired/device-response.cbor",
         "credential": "mdoc-verify/expired/credential.json",
@@ -1704,12 +1745,13 @@
       "expected": {
         "valid": false,
         "reason": "mso-expired"
-      }
+      },
+      "requirement": null,
+      "status": "pending",
+      "pendingOn": "Whether verifiers check the validity window."
     },
     {
       "id": "wallet-response/capture-v2-request",
-      "requirement": null,
-      "status": "active",
       "capability": "wallet-response",
       "description": "Answer the real capture's request; the reference verifier must accept the result.",
       "rule": "§8.4",
@@ -1722,12 +1764,12 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     },
     {
       "id": "wallet-response/synthetic-request",
-      "requirement": null,
-      "status": "active",
       "capability": "wallet-response",
       "description": "Answer a reference-built request.",
       "rule": "§8.4",
@@ -1740,7 +1782,9 @@
       },
       "expected": {
         "valid": true
-      }
+      },
+      "requirement": null,
+      "status": "active"
     }
   ]
 }
