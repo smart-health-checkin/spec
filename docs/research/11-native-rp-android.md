@@ -6,7 +6,7 @@ Question: an Android app (think MyChart) wants to request a SMART Health
 Check-in from the wallet. Can it invoke the platform directly, or does it need
 a web surface — and if so, an embedded browser or a pivot out to Chrome?
 
-Answered 2026-08-28 with sources plus a working spike, `wallet-android/rp-app`,
+Answered 2026-08-28 with sources plus a working spike, `wallet-android/rp-app` (now `android-wallet/verifier-app`),
 run on a Pixel 11 Pro XL (Android 17, Play services 26.32, Chrome/WebView 151)
 against the wallet in `wallet-android/`.
 
@@ -95,7 +95,7 @@ applies to native RPs only if they pin an older androidx.
 
 ```sh
 cd wallet-android
-./gradlew :rp-app:assembleDebug && adb install -r rp-app/build/outputs/apk/debug/rp-app-debug.apk
+./gradlew :verifier-app:assembleDebug && adb install -r verifier-app/build/outputs/apk/debug/verifier-app-debug.apk
 python3 tools/payload-probe/rp_drive.py        # taps through picker + wallet, prints both sides' logs
 ```
 

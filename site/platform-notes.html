@@ -98,12 +98,14 @@
           talks to, under the patient's existing session, and the app fetches it there.</li>
         <li><b>A Custom Tabs message channel</b> (Android). The app opens the page in a Custom Tab and asks for a
           message channel, which Chrome grants after checking the app against the page's domain with Digital Asset
-          Links. The page sends the result to the app in pieces, since each message is capped at about 1 MB.</li>
+          Links. The page sends the result to the app in parts, since each message is capped at about 1 MB.
+          This works end to end: a web wallet opened from the page keeps its link back to it, and a 1.9 MB response
+          arrives in 10 parts in under 3 seconds (Android 17, Chrome 145). The
+          <a href="/client/docs/native-apps.html">Native apps guide</a> has the code.</li>
       </ul>
       <p class="note warning">
-        Not yet tested: whether a web wallet's tab, opened from a Custom Tab, keeps its link back to the page; and on
-        iOS, which in-app browser surface (<code>SFSafariViewController</code> or <code>ASWebAuthenticationSession</code>)
-        offers the Digital Credentials API. Safari itself does.
+        Not yet tested on iOS: which in-app browser surface (<code>SFSafariViewController</code> or
+        <code>ASWebAuthenticationSession</code>) offers the Digital Credentials API. Safari itself does.
       </p>
       <h3 id="origins">Calling platform wallets directly on Android</h3>
       <p>
@@ -163,7 +165,8 @@
           <tbody>
             <tr><td>Android phone, Chrome, reference wallet</td><td>Android 17, Chrome 151, Play services 26.32</td><td>By hand, including the response-size measurements</td></tr>
             <tr><td>Android emulator, Chrome, reference wallet, Testing EHR</td><td>API 37 image, Chrome 145, Play services 26.11</td><td>Nightly in <a href="https://github.com/smart-health-checkin/connectathon/actions/workflows/android-e2e.yml">CI</a>; the large-response scenario is skipped because Chrome 145 is below 150</td></tr>
-            <tr><td>Native Android app as Verifier</td><td>Android 17</td><td>By hand, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a></td></tr>
+            <tr><td>Native Android app as Verifier, through a Custom Tab</td><td>Android 17, Chrome 145</td><td>Automated, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a> and the SMART Testing Wallet</td></tr>
+            <tr><td>Native Android app as Verifier, direct</td><td>Android 17</td><td>By hand, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a></td></tr>
             <tr><td>Web wallets in any browser</td><td>Current Chrome and Chromium</td><td>After every deploy and nightly, by the Testing EHR self-test</td></tr>
           </tbody>
         </table>
