@@ -131,7 +131,7 @@
 
     <section id="flow">
       <h2>Step by step</h2>
-      <div class="xd-figure">
+      <div class="xd-figure xd-wide">
 <svg class="xd" viewBox="0 0 880 520" role="img" aria-labelledby="k-title k-desc">
       <title id="k-title">Kiosk check-in, step by step</title>
       <desc id="k-desc">Three columns: the clinic kiosk, the connection between devices, and the patient's phone. Step 1, start: the kiosk builds the request and a one-time key, keeps the private key, and shows a code. Step 2, join: the patient scans the code and the request travels to the phone's check-in page. Step 3, share: the patient reviews in their wallet and shares some or all items; private information stays on the phone. Step 4, return: the encrypted response travels back; the connection cannot read it; the kiosk opens it with its key, checks it against the request, and shows staff that check-in was received.</desc>
@@ -217,6 +217,71 @@
       <text x="86" y="457" class="s">then shows staff:</text>
       <rect class="pill-ok" x="86" y="467" width="150" height="22" rx="11"/>
       <text x="161" y="482" text-anchor="middle" class="pill-ok-t">Check-in received</text>
+    </svg>
+      </div>
+
+      <div class="xd-figure xd-narrow">
+    <svg class="xd" viewBox="0 0 360 692" role="img" aria-labelledby="kn-title kn-desc">
+      <title id="kn-title">Kiosk check-in, step by step</title>
+      <desc id="kn-desc">Four steps, top to bottom. Step 1, start, on the clinic kiosk: it builds the request and a one-time key pair, keeps the private key, and shows a code. Step 2, join: the patient scans the code, and the request and public key travel through the connection, which sees only public material, to the check-in page on the patient's phone. Step 3, share, on the patient's phone: the patient reviews in their wallet and shares all, some, or none; private details stay on the phone. Step 4, return: the encrypted response goes back through the connection, which cannot read or change it; the clinic kiosk opens it with its key, checks it against the request, and shows staff that check-in was received.</desc>
+      <defs>
+        <marker id="kn-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+      </defs>
+
+      <!-- 1 START: kiosk -->
+      <circle class="num" cx="22" cy="16" r="11"/><text x="22" y="20.5" text-anchor="middle" class="num-t">1</text>
+      <text x="42" y="20.5" class="step">START · CLINIC KIOSK</text>
+      <rect class="box" x="8" y="34" width="344" height="80" rx="8"/>
+      <text x="24" y="56" class="t">Builds the request</text>
+      <text x="24" y="76" class="s">and a one-time key pair.</text>
+      <g transform="translate(24 88)"><circle class="key" cx="6" cy="6" r="5"/><path class="key" d="M11 6 h14 M21 6 v5 M25 6 v4"/></g>
+      <text x="56" y="99" class="s">Private key stays here</text>
+      <g transform="translate(306 46)">
+        <rect class="qr" x="0" y="0" width="8" height="8"/><rect class="qr" x="14" y="0" width="4" height="4"/><rect class="qr" x="22" y="0" width="8" height="8"/>
+        <rect class="qr" x="10" y="8" width="4" height="4"/><rect class="qr" x="18" y="12" width="4" height="4"/>
+        <rect class="qr" x="0" y="22" width="8" height="8"/><rect class="qr" x="12" y="18" width="4" height="4"/><rect class="qr" x="22" y="22" width="4" height="4"/><rect class="qr" x="26" y="16" width="4" height="4"/>
+      </g>
+
+      <!-- 2 JOIN: through the connection to the phone -->
+      <circle class="num" cx="22" cy="138" r="11"/><text x="22" y="142.5" text-anchor="middle" class="num-t">2</text>
+      <text x="42" y="142.5" class="step">JOIN</text>
+      <text x="86" y="142.5" class="sub">the patient scans the code</text>
+      <rect class="band" x="0" y="158" width="360" height="58"/>
+      <text x="14" y="182" class="head">The connection</text>
+      <text x="14" y="200" class="sub">sees only public material</text>
+      <path class="arrow" d="M270 114 V 250" marker-end="url(#kn-ah)"/>
+      <rect class="chip" x="194" y="176" width="152" height="22" rx="11"/>
+      <text x="270" y="191" text-anchor="middle" class="chip-t">request + public key</text>
+      <text x="42" y="240.5" class="step">PATIENT'S PHONE</text>
+      <rect class="box" x="8" y="254" width="344" height="60" rx="8"/>
+      <text x="24" y="276" class="t">Opens the check-in page</text>
+      <text x="24" y="296" class="s">for this visit, on the phone.</text>
+
+      <!-- 3 SHARE: phone -->
+      <path class="arrow" d="M270 314 V 354" marker-end="url(#kn-ah)"/>
+      <circle class="num" cx="22" cy="338" r="11"/><text x="22" y="342.5" text-anchor="middle" class="num-t">3</text>
+      <text x="42" y="342.5" class="step">SHARE · PATIENT'S PHONE</text>
+      <rect class="box" x="8" y="358" width="344" height="80" rx="8"/>
+      <text x="24" y="380" class="t">Reviews in their wallet</text>
+      <text x="24" y="400" class="s">Shares all, some, or none.</text>
+      <text x="24" y="422" class="s ok-t">Private details stay on the phone</text>
+
+      <!-- 4 RETURN: back through the connection to the kiosk -->
+      <circle class="num" cx="22" cy="462" r="11"/><text x="22" y="466.5" text-anchor="middle" class="num-t">4</text>
+      <text x="42" y="466.5" class="step">RETURN</text>
+      <rect class="band" x="0" y="482" width="360" height="68"/>
+      <g transform="translate(16 490)"><rect class="lock" x="0" y="10" width="26" height="20" rx="3"/><path class="lock open" d="M6 10 v-4 a7 7 0 0 1 14 0 v4"/></g>
+      <text x="54" y="504" class="t" style="font-size:13px">Encrypted response</text>
+      <text x="54" y="522" class="sub">back through the connection;</text>
+      <text x="54" y="538" class="sub">it can't be read or changed on the way</text>
+      <path class="arrow" d="M322 438 V 586" marker-end="url(#kn-ah)"/>
+      <text x="42" y="576.5" class="step">CLINIC KIOSK</text>
+      <rect class="box" x="8" y="590" width="344" height="98" rx="8"/>
+      <text x="24" y="613" class="t">Opens it with its key</text>
+      <text x="24" y="632" class="s">Checks it against the request,</text>
+      <text x="24" y="649" class="s">then shows staff:</text>
+      <rect class="pill-ok" x="24" y="659" width="150" height="22" rx="11"/>
+      <text x="99" y="674" text-anchor="middle" class="pill-ok-t">Check-in received</text>
     </svg>
       </div>
 
