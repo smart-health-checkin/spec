@@ -260,9 +260,13 @@ An example request, which the build validates:
 
 **[REQ-1]** The Verifier SHALL set `type` to `smart-health-checkin-request` and `version` to `"1"`.
 
-**[REQ-2]** The Wallet SHALL reject a request whose `type` or `version` differs, or whose members do not have the types §5.2 gives them.
+**[REQ-2]** The Wallet SHALL reject a request whose `type` or `version` differs, or whose members outside `content` do not have the types §5.2 gives them. An item whose `content` is not an object with a string `kind` makes the whole request invalid; other problems inside `content` affect only that item (§5.4).
 
-**[REQ-3]** The Verifier SHALL include at least one item.
+**[REQ-3]** The Verifier SHOULD include at least one item.
+
+**[REQ-4]** The Verifier SHOULD keep requests no larger than it needs.
+
+**[REQ-5]** A Verifier that accepts `application/fhir+json` for any item SHOULD list the FHIR releases it can read in `fhirVersions[]`, unless it can read any release.
 
 **[ITEM-1]** The Verifier SHALL give every item an `id` that is unique within the request.
 
@@ -278,9 +282,11 @@ A selector says what the Verifier is looking for. It is not a query language, an
 
 **[SEL-2]** The Wallet SHALL evaluate each item's selector on its own. §6.3 covers Artifacts that answer several items.
 
+**[SEL-10]** The Wallet SHALL report `unsupported` for an item whose selector members do not have the types §5.2 gives them, for example a `profilesFrom` that is a string, and process the other items.
+
 #### 5.4.1 `selection.fhir`
 
-**[SEL-3]** The Wallet SHALL treat `profiles[]` and `profilesFrom[]` as alternatives: a resource matches if it matches any listed profile or belongs to any listed family. When `resourceTypes[]` is present, a match must also have one of those resource types.
+**[SEL-3]** The Wallet SHALL treat `profiles[]` and `profilesFrom[]` as alternatives: when either is present, a resource matches if it matches any listed profile or belongs to any listed family. `resourceTypes[]` narrows the match to those resource types; on its own, it matches any resource of those types.
 
 **[SEL-4]** The Verifier SHALL list only FHIR `resourceType` names in `resourceTypes[]`.
 
@@ -298,7 +304,7 @@ A selector says what the Verifier is looking for. It is not a query language, an
 
 **[FORM-2]** When both are present, `questionnaireCanonical` names the form and `questionnaire` is the body to show. The Verifier SHOULD make the inline Questionnaire's `url` and `version` match the canonical.
 
-**[FORM-3]** The Wallet SHALL NOT rewrite `questionnaireCanonical`. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report `unsupported` rather than collect answers.
+**[FORM-3]** The Wallet SHALL NOT rewrite `questionnaireCanonical`, or merge two conflicting Questionnaire definitions. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report `unsupported` rather than collect answers.
 
 **[FORM-4]** When there is no inline Questionnaire, the Wallet SHALL resolve `questionnaireCanonical` as §5.5 describes. If it cannot resolve, show, or use the form, it SHALL report `unsupported` or `error` (§6.2) and SHALL NOT invent a form.
 
@@ -339,7 +345,7 @@ A selector says what the Verifier is looking for. It is not a query language, an
 
 ### 5.7 Identity, trust, and Holder control
 
-**[ID-1]** The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request: no organization names, logos, URLs, certificates, keys, or accreditation data.
+**[ID-1]** The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request (organization names, logos, URLs, certificates, keys, accreditation data, or consent terms), nor handoff or transport data such as callback URLs, relay pointers, or nonces.
 
 **[ID-2]** The Wallet SHALL NOT treat anything in the request, including `purpose`, `title`, and `summary`, as evidence of who is asking. That comes from the origin and, if present, reader authentication (§7).
 
@@ -511,7 +517,7 @@ A Verifier checks a response against the request it sent before using anything i
 
 **[XV-7]** The Artifact's `mediaType` needs to be in the `accept[]` of every item it lists.
 
-**[XV-8]** An `application/fhir+json` Artifact needs a non-empty string `fhirVersion`, and a `value` that is an object with a string `resourceType`. The Verifier MAY also disregard it when the request listed `fhirVersions[]` and this release is not among them.
+**[XV-8]** An `application/fhir+json` Artifact needs a non-empty string `fhirVersion`, and a `value` that is an object with a string `resourceType`. The Verifier SHOULD also disregard it when the request listed `fhirVersions[]` and this release is not among them.
 
 **[XV-9]** An `application/smart-health-card` Artifact needs a non-empty `value.verifiableCredential[]` of strings and no `fhirVersion`.
 
@@ -520,6 +526,8 @@ A Verifier checks a response against the request it sent before using anything i
 **[XV-11]** For an item whose `profiles[]` includes a versioned canonical, the Verifier SHALL NOT treat a `fulfilled` status as met unless an Artifact listing the item contains a resource whose `meta.profile` includes that exact versioned canonical.
 
 **[XV-12]** The Verifier SHOULD flag an item with status `fulfilled` or `partial` that no valid Artifact lists.
+
+**[XV-14]** The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch.
 
 **[XV-13]** Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer.
 
@@ -663,7 +671,7 @@ SessionTranscript = [null, null, Handover]
 2. **[WRQ-3]** Check that `version` is `"1.0"`. A Wallet MAY also accept a later ISO version it supports.
 3. **[WRQ-4]** Find the `DocRequest` whose `ItemsRequest` has `docType` `org.smarthealthit.checkin.1`, ignoring other `docType`s. Reject the request if there is none or more than one.
 4. **[WRQ-5]** Check that `itemsRequest` is `tag24` of an `ItemsRequest` that requests `smart_health_checkin_response` in namespace `org.smarthealthit.checkin`, with a boolean `intentToRetain`, and has a text string under `requestInfo["org.smarthealthit.checkin.request"]`.
-5. **[WRQ-6]** Parse and validate that text as a SMART request (§§5.1–5.3).
+5. **[WRQ-6]** Parse and validate that text as a SMART request (§§5.1–5.3). The request is read only from this location, never from element names or other members.
 6. **[WRQ-7]** Decode `encryptionInfo`, and check that it is `["dcapi", {...}]` with a `nonce` byte string and a P-256 `recipientPublicKey` (§8.7).
 7. **[WRQ-8]** Compute `SessionTranscript` (§8.3).
 8. **[WRQ-9]** If `readerAuth` is present and the Wallet verifies it, verify it (§8.6) and classify it (§7).
@@ -671,13 +679,13 @@ SessionTranscript = [null, null, Handover]
 
 **[WRS-0]** The Wallet SHALL then build the `DeviceResponse` in these steps, in this order.
 
-10. **[WRS-1]** Build an `IssuerSignedItem` with a `digestID`, a `random` of at least 16 random bytes, `elementIdentifier` `smart_health_checkin_response`, and `elementValue` set to the SMART response as UTF-8 JSON text. Compute `IssuerSignedItemBytes = tag24(CBOR(IssuerSignedItem))`.
-11. **[WRS-2]** Build the MSO (§8.7) with `version` `"1.0"`, `digestAlgorithm` `"SHA-256"`, and `docType` `org.smarthealthit.checkin.1`. Its `valueDigests` maps namespace `org.smarthealthit.checkin` to `{digestID: SHA-256(IssuerSignedItemBytes)}`. Its `deviceKeyInfo.deviceKey` is the P-256 public key the Wallet will sign the session with.
-12. **[WRS-3]** Set the MSO's `validityInfo`: `signed` and `validFrom` to the signing time, and `validUntil` to a later time. Each is a CBOR tag 0 date-time string in UTC, without fractional seconds.
-13. **[WRS-4]** Sign `issuerAuth`: a `COSE_Sign1` with protected header `{1: -7}`, `x5chain` (label 33) in the unprotected header with the certificate for the signing key, and payload `MobileSecurityObjectBytes = tag24(CBOR(MSO))`. The certificate may be self-signed.
-14. **[WRS-5]** Set `DeviceNameSpacesBytes = tag24(CBOR({}))`, an empty map, unless a deployment profile defines device-signed elements. The SMART response is always the issuer-signed element, never a device-signed one.
-15. **[WRS-6]** Sign the session: a `COSE_Sign1` with protected header `{1: -7}` and payload `null`, signed with the private key for `deviceKeyInfo.deviceKey` over the detached payload `DeviceAuthenticationBytes` (§8.6).
-16. **[WRS-7]** Build a `DeviceResponse` with `version` `"1.0"`, `status` `0`, and exactly one document holding the issuer-signed item, `issuerAuth`, `DeviceNameSpacesBytes`, and the device signature (§8.7).
+1. **[WRS-1]** Build an `IssuerSignedItem` with a `digestID`, a `random` of at least 16 random bytes, `elementIdentifier` `smart_health_checkin_response`, and `elementValue` set to the SMART response as UTF-8 JSON text. Compute `IssuerSignedItemBytes = tag24(CBOR(IssuerSignedItem))`.
+2. **[WRS-2]** Build the MSO (§8.7) with `version` `"1.0"`, `digestAlgorithm` `"SHA-256"`, and `docType` `org.smarthealthit.checkin.1`. Its `valueDigests` maps namespace `org.smarthealthit.checkin` to `{digestID: SHA-256(IssuerSignedItemBytes)}`. Its `deviceKeyInfo.deviceKey` is the P-256 public key the Wallet will sign the session with.
+3. **[WRS-3]** Set the MSO's `validityInfo`: `signed` and `validFrom` to the signing time, and `validUntil` to a later time. Each is a CBOR tag 0 date-time string in UTC, without fractional seconds.
+4. **[WRS-4]** Sign `issuerAuth`: a `COSE_Sign1` with protected header `{1: -7}`, `x5chain` (label 33) in the unprotected header with the certificate for the signing key, and payload `MobileSecurityObjectBytes = tag24(CBOR(MSO))`. The certificate may be self-signed.
+5. **[WRS-5]** Set `DeviceNameSpacesBytes = tag24(CBOR({}))`, an empty map, unless a deployment profile defines device-signed elements. The SMART response is always the issuer-signed element, never a device-signed one.
+6. **[WRS-6]** Sign the session: a `COSE_Sign1` with protected header `{1: -7}` and payload `null`, signed with the private key for `deviceKeyInfo.deviceKey` over the detached payload `DeviceAuthenticationBytes` (§8.6).
+7. **[WRS-7]** Build a `DeviceResponse` with `version` `"1.0"`, `status` `0`, and exactly one document holding the issuer-signed item, `issuerAuth`, `DeviceNameSpacesBytes`, and the device signature (§8.7).
 
 <a id="8-6-validation-checklist"></a>
 
@@ -755,7 +763,7 @@ DeviceRequest = {
 
 DocRequest = {
   "itemsRequest" => ItemsRequestBytes,
-  ? "readerAuth" => COSE_Sign1,
+  ? "readerAuth" => DetachedSign1,
   * tstr => any
 }
 
@@ -828,12 +836,12 @@ Document = {
   "docType" => "org.smarthealthit.checkin.1",
   "issuerSigned" => {
     "nameSpaces" => { "org.smarthealthit.checkin" => [ IssuerSignedItemBytes ] },
-    "issuerAuth" => COSE_Sign1,   ; payload: MobileSecurityObjectBytes
+    "issuerAuth" => AttachedSign1,   ; payload: MobileSecurityObjectBytes
     * tstr => any
   },
   "deviceSigned" => {
     "nameSpaces" => DeviceNameSpacesBytes,
-    "deviceAuth" => { "deviceSignature" => COSE_Sign1 },   ; payload: null
+    "deviceAuth" => { "deviceSignature" => DetachedSign1 },
     * tstr => any
   },
   * tstr => any
@@ -863,7 +871,8 @@ MobileSecurityObject = {
   * tstr => any
 }
 
-DeviceNameSpacesBytes = #6.24(bstr .cbor { * tstr => any })
+DeviceNameSpacesBytes = #6.24(bstr .cbor DeviceNameSpaces)
+DeviceNameSpaces = { * tstr => any }   ; empty unless a deployment profile defines elements
 
 DeviceAuthentication = [
   "DeviceAuthentication",
@@ -874,7 +883,12 @@ DeviceAuthentication = [
 DeviceAuthenticationBytes = #6.24(bstr .cbor DeviceAuthentication)
 ```
 
-`COSE_Sign1` is `[protected: bstr, unprotected: {* int => any}, payload: bstr / null, signature: bstr]` (RFC 9052). `tdate` is CBOR tag 0 over an RFC 3339 date-time string.
+`tdate` is CBOR tag 0 over an RFC 3339 date-time string. The two signature forms are `COSE_Sign1` (RFC 9052) with the payload present or `null`:
+
+```cddl
+AttachedSign1 = [ protected: bstr, unprotected: { * int => any }, payload: bstr, signature: bstr ]
+DetachedSign1 = [ protected: bstr, unprotected: { * int => any }, payload: null, signature: bstr ]
+```
 
 ---
 
@@ -908,7 +922,7 @@ Extensions can add selector kinds and Artifact media types. A profile identifier
 
 **[EXT-3]** An extension SHALL NOT change the meaning of core members, core selector kinds, status codes, Holder control, or the validation in §6.4, and SHALL NOT define a catch-all Artifact type with generic payload members.
 
-**[PROF-1]** A deployment profile that adds trust requirements SHALL state which targets it constrains, the certificates, keys, or allow-lists it trusts, and what happens when a presentation is valid but fails its trust policy.
+**[PROF-1]** A deployment profile that adds trust requirements SHALL state which targets it constrains; which trust signals become mandatory; the certificates, keys, allow-lists, or provenance mechanisms it accepts; its freshness and revocation expectations; how Wallets show trusted and untrusted verifiers to the Holder; and what happens when a presentation is valid but fails its trust policy.
 
 A future change to the mdoc carrier that older software cannot process will use a new `docType`.
 
@@ -920,7 +934,9 @@ Display text includes `purpose`, `title`, `summary`, `message`, Questionnaire te
 
 **[I18N-2]** Language tags attached to display text SHOULD be well-formed BCP 47 tags.
 
-**[I18N-3]** Wallet and Verifier user interfaces SHALL keep display text from the other party visually separate from origins, identities, identifiers, statuses, and controls, so that it cannot imitate them.
+**[I18N-3]** Wallet and Verifier user interfaces SHALL NOT let display text from the other party imitate or hide origins, identities, identifiers, statuses, trust indicators, or controls, including through Unicode bidirectional characters.
+
+**[I18N-4]** They SHOULD keep such text visually separate from those elements.
 
 ---
 

@@ -11,6 +11,8 @@ bun "$ROOT/scripts/check-explainer.ts"
 bun "$ROOT/scripts/spec-requirements.ts" --check
 bun "$ROOT/scripts/check-spec-examples.ts"
 bun "$ROOT/scripts/worked-example.ts" --check
+# The real capture matches the normative CDDL (needs `gem install cddl`).
+bun "$ROOT/scripts/check-spec-cddl.ts"
 
 rm -rf "$SITE_DIR"
 mkdir -p "$SITE_DIR"

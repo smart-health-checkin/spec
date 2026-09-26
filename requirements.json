@@ -60,13 +60,25 @@
       "id": "REQ-2",
       "section": "5.3",
       "actor": "Wallet",
-      "summary": "The Wallet SHALL reject a request whose type or version differs, or whose members do not have the types §5.2 gives them."
+      "summary": "The Wallet SHALL reject a request whose type or version differs, or whose members outside content do not have the types §5.2 gives them. An item whose content is not an object with a string kind makes the whole request invalid; other pro…"
     },
     {
       "id": "REQ-3",
       "section": "5.3",
       "actor": "Verifier",
-      "summary": "The Verifier SHALL include at least one item."
+      "summary": "The Verifier SHOULD include at least one item."
+    },
+    {
+      "id": "REQ-4",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "The Verifier SHOULD keep requests no larger than it needs."
+    },
+    {
+      "id": "REQ-5",
+      "section": "5.3",
+      "actor": "Verifier",
+      "summary": "A Verifier that accepts application/fhir+json for any item SHOULD list the FHIR releases it can read in fhirVersions[], unless it can read any release."
     },
     {
       "id": "ITEM-1",
@@ -99,10 +111,16 @@
       "summary": "The Wallet SHALL evaluate each item's selector on its own. §6.3 covers Artifacts that answer several items."
     },
     {
+      "id": "SEL-10",
+      "section": "5.4",
+      "actor": "Wallet",
+      "summary": "The Wallet SHALL report unsupported for an item whose selector members do not have the types §5.2 gives them, for example a profilesFrom that is a string, and process the other items."
+    },
+    {
       "id": "SEL-3",
       "section": "5.4.1",
       "actor": "Wallet",
-      "summary": "The Wallet SHALL treat profiles[] and profilesFrom[] as alternatives: a resource matches if it matches any listed profile or belongs to any listed family. When resourceTypes[] is present, a match must also have one of those resource types."
+      "summary": "The Wallet SHALL treat profiles[] and profilesFrom[] as alternatives: when either is present, a resource matches if it matches any listed profile or belongs to any listed family. resourceTypes[] narrows the match to those resource types;…"
     },
     {
       "id": "SEL-4",
@@ -150,7 +168,7 @@
       "id": "FORM-3",
       "section": "5.4.2",
       "actor": "Wallet",
-      "summary": "The Wallet SHALL NOT rewrite questionnaireCanonical. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report unsupported rather than collect answers."
+      "summary": "The Wallet SHALL NOT rewrite questionnaireCanonical, or merge two conflicting Questionnaire definitions. If the inline Questionnaire and the canonical disagree about which form this is, the Wallet SHOULD report unsupported rather than co…"
     },
     {
       "id": "FORM-4",
@@ -234,7 +252,7 @@
       "id": "ID-1",
       "section": "5.7",
       "actor": "Verifier",
-      "summary": "The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request: no organization names, logos, URLs, certificates, keys, or accreditation data."
+      "summary": "The Verifier SHALL NOT put claims about its own identity or trustworthiness in the request (organization names, logos, URLs, certificates, keys, accreditation data, or consent terms), nor handoff or transport data such as callback URLs, …"
     },
     {
       "id": "ID-2",
@@ -396,7 +414,7 @@
       "id": "XV-8",
       "section": "6.4",
       "actor": "Verifier",
-      "summary": "An application/fhir+json Artifact needs a non-empty string fhirVersion, and a value that is an object with a string resourceType. The Verifier MAY also disregard it when the request listed fhirVersions[] and this release is not among them."
+      "summary": "An application/fhir+json Artifact needs a non-empty string fhirVersion, and a value that is an object with a string resourceType. The Verifier SHOULD also disregard it when the request listed fhirVersions[] and this release is not among …"
     },
     {
       "id": "XV-9",
@@ -421,6 +439,12 @@
       "section": "6.4",
       "actor": "Verifier",
       "summary": "The Verifier SHOULD flag an item with status fulfilled or partial that no valid Artifact lists."
+    },
+    {
+      "id": "XV-14",
+      "section": "6.4",
+      "actor": "Verifier",
+      "summary": "The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch."
     },
     {
       "id": "XV-13",
@@ -594,7 +618,7 @@
       "id": "WRQ-6",
       "section": "8.4",
       "actor": "Wallet",
-      "summary": "Parse and validate that text as a SMART request (§§5.1–5.3)."
+      "summary": "Parse and validate that text as a SMART request (§§5.1–5.3). The request is read only from this location, never from element names or other members."
     },
     {
       "id": "WRQ-7",
@@ -822,7 +846,7 @@
       "id": "PROF-1",
       "section": "9.3",
       "actor": "Deployment profile",
-      "summary": "A deployment profile that adds trust requirements SHALL state which targets it constrains, the certificates, keys, or allow-lists it trusts, and what happens when a presentation is valid but fails its trust policy."
+      "summary": "A deployment profile that adds trust requirements SHALL state which targets it constrains; which trust signals become mandatory; the certificates, keys, allow-lists, or provenance mechanisms it accepts; its freshness and revocation expec…"
     },
     {
       "id": "I18N-1",
@@ -840,7 +864,13 @@
       "id": "I18N-3",
       "section": "9.4",
       "actor": "Verifier, Wallet",
-      "summary": "Wallet and Verifier user interfaces SHALL keep display text from the other party visually separate from origins, identities, identifiers, statuses, and controls, so that it cannot imitate them."
+      "summary": "Wallet and Verifier user interfaces SHALL NOT let display text from the other party imitate or hide origins, identities, identifiers, statuses, trust indicators, or controls, including through Unicode bidirectional characters."
+    },
+    {
+      "id": "I18N-4",
+      "section": "9.4",
+      "actor": "Verifier, Wallet",
+      "summary": "They SHOULD keep such text visually separate from those elements."
     }
   ]
 }
