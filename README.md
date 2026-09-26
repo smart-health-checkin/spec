@@ -14,7 +14,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 | Path | What it is |
 | --- | --- |
-| [`spec.md`](spec.md) | The draft spec. §§5–6 define the request and response model; §8 the `org-iso-mdoc` flow; Appendix A a worked example computed from a real capture. |
+| [`spec.md`](spec.md) | The draft spec. [§§5–6](https://smart-health-checkin.org/spec/#5-clinical-request-model) define the request and response model; [§8](https://smart-health-checkin.org/spec/#8-same-device-presentation-flow) the `org-iso-mdoc` flow; [Appendix A](https://smart-health-checkin.org/spec/#appendix-a-worked-example) a worked example computed from a real capture. |
 | [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, the kiosk flow, trust and limits, and platform notes. |
 | [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see below). |
 | [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |

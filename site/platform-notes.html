@@ -115,7 +115,7 @@
         and signing certificates. The origin string is then <code>android:apk-key-hash:</code> followed by the base64url
         SHA-256 of the app's signing certificate <a class="rid" href="./spec.html#TR-2">TR-2</a>, the format Android's holder
         documentation, Multipaz, and Google Wallet use. The app computes the same string for its own transcript. The
-        reference Android wallet still uses an older format and is moving to this one.
+        <a href="https://github.com/smart-health-checkin/android-wallet/releases/latest">reference Android wallet</a> uses it from v0.4.0.
       </p>
     </section>
 
@@ -143,7 +143,7 @@
           <a href="#native-apps">Native apps as Verifiers</a>.</li>
         <li>There is no reference iOS wallet or checked-in iOS capture yet. The
           <a href="https://github.com/smart-health-checkin/swift">Swift package</a> implements the Verifier and Wallet
-          sides and runs the spec's conformance cases.</li>
+          sides and runs the spec's <a href="https://github.com/smart-health-checkin/spec/tree/main/conformance">conformance cases</a>.</li>
       </ul>
     </section>
 
@@ -167,7 +167,7 @@
             <tr><td>Android emulator, Chrome, reference wallet, Testing EHR</td><td>API 37 image, Chrome 145, Play services 26.11</td><td>Nightly in <a href="https://github.com/smart-health-checkin/connectathon/actions/workflows/android-e2e.yml">CI</a>; the large-response scenario is skipped because Chrome 145 is below 150</td></tr>
             <tr><td>Native Android app as Verifier, through a Custom Tab</td><td>Android 17, Chrome 145</td><td>Automated, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a> and the SMART Testing Wallet</td></tr>
             <tr><td>Native Android app as Verifier, direct</td><td>Android 17, wallet v0.4.0</td><td>Automated, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a></td></tr>
-            <tr><td>Web wallets in any browser</td><td>Current Chrome and Chromium</td><td>After every deploy and nightly, by the Testing EHR self-test</td></tr>
+            <tr><td>Web wallets in any browser</td><td>Current Chrome and Chromium</td><td>After every deploy and nightly, by the <a href="https://smart-health-checkin.org/connectathon/testing-ehr/">Testing EHR</a> self-test</td></tr>
           </tbody>
         </table>
       </div>
