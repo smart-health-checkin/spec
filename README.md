@@ -6,7 +6,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 - **Spec:** <https://smart-health-checkin.org/spec/>
 - **Client library** (EHR pages, web wallets, testing): [smart-health-checkin/client](https://github.com/smart-health-checkin/client), docs at <https://smart-health-checkin.org/client/>
-- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet-debug.apk)). It moved out of this repo with its history.
+- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet.apk)). It moved out of this repo with its history.
 - **Also moved out:** the exploratory Swift package ([smart-health-checkin/swift](https://github.com/smart-health-checkin/swift)) and archived planning notes ([smart-health-checkin/notes](https://github.com/smart-health-checkin/notes)).
 - **Connectathon:** [smart-health-checkin/connectathon](https://github.com/smart-health-checkin/connectathon), at <https://smart-health-checkin.org/connectathon/>
 
