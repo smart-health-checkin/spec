@@ -641,14 +641,7 @@
       <details class="advanced-loader">
         <summary>Load a different capture</summary>
         <div>
-          <p class="small">This page already auto-loads the checked-in Chrome/Android capture. Use these controls only when comparing a newer local Android handler bundle.</p>
-<pre>node tools/capture/capture-android-rp-flow.mjs \
-  --url http://127.0.0.1:3010 \
-  --no-server \
-  --adb-auto-wallet \
-  --out /tmp/shc-handler-runs \
-  --timeout 300000</pre>
-          <p class="small" style="margin-top:10px">Serve the repo root over HTTP so local fixture files can be fetched.</p>
+          <p class="small">This page auto-loads the checked-in Chrome/Android capture. To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/real-chrome-android-smart-checkin</code> and <code>fixtures/responses/real-chrome-android-smart-checkin</code>. The Testing EHR can also open a run here directly.</p>
           <div class="button-row">
             <button id="loadExample" type="button">Reload checked-in capture</button>
             <button id="clearRun" class="secondary" type="button">Clear loaded run</button>
@@ -954,7 +947,7 @@
         title: "Embedded ItemsRequest CBOR",
         file: preferredFile(index, "items-request.cbor", "analysis/request/items-request.cbor"),
         source: "docRequests[0].itemsRequest tag-24 byte string",
-        meaning: "The mdoc request body with docType, namespace, requested element, intentToRetain=true, readerAuth, and requestInfo.",
+        meaning: "The mdoc request body with docType, namespace, requested element, intentToRetain=true, and requestInfo. readerAuth, when present, sits beside it in the DocRequest.",
         check: async (bytes) => checkHexEquals(docRequest?.itemsRequestHex, bytes, "matches tag-24 contents decoded from DeviceRequest"),
         details: await readText(findBySuffix(index, "analysis/request/items-request.diag")),
         nestedJson: await readText(findBySuffix(index, "analysis/request/items-request.decoded.json")),

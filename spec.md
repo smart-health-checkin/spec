@@ -18,7 +18,7 @@ Copyright and license terms are to be finalized before publication. The text is 
 
 ## 1. Introduction
 
-SMART Health Check-in 1.0 defines a patient-mediated check-in profile in which a **Requester** asks a **Holder**, through a **Wallet/Responder**, to share workflow-bounded clinical or administrative content and receives a structured **SMART response**. Version 1.0 has two normative layers: the transport-neutral clinical JSON request/response model in §§5-6, and same-device direct `org-iso-mdoc` presentation over the W3C Digital Credentials API in §§7-8.
+SMART Health Check-in 1.0 defines a patient-mediated check-in profile in which a **Requester** asks a **Holder**, through a **Wallet/Responder**, to share workflow-bounded clinical or administrative content and receives a structured **SMART response**. Version 1.0 has two normative layers: the transport-neutral clinical JSON request/response model in §§5-6, and same-device direct `org-iso-mdoc` presentation over the W3C Digital Credentials API in §8.
 
 This profile uses W3C Digital Credentials API plus direct `org-iso-mdoc` because those are the practical rails available in 2026 across modern browsers, Android, iOS, and shipping wallet ecosystems. The mdoc layer is used as an authenticated, encrypted, holder-mediated transport for SMART clinical JSON. It is not used for mdoc-style per-element clinical selective disclosure or for defining clinical credential issuance. That is an unconventional use of mdoc, but it lets healthcare use deployed wallet/browser capabilities while keeping clinical semantics in FHIR-aware JSON.
 
@@ -1048,15 +1048,14 @@ A Verifier accepting a same-device response performs the §8.5 and §8.6 pipelin
 
 ### Companion material
 
-Companion material is non-normative and subordinate to this specification. At the time of this editor's draft, maintained companion material is available in the SMART Health Check-in GitHub repository:
+Companion material is non-normative and subordinate to this specification. At the time of this editor's draft, maintained companion material is:
 
-- [Public landing page and explainers](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/site): model explainer, kiosk handoff explainer, wire-protocol explainer, and browser byte inspector.
-- [Live verifier and demo applications](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web): same-device verifier, kiosk creator, phone submitter, and static web app source.
-- [TypeScript SDK and verifier helpers](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web/src/sdk): request/response validation, DC API verifier flow, kiosk-session helpers, and React bindings.
-- [Protocol builders and inspectors](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/rp-web/src/protocol): CBOR builders, HPKE/open helpers, request/response inspectors, and test vectors.
-- [Android wallet implementation](https://github.com/smart-health-checkin/android-wallet): demo wallet app plus reusable core, direct-mdoc, Credential Manager, UI, and matcher modules.
-- [Fixtures and captured byte artifacts](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/fixtures): checked-in request, response, transcript, and capture fixtures used by the test suites and explainers.
-- [Developer tools](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/tools): capture scripts, fixture-generation utilities, and diagnostic tooling.
-- [Historical design notes and archived material](https://github.com/jmandel/smart-health-checkin-mdoc/tree/main/docs): provenance, earlier design notes, and archived drafts that are not current implementation guidance.
+- [Model explainer](https://smart-health-checkin.org/spec/smart-model-explainer.html): the request and response JSON, with one worked example.
+- [Wire protocol explainer](https://smart-health-checkin.org/spec/wire-protocol-explainer.html) and [capture inspector](https://smart-health-checkin.org/spec/wire-protocol-inspector.html): how the same-device flow builds, seals, and verifies each structure, walked over real captured bytes.
+- [Kiosk flow](https://smart-health-checkin.org/spec/kiosk-flow-explainer.html): the front-desk hand-off to a patient's phone.
+- [Fixtures](https://github.com/smart-health-checkin/spec/tree/main/fixtures) and [developer tools](https://github.com/smart-health-checkin/spec/tree/main/tools): captured and generated request and response bytes, tagged `fixtures-vN`, and scripts that inspect them.
+- [JavaScript client library and developer docs](https://smart-health-checkin.org/client/): verifier and wallet helpers, validation, and demos ([source](https://github.com/smart-health-checkin/client)).
+- [Android wallet](https://github.com/smart-health-checkin/android-wallet) and [Swift package](https://github.com/smart-health-checkin/swift): wallet and verifier implementations.
+- [Connectathon](https://smart-health-checkin.org/connectathon/): test scenarios, the Testing EHR, and the SMART Testing Wallet.
 
 These materials may include tutorials, fixture indexes, byte ladders, diagrams, reference code, demo applications, implementation notes, detailed FHIR mapping walkthroughs, and historical captures. They SHALL NOT redefine core fields, identifiers, algorithms, validation rules, selector semantics, status semantics, trust boundaries, or any other normative requirement in this specification.

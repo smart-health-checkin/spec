@@ -1,5 +1,7 @@
 # SMART Health Check-in over `org-iso-mdoc` — direct profile
 
+> **Archived, pre-1.0.** Kept for history; names, paths, and details here may not match the 1.0 spec or current code.
+
 ## TL;DR
 
 Skip OID4VP entirely. The DC API already gives us:

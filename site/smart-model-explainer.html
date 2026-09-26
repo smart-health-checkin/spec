@@ -218,7 +218,7 @@
         app shows the list, the patient decides what to share, and the health
         app answers with records and one outcome per item. This page walks
         through that JSON with one running example. Every example on it is
-        checked against the draft spec's validators when the site is built.
+        checked against the client library's validators when the site is built.
       </p>
     </header>
 
@@ -330,7 +330,8 @@
       <p>
         <code>content.kind</code> is either <code>selection.fhir</code> (share records the
         patient already has) or <code>form.fhir</code> (fill in a form). A health app
-        that sees a kind it doesn't know answers <code>unsupported</code>.
+        that sees a kind it doesn't know answers <code>unsupported</code> for that
+        item and handles the rest of the request as usual.
       </p>
 
       <div class="tabs" role="tablist" aria-label="Kinds of content" hidden>
@@ -543,7 +544,7 @@
         <li>Every id in <code>fulfills[]</code> is an item in the request. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
         <li>Every record's <code>mediaType</code> is accepted by each item it fulfills. <a href="./spec.html#5-6-accepted-media-types">§5.6</a></li>
         <li>FHIR JSON has a <code>fhirVersion</code>, and a Bundle doesn't mix releases. A health card has no outer <code>fhirVersion</code>. <a href="./spec.html#6-4-verifier-cross-validation">§6.4</a></li>
-        <li>Profile and Questionnaire canonicals come back exactly as sent. <a href="./spec.html#5-5-canonical-version-handling">§5.5</a></li>
+        <li>Returned <code>meta.profile</code> strings and <code>QuestionnaireResponse.questionnaire</code> are kept exactly as written, and a record only counts toward a versioned profile (<code>…|1.2</code>) if it claims that exact version. <a href="./spec.html#5-5-canonical-version-handling">§5.5</a></li>
         <li>Several records for one item are allowed, and the app looks at all of them. <a href="./spec.html#6-3-many-to-many-fulfillment">§6.3</a></li>
       </ul>
       <p>

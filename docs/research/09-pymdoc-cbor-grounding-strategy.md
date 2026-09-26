@@ -1,5 +1,7 @@
 # Grounding the TS verifier against pyMDOC-CBOR
 
+> **Archived, pre-1.0.** Kept for history; names, paths, and details here may not match the 1.0 spec or current code.
+
 How we use IdentityPython's [pyMDOC-CBOR](https://github.com/IdentityPython/pyMDOC-CBOR)
 as ground truth without letting its idioms leak into our public API.
 

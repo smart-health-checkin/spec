@@ -1,5 +1,7 @@
 # Can a native Android app be the relying party?
 
+> **Archived, pre-1.0.** Kept for history; names, paths, and details here may not match the 1.0 spec or current code.
+
 Question: an Android app (think MyChart) wants to request a SMART Health
 Check-in from the wallet. Can it invoke the platform directly, or does it need
 a web surface — and if so, an embedded browser or a pivot out to Chrome?

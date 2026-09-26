@@ -638,7 +638,7 @@
   <div data-smart-topbar></div>
   <header>
     <div class="wrap hero">
-      <a class="back-link" href="./index.html">← SMART Health Check-in</a>
+      <a class="back-link" href="/">← SMART Health Check-in</a>
       <h1>Wire protocol</h1>
       <p class="lede">
         How a SMART Health Check-in request and response are <em>built</em>, <em>signed</em>, <em>encrypted</em>, <em>parsed</em>, and <em>verified</em> &mdash;
@@ -701,13 +701,13 @@
           </div>
           <div class="flow-step">
             <strong>5. Verifier page</strong>
-            Recomputes the SessionTranscript, opens the HPKE seal, walks the issuer and device signatures, and
-            renders SMART artifacts.
+            Recomputes the SessionTranscript, opens the HPKE seal, checks the DeviceResponse and its issuer and device
+            signatures, validates the SMART response against the original request, and only then renders it.
           </div>
         </div>
         <div class="callout good">
-          <strong>End-to-end success signal:</strong> the verifier displays
-          <code>HPKE opened</code>, <code>digest matched</code>, four artifacts, and four fulfilled item statuses.
+          <strong>End-to-end success:</strong> the HPKE seal opens, every signature and digest verifies, and the SMART
+          response passes validation against the original request.
           That means the browser origin, the SessionTranscript, the HPKE key schedule, and every digest line up across the two sides.
           It does not by itself prove requester identity, clinical-source provenance, patient matching, or EHR write-back authorization.
         </div>
@@ -813,8 +813,8 @@
               <h3>Generate an HPKE recipient keypair</h3>
               <p>
                 Generate a fresh baseline ECDH P-256 keypair. The private key stays in the verifier page; the public key
-                travels to the wallet so the wallet can encrypt to it. Deployment profiles can use another HPKE suite only
-                when both parties support it through the wire identifiers.
+                travels to the wallet so the wallet can encrypt to it. Version 1.0 uses one fixed HPKE suite (see
+                <a href="#encrypt">the HPKE parameters</a>); nothing on the wire names or negotiates a suite.
               </p>
 <pre>recipientPublicKey = COSE_Key {
   1:  2,        // kty:  EC2
@@ -881,9 +881,9 @@
             <div>
               <h3>Origin from a privileged caller</h3>
               <p>
-                AndroidX exposes <code>callingAppInfo.origin</code> only when the wallet passes a privileged-caller allowlist
-                into <code>getOrigin(...)</code>. The dev wallet reflects the actual caller signature for traceability;
-                production should pin trusted browser package names plus signing-cert fingerprints.
+                On Android, AndroidX exposes <code>callingAppInfo.origin</code> only when the wallet passes a
+                privileged-caller allowlist into <code>getOrigin(...)</code>. A wallet should list trusted browser
+                package names with their signing-certificate fingerprints.
               </p>
               <p class="note"><b>What it is</b> an authenticated origin or approved equivalent (e.g. <code>https://clinic.example</code>). <b>Caveat</b> origin is a presentation-layer signal, not requester or organization identity by itself.</p>
             </div>
@@ -918,7 +918,7 @@
                 The exact CBOR byte string used both as HPKE <code>info</code> and as a field inside the device-signed payload.
               </p>
 <pre>SessionTranscript = CBOR([ null, null, handover ])</pre>
-              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> the two leading <code>null</code> slots are reserved for legacy DeviceEngagement / EReader handover; DC API uses only the third.</p>
+              <p class="note"><b>Encoding</b> CBOR. <b>Why</b> the two leading <code>null</code> slots are ISO 18013-5's <code>DeviceEngagementBytes</code> and <code>EReaderKeyBytes</code>, which the DC API flow doesn't use; only the handover is filled in.</p>
             </div>
           </div>
         </div>
@@ -936,7 +936,7 @@
               <h3>SMART response JSON</h3>
               <p>
                 The wallet produces <code>{type:"smart-health-checkin-response", version:"1", requestId, artifacts, requestStatus}</code>.
-                Each artifact declares <code>mediaType</code>, media-type-specific payload fields, and the request-item ids it <code>fulfills</code>. Raw FHIR uses <code>value</code> plus <code>fhirVersion</code>; SMART Health Cards use <code>value.verifiableCredential[]</code>; extensions define their own typed fields. <code>requestStatus[].item</code> records whether each requested item was fulfilled, declined, unsupported, or errored.
+                Each artifact declares <code>mediaType</code>, media-type-specific payload fields, and the request-item ids it <code>fulfills</code>. Raw FHIR uses <code>value</code> plus <code>fhirVersion</code>; SMART Health Cards use <code>value.verifiableCredential[]</code>; extensions define their own typed fields. <code>requestStatus[]</code> has one entry per requested item: <code>item</code> is the item id and <code>status</code> is one of <code>fulfilled</code>, <code>partial</code>, <code>unavailable</code>, <code>declined</code>, <code>unsupported</code>, or <code>error</code>.
               </p>
               <p class="note"><b>Encoding</b> JSON. <b>Why</b> the same shape the verifier later renders to the user.</p>
             </div>
@@ -945,8 +945,8 @@
             <div>
               <h3>IssuerSignedItem and tag-24 wrap</h3>
               <p>
-                The SMART response JSON is the <code>elementValue</code> of one stable mdoc element. The item is canonical CBOR,
-                then wrapped as tag 24 &mdash; that wrapper is what gets hashed, so the bytes are pinned at this boundary.
+                The SMART response JSON is the <code>elementValue</code> of one stable mdoc element. The item is encoded as CBOR,
+                then wrapped as tag 24 &mdash; that wrapper is what gets hashed, so verifiers hash the bytes exactly as received and never re-encode them.
               </p>
 <pre>IssuerSignedItem = {
   digestID:          0,
@@ -956,7 +956,7 @@
 }
 
 issuerSignedItemTag24 = Tag(24, bstr .cbor IssuerSignedItem)</pre>
-              <p class="note"><b>Encoding</b> CBOR + tag 24. <b>Why</b> the digest must be reproducible byte-for-byte on the verifier side.</p>
+              <p class="note"><b>Encoding</b> CBOR + tag 24. <b>Why</b> the verifier hashes these exact bytes; re-encoding them could change the digest.</p>
             </div>
           </div>
           <div class="calc-row">
@@ -984,7 +984,7 @@ issuerSignedItemTag24 = Tag(24, bstr .cbor IssuerSignedItem)</pre>
 }
 
 issuerAuth = COSE_Sign1(MSO, issuerKey)</pre>
-              <p class="note"><b>Math</b> baseline ES256 / SHA-256 fixture values. <b>Why</b> binds digest + deviceKey + docType + validity into one signed object. Mutually supported alternatives use the normal COSE/MSO identifiers.</p>
+              <p class="note"><b>Math</b> baseline ES256 / SHA-256 fixture values. <b>Why</b> binds digest + deviceKey + docType + validity into one signed object. </p>
             </div>
           </div>
           <div class="calc-row">
@@ -1043,7 +1043,7 @@ issuerAuth = COSE_Sign1(MSO, issuerKey)</pre>
         </p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Parameter</th><th>Baseline fixture value</th></tr></thead>
+            <thead><tr><th>Parameter</th><th>Value (fixed for 1.0)</th></tr></thead>
             <tbody>
               <tr><td>KEM</td><td><code>DHKEM(P-256, HKDF-SHA256)</code> &middot; suite id <code>0x0010</code></td></tr>
               <tr><td>KDF</td><td><code>HKDF-SHA256</code> &middot; suite id <code>0x0001</code></td></tr>
@@ -1055,10 +1055,8 @@ issuerAuth = COSE_Sign1(MSO, issuerKey)</pre>
           </table>
         </div>
         <p class="note">
-          These algorithms are baseline required support and fixture choices,
-          not immutable pins. Mutually supported alternatives are allowed only
-          when carried through the existing COSE, MSO, HPKE,
-          <code>encryptionInfo</code>, and <code>dcapiResponse</code> identifiers.
+          This is the only suite in version 1.0, in base mode. Neither <code>encryptionInfo</code> nor
+          <code>dcapiResponse</code> has a field that names a suite, so both sides use exactly these parameters.
         </p>
         <p>The encrypted result is wrapped as a small CBOR array and returned to the browser through Credential Manager.</p>
 <pre>dcapiResponse = CBOR([
@@ -1117,8 +1115,9 @@ SessionTranscript = CBOR([ null, null, handover ])</pre>
               <h3>Walk the DeviceResponse</h3>
               <p>
                 Decode the plaintext CBOR, step into <code>documents[0]</code>, and pull out
-                <code>issuerSigned.nameSpaces["org.smarthealthit.checkin"][0]</code> (the IssuerSignedItem tag-24 wrapper)
-                and the issuer <code>COSE_Sign1</code>.
+                the IssuerSignedItem tag-24 wrapper from <code>issuerSigned.nameSpaces["org.smarthealthit.checkin"]</code>
+                and the issuer <code>COSE_Sign1</code>. Check that the DeviceResponse <code>status</code> is 0 and the
+                document's <code>docType</code> is <code>org.smarthealthit.checkin.1</code>.
               </p>
             </div>
           </div>
@@ -1140,7 +1139,7 @@ SessionTranscript = CBOR([ null, null, handover ])</pre>
                 Take the IssuerSignedItem exactly as wrapped by the wallet (tag 24 + bytes), SHA-256 it, and compare to
                 the MSO's expected digest at <code>(namespace, digestID)</code>.
               </p>
-<pre>SHA-256(issuerSignedItemTag24Bytes) == MSO.valueDigests["org.smarthealthit.checkin"][0]</pre>
+<pre>SHA-256(issuerSignedItemTag24Bytes) == MSO.valueDigests["org.smarthealthit.checkin"][item.digestID]</pre>
               <p class="note"><b>What it proves</b> the SMART response JSON in this item is exactly what the issuer committed to.</p>
             </div>
           </div>
@@ -1164,11 +1163,14 @@ verify_COSE_Sign1(deviceSignature, MSO.deviceKey)</pre>
           </div>
           <div class="calc-row">
             <div>
-              <h3>Render SMART artifacts</h3>
+              <h3>Validate, then render</h3>
               <p>
-                Parse <code>IssuerSignedItem.elementValue</code> as the SMART response JSON. Walk <code>artifacts[]</code>
-                and <code>requestStatus[]</code>; render each artifact according to its media-type-specific fields; show fulfillment status
-                for every requested item.
+                Parse <code>IssuerSignedItem.elementValue</code> as the SMART response JSON. Before showing anything,
+                validate it (<a href="./spec.html#6-1-normative-typescript-model">spec §6</a>) and cross-validate it against
+                the request you sent (<a href="./spec.html#6-4-verifier-cross-validation">§6.4</a>): <code>requestId</code>
+                matches, every item has exactly one status, and every artifact's <code>mediaType</code> is accepted by the
+                items it fulfills. Then walk <code>artifacts[]</code> and <code>requestStatus[]</code>, render each artifact
+                by its media type, and show the status of every requested item.
               </p>
             </div>
           </div>
@@ -1190,14 +1192,15 @@ verify_COSE_Sign1(deviceSignature, MSO.deviceKey)</pre>
           <div class="mini">
             <h3>Transcript</h3>
             <p>
-              Recompute <code>CBOR([encryptionInfoB64u, origin])</code>, SHA-256 it, then compare to
+              Hash <code>CBOR([encryptionInfoB64u, origin])</code> with SHA-256, build
+              <code>CBOR([null, null, ["dcapi", hash]])</code>, and compare the bytes to
               <code>session-transcript.cbor</code>.
             </p>
           </div>
           <div class="mini">
             <h3>Response</h3>
             <p>
-              Check <code>SHA-256(issuer-signed-item-tag24.cbor) == MSO.valueDigests[namespace][0]</code>,
+              Check <code>SHA-256(issuer-signed-item-tag24.cbor) == MSO.valueDigests[namespace][digestID]</code>,
               then verify the issuer and device <code>COSE_Sign1</code> envelopes.
             </p>
           </div>
@@ -1205,19 +1208,21 @@ verify_COSE_Sign1(deviceSignature, MSO.deviceKey)</pre>
         <div class="two" style="margin-top:16px">
           <div class="mini">
             <h3>Offline tools</h3>
-<pre>bun run inspect:mdoc \
-  /tmp/shc-handler-runs/run-* \
+<pre>bun tools/wire/inspect-mdoc-request.ts \
+  fixtures/dcapi-requests/real-chrome-android-smart-checkin \
   --out /tmp/out/request
 
-bun run inspect:response \
-  /tmp/shc-handler-runs/run-*/device-response.cbor \
+bun tools/wire/inspect-mdoc-response.ts \
+  fixtures/responses/real-chrome-android-smart-checkin/device-response.cbor \
   --out /tmp/out/response</pre>
+            <p class="note">Run from a checkout of the spec repository after <code>bun install</code>.</p>
           </div>
           <div class="mini">
-            <h3>Expected verifier UI</h3>
+            <h3>This fixture's result</h3>
             <p>
-              Success shows <code>HPKE opened</code>, <code>digest matched</code>, <code>4 artifacts</code>,
-              and <code>4 fulfilled item statuses</code>.
+              The checked-in capture opens, its digest and signatures verify, and its SMART response has four
+              artifacts and four <code>fulfilled</code> statuses. That describes this capture, not what every
+              response looks like.
             </p>
           </div>
         </div>
@@ -1230,11 +1235,6 @@ bun run inspect:response \
             <thead><tr><th>Area</th><th>Current behavior</th><th>Future hardening</th></tr></thead>
             <tbody>
               <tr>
-                <td>Browser origin trust</td>
-                <td>Dev build reflects the actual caller app/signature into the AndroidX privileged allowlist.</td>
-                <td>Use an up-to-date allowlist of trusted browser package names and official signing-cert fingerprints.</td>
-              </tr>
-              <tr>
                 <td>Clinical source trust</td>
                 <td>The demo mdoc issuer certificate is fixture material. SMART artifacts carry their own media semantics: signed SMART Health Cards retain issuer proof; raw FHIR JSON is treated as patient-mediated content.</td>
                 <td>Deployments can layer source-specific policy when they require source attestation; it is not assumed by the transport demo.</td>
@@ -1242,12 +1242,12 @@ bun run inspect:response \
               <tr>
                 <td>HPKE binding</td>
                 <td>SessionTranscript is HPKE <code>info</code>; AEAD AAD is empty.</td>
-                <td>Profiles may allow mutually supported alternatives only through existing wire identifiers; unilateral substitutions fail closed.</td>
+                <td>One fixed suite in 1.0. A later version that adds suites needs a new wire field to name them.</td>
               </tr>
               <tr>
                 <td>Request carrier</td>
-                <td><code>requestInfo["org.smarthealthit.checkin.request"]</code> is load-bearing.</td>
-                <td>Other request carriers are not SMART Health Check-in 1.0.</td>
+                <td>The request travels only in <code>ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]</code>.</td>
+                <td>None planned.</td>
               </tr>
             </tbody>
           </table>
