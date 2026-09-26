@@ -3,39 +3,26 @@
   "href": "./",
   "items": [
     {
-      "title": "Model",
-      "href": "smart-model-explainer.html",
-      "note": "Request and response JSON"
+      "title": "Explainers",
+      "items": [
+        { "title": "Model", "href": "smart-model-explainer.html", "note": "Request and response JSON" },
+        { "title": "Wire protocol", "href": "wire-protocol-explainer.html", "note": "CBOR, COSE, HPKE" },
+        { "title": "Kiosk flow", "href": "kiosk-flow-explainer.html", "note": "Front-desk handoff" }
+      ]
     },
     {
-      "title": "Wire protocol",
-      "href": "wire-protocol-explainer.html",
-      "note": "CBOR, COSE, HPKE"
+      "title": "Notes",
+      "items": [
+        { "title": "Trust and limits", "href": "trust-and-limits.html", "note": "What signatures prove, size, cancel" },
+        { "title": "Platform notes", "href": "platform-notes.html", "note": "Android, iOS, browsers, app origins" }
+      ]
     },
     {
-      "title": "Capture inspector",
-      "href": "wire-protocol-inspector.html",
-      "note": "Byte-level fixture viewer"
+      "title": "Tools",
+      "items": [
+        { "title": "Capture inspector", "href": "wire-protocol-inspector.html", "note": "Byte-level fixture viewer" }
+      ]
     },
-    {
-      "title": "Kiosk flow",
-      "href": "kiosk-flow-explainer.html",
-      "note": "Front-desk handoff"
-    },
-    {
-      "title": "Trust and limits",
-      "href": "trust-and-limits.html",
-      "note": "What signatures prove, size, cancel"
-    },
-    {
-      "title": "Platform notes",
-      "href": "platform-notes.html",
-      "note": "Android, iOS, browsers, app origins"
-    },
-    {
-      "title": "Draft spec 1.0",
-      "href": "./",
-      "note": "Normative reference"
-    }
+    { "title": "Draft spec 1.0", "href": "./", "note": "Normative reference" }
   ]
 }
