@@ -576,7 +576,7 @@
       "id": "TR-2",
       "section": "8.3",
       "actor": "Verifier, Wallet",
-      "summary": "For a web page, origin SHALL be the ASCII serialization of the calling page's origin: scheme, ://, host, and :port only for a non-default port, with no trailing slash (for example https://clinic.example). For a native app, it SHALL be th…"
+      "summary": "For a web page, origin SHALL be the ASCII serialization of the calling page's origin: scheme, ://, host, and :port only for a non-default port, with no trailing slash (for example https://clinic.example). A Wallet SHALL use this serializ…"
     },
     {
       "id": "TR-3",

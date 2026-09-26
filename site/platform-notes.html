@@ -55,7 +55,7 @@
 
     <nav class="toc" aria-label="On this page">
       <a href="#android">Android</a>
-      <a href="#origins">Native-app origins</a>
+      <a href="#native-apps">Native apps</a>
       <a href="#ios">iOS and Safari</a>
       <a href="#desktop">Desktop browsers</a>
       <a href="#tested">What has been tested</a>
@@ -84,39 +84,66 @@
       </ul>
     </section>
 
-    <section id="origins">
-      <h2>Native-app origins</h2>
+    <section id="native-apps">
+      <h2>Native apps as Verifiers</h2>
       <p>
-        A native Android app can be the Verifier without a browser: it calls
-        <code>CredentialManager.getCredential</code> with a <code>GetDigitalCredentialOption</code> holding the same
-        <code>org-iso-mdoc</code> request, and gets the same picker. A WebView has no Digital Credentials API, and a
-        Custom Tab is Chrome, so the response stays in that page.
+        A native app uses the web flow. It opens a page on its own domain in a browser surface, the page runs the
+        client library as any web page would (platform wallets and web wallets alike), and the page hands the checked
+        result back to the app. Wallets bind the response to that page's origin; the app trusts the page because it's
+        the app owner's own domain.
       </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Platform</th><th>Opening the page</th><th>Handing the result back</th><th>Size</th></tr></thead>
+          <tbody>
+            <tr><td>Android</td><td>Custom Tab</td><td>Custom Tabs message channel, verified with Digital Asset Links; send in pieces</td><td>No limit</td></tr>
+            <tr><td>Android</td><td>Custom Tab</td><td>The page navigates to an App Link carrying the result</td><td>What fits in a URL</td></tr>
+            <tr><td>iOS</td><td><code>ASWebAuthenticationSession</code></td><td>The page navigates to the session's callback URL carrying the result</td><td>What fits in a URL</td></tr>
+            <tr><td>Either</td><td>Any</td><td>The page posts the result to the app's own backend, which the app already talks to</td><td>No limit</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note warning">
+        Not yet tested: whether a web wallet's tab, opened from a Custom Tab, keeps its link back to the page; and
+        whether the Digital Credentials API is available inside <code>ASWebAuthenticationSession</code>.
+      </p>
+      <h3 id="origins">Calling platform wallets directly on Android</h3>
       <p>
-        The transcript needs an origin string, and for an app caller Android's <code>getOrigin</code> returns none.
-        The Wallet still knows who called: Android gives it the calling app's package name and signing certificates.
-        <a href="./spec.html#TR-2">TR-2</a> says how to turn them into the origin string: <code>android:apk-key-hash:</code>
-        followed by the base64url SHA-256 of the app's signing certificate. This is the format Android's holder documentation,
-        Multipaz, and Google Wallet use. The calling app computes the same string for its own transcript.
-      </p>
-      <p class="note">
-        The reference Android wallet used <code>android-app:&lt;package name&gt;</code> before this was settled, and is
-        moving to <code>android:apk-key-hash:</code>. Until that release, the
-        <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/rp-app">example app</a> tries both strings.
+        On Android an app can also skip the browser and call platform wallets through
+        <code>CredentialManager.getCredential</code> with a <code>GetDigitalCredentialOption</code>; web wallets aren't
+        reachable this way. Android reports no origin for an app caller, but it gives the Wallet the app's package name
+        and signing certificates. The origin string is then <code>android:apk-key-hash:</code> followed by the base64url
+        SHA-256 of the app's signing certificate <a class="rid" href="./spec.html#TR-2">TR-2</a>, the format Android's holder
+        documentation, Multipaz, and Google Wallet use. The app computes the same string for its own transcript. The
+        reference Android wallet still uses an older format and is moving to this one.
       </p>
     </section>
 
     <section id="ios">
       <h2>iOS and Safari</h2>
       <ul>
-        <li>Safari 26 ships the Digital Credentials API, including the <code>org-iso-mdoc</code> protocol.</li>
-        <li>Testing on iOS showed that a wallet can read the SMART request from <code>requestInfo</code>, which is why
-          the spec carries the request only there.</li>
-        <li>There is no reference iOS wallet, and no checked-in iOS capture yet. The
+        <li><b>Browser.</b> Safari 26 (iOS, iPadOS, and macOS 26) ships the Digital Credentials API with the
+          <code>org-iso-mdoc</code> protocol. On a Mac, the request continues on a nearby iPhone.</li>
+        <li><b>Registering as a wallet.</b> A wallet app answers through an Identity Document Provider extension. The
+          entitlement that allows this (<code>com.apple.developer.identity-document-services.document-provider.mobile-document-types</code>)
+          lists a handful of document types by default; Apple approves additional ones on request. A wallet needs
+          <code>org.smarthealthit.checkin.1</code> approved for it before it can register for this document type.</li>
+        <li><b>Reading the SMART request.</b> Before the patient interacts, the extension sees only a parsed summary of the
+          request, without <code>requestInfo</code>. Once the patient interacts, the extension calls
+          <code>sendResponse</code>, and its closure receives the raw request: <code>deviceRequest</code> and
+          <code>encryptionInfo</code>, including <code>requestInfo</code> <a class="rid" href="./spec.html#WRQ-5">WRQ-5</a>.</li>
+        <li><b>Letting the patient choose.</b> The wallet can hold that closure open while it shows its own screens,
+          item by item <a class="rid" href="./spec.html#HOLD-1">HOLD-1</a>, and complete it with the sealed response
+          when the patient is done. This isn't a documented pattern, but it works on iOS 26.</li>
+        <li><b>The origin.</b> Safari gives the extension the calling page's origin as a URL, which reads
+          <code>https://clinic.example/</code> with a trailing slash. The transcript uses the origin without it
+          <a class="rid" href="./spec.html#TR-2">TR-2</a>, so strip the slash before hashing. For a page in an iframe,
+          the origin is the top-level page's.</li>
+        <li><b>Native iOS apps</b> have no public API for asking a third-party wallet directly. They use the pattern in
+          <a href="#native-apps">Native apps as Verifiers</a>.</li>
+        <li>There is no reference iOS wallet or checked-in iOS capture yet. The
           <a href="https://github.com/smart-health-checkin/swift">Swift package</a> implements the Verifier and Wallet
-          sides and runs the spec's conformance cases, but it hasn't been tested end to end with Safari.</li>
-        <li>How an iOS app registers as a wallet for this document type is not documented here, because it hasn't
-          been tried in this project.</li>
+          sides and runs the spec's conformance cases.</li>
       </ul>
     </section>
 

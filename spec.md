@@ -671,7 +671,7 @@ SessionTranscript = [null, null, Handover]
 
 **[TR-1]** `encryptionInfoBase64url` SHALL be the exact `encryptionInfo` string the Verifier sent, not a re-encoding of its decoded bytes.
 
-**[TR-2]** For a web page, `origin` SHALL be the ASCII serialization of the calling page's origin: scheme, `://`, host, and `:port` only for a non-default port, with no trailing slash (for example `https://clinic.example`). For a native app, it SHALL be the origin string its platform reports to the Wallet. Where the platform reports none, as Android does for app callers, it SHALL be `android:apk-key-hash:` followed by the base64url SHA-256 of the DER-encoded signing certificate the platform reports for the calling app (its current certificate, if it has a rotation history). Companion platform notes cover each platform.
+**[TR-2]** For a web page, `origin` SHALL be the ASCII serialization of the calling page's origin: scheme, `://`, host, and `:port` only for a non-default port, with no trailing slash (for example `https://clinic.example`). A Wallet SHALL use this serialization even when its platform delivers the origin in another form, such as a URL with a trailing slash. For a native app, it SHALL be the origin string its platform reports to the Wallet. Where the platform reports none, as Android does for app callers, it SHALL be `android:apk-key-hash:` followed by the base64url SHA-256 of the DER-encoded signing certificate the platform reports for the calling app (its current certificate, if it has a rotation history). Companion platform notes cover each platform.
 
 **[TR-3]** The Wallet SHALL take the origin only from the browser or platform, never from anything in the request.
 
