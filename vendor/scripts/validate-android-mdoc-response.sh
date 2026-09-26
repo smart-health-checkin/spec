@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
 # The Android wallet lives in its own repo; check it out next to this one.
 ANDROID_DIR="${ANDROID_DIR:-$PROJECT_DIR/../android-wallet}"
-GENERATED_DIR="$ANDROID_DIR/app/build/generated/mdoc-validation/ts-smart-checkin-basic"
-REQUEST_FIXTURE_DIR="$PROJECT_DIR/fixtures/dcapi-requests/ts-smart-checkin-basic"
+GENERATED_DIR="$ANDROID_DIR/app/build/generated/mdoc-validation/synthetic-basic"
+REQUEST_FIXTURE_DIR="$PROJECT_DIR/fixtures/dcapi-requests/synthetic-basic"
 OUT_DIR="$PROJECT_DIR/fixtures/responses/android-kotlin-generated"
 
 if ! command -v bun >/dev/null 2>&1; then

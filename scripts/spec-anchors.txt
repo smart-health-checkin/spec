@@ -1,12 +1,13 @@
-# Section anchors other pages link to. Each must keep resolving in _site/spec.html,
-# as a heading id or an explicit <a id> alias (scripts/check-spec-anchors.ts).
+# Section anchors other pages link to. Each must resolve exactly once in
+# _site/spec.html (scripts/check-spec-anchors.ts). Regenerate this list when
+# headings change, and fix the links that pointed at a removed heading.
 smart-health-check-in-1-0
-0-front-matter
+0-status
 1-introduction
-1-1-core-trust-rule
-1-2-why-this-design
+1-1-what-the-mdoc-layer-is-for
+1-2-design-in-brief
 1-3-handoffs-as-on-ramps
-1-4-deliberately-out-of-scope
+1-4-out-of-scope
 1-5-companion-material
 2-terminology-and-conventions
 3-architecture-overview
@@ -23,6 +24,7 @@ smart-health-check-in-1-0
 5-4-3-extension-selectors
 5-5-canonical-version-handling
 5-6-accepted-media-types
+5-7-identity-trust-and-holder-control
 6-clinical-response-model
 6-1-normative-typescript-model
 6-2-artifact-and-status-semantics
@@ -35,21 +37,14 @@ smart-health-check-in-1-0
 8-3-sessiontranscript
 8-4-wallet-request-handling-and-response-construction
 8-5-hpke-encryption-and-verifier-processing
-8-6-validation-checklist
+8-6-encoding-rules-and-signed-bytes
+8-7-message-structures
 9-security-privacy-extension-points-and-internationalization
 9-1-security-considerations
 9-2-privacy-considerations
 9-3-identifiers-and-extension-points
 9-4-internationalization
-appendix-a-same-device-diagnostic-bridge
-a-1-fixed-identifiers
-a-2-digital-credentials-api-wrappers
-a-3-devicerequest-docrequest-and-tag-24-itemsrequest
-a-4-optional-per-docrequest-readerauth
-a-5-encryptioninfo-sessiontranscript-and-hpke-context
-a-6-direct-dcapiresponse
-a-7-issuer-signed-smart-response-item-and-device-authentication
-a-8-extraction-and-validation-reminders
+appendix-a-worked-example
 references-and-companion-material
 normative-references
 informative-references

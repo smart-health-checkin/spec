@@ -41,7 +41,7 @@ Last fetched: April 2026.
 - Local CMWallet matcher example — upstream CMWallet `matcher/hardcoded_matcher.c`, `matcher/dcql.c`
 - Local CMWallet sample DCQL request (legacy shape) — upstream CMWallet `matcher/request.json`
 - Local mirror of shl-wallet Rust matcher — `shl-wallet-matcher_rs/matcher_rs_src_main.rs` (Cargo.toml + main.rs + README)
-- Archived OID4VP/DCQL notes — `archive/legacy-oid4vp/` (historical context only)
+- Archived OID4VP/DCQL notes — [https://github.com/smart-health-checkin/notes/tree/main/research/legacy-oid4vp](notes repo, historical context only)
 
 ## Background reading
 

@@ -12,36 +12,25 @@ Rules:
 - Generated debug summaries should be stable JSON so they can become unit-test
   inputs.
 
-Current fixture roots:
+Fixture roots:
 
 - `dcapi-requests/` - DeviceRequest and ItemsRequest fixtures.
 - `responses/` - DeviceResponse or response-side mdoc fixtures.
-- `transcripts/` - SessionTranscript byte fixtures.
 - `captures/` - normalized browser/Android capture bundles.
 
-Notable checked-in fixtures:
+Notable fixtures:
 
-- `dcapi-requests/real-chrome-android-smart-checkin-v2/` and
-    `responses/real-chrome-android-smart-checkin-v2/` - the current real
-    Chrome/Android capture (wallet-v0.3.6, 2026-09-26): the same request shape
-    as below, with the ISO 18013-5 detached `deviceSignature` payload and MSO
-    `validityInfo`. Includes an intentionally public test-only HPKE private JWK.
-    `pymdoc-byte-check.json` checks it independently with pyMDOC/cryptography.
-- `dcapi-requests/real-chrome-android-smart-checkin/` - (pre-fix; superseded by
-    `-v2`, its response attaches the `deviceSignature` payload) real Chrome/Android
-    Credential Manager SMART Health Check-in request from a local handler run, with
-    decoded `DeviceRequest`, `ItemsRequest`, `EncryptionInfo`, and
-    `SessionTranscript` sidecars. Includes an intentionally public test-only RP
-    HPKE private JWK for reopening the matching encrypted response fixture.
-- `dcapi-requests/ts-smart-checkin-readerauth/` - synthetic SMART request with
-   per-`DocRequest.readerAuth`, the exact tag-24 `ItemsRequest`,
-   `SessionTranscript`, detached readerAuth COSE_Sign1, and test-only reader
-   certificate artifacts. Android parses this fixture and verifies the detached
-   signature.
-- `responses/real-chrome-android-smart-checkin/` - matching real Android wallet
-     response debug artifacts, including the encrypted `dcapi` wrapper, plaintext
-     `DeviceResponse`, issuer/device COSE artifacts, Python byte-check output, and
-    saved RP-web HPKE-open inspection.
+- `dcapi-requests/android-chrome-capture/` and `responses/android-chrome-capture/` -
+  a real Chrome/Android capture: Chrome 145 on an Android 17 emulator, answered by
+  the reference Android wallet 0.3.6, with the detached `deviceSignature` and MSO
+  `validityInfo`. Includes an intentionally public test-only HPKE private JWK so
+  anyone can reopen the response. `pymdoc-byte-check.json` checks it independently
+  with pyMDOC/cryptography. Spec Appendix A walks it byte by byte.
+- `dcapi-requests/synthetic-basic/` - a deterministic synthetic request.
+- `dcapi-requests/synthetic-reader-auth/` - a synthetic request with
+  per-`DocRequest.readerAuth`, the exact tag-24 `ItemsRequest`,
+  `SessionTranscript`, detached readerAuth COSE_Sign1, and test-only reader
+  certificate artifacts.
 
 Current fixture coverage should stay aligned with the spec source of truth:
 

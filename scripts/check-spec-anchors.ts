@@ -13,4 +13,4 @@ if (missing.length || dupes.length) {
   if (dupes.length) console.error(`duplicate ids: ${dupes.join(", ")}`);
   process.exit(1);
 }
-console.log(`All ${wanted.length} legacy anchors resolve; no duplicate ids`);
+console.log(`All ${wanted.length} section anchors resolve; no duplicate ids`);

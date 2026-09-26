@@ -36,9 +36,6 @@ bun "$ROOT/scripts/check-spec-anchors.ts" "$SITE_DIR/spec.html"
 # Every link from the explainers into the spec or between pages resolves.
 bun "$ROOT/scripts/check-site-links.ts" "$SITE_DIR"
 cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
-# The web-wallet hand-off is now documented by the client library.
-HANDOFF="https://smart-health-checkin.org/client/docs/web-wallet-handoff.html"
-printf '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=%s"><link rel="canonical" href="%s"><title>Moved</title><p>Moved to <a href="%s">%s</a>.</p>\n' "$HANDOFF" "$HANDOFF" "$HANDOFF" "$HANDOFF" > "$SITE_DIR/web-wallet-protocol.html"
 # This repo deploys to smart-health-checkin.org/spec/. The org site
 # (smart-health-checkin.github.io) serves the apex and /assets/ — the design
 # system and the shared chrome every page here loads — and the draft spec is

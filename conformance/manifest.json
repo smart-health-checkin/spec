@@ -12,12 +12,12 @@
   },
   "cases": [
     {
-      "id": "request-json/capture-v2",
+      "id": "request-json/capture",
       "capability": "request-json",
       "description": "The request from the real Chrome/Android capture.",
       "rule": "REQ-1, REQ-2",
       "inputs": {
-        "request": "request-json/capture-v2/request.json"
+        "request": "request-json/capture/request.json"
       },
       "expected": {
         "outcome": "accept"
@@ -194,12 +194,12 @@
       "status": "active"
     },
     {
-      "id": "request-json/legacy-members-ignored",
+      "id": "request-json/unknown-selector-members-ignored",
       "capability": "request-json",
-      "description": "Old selector members canonical and resource are ignored like any unknown member.",
+      "description": "Unknown selector members (here canonical and resource) are ignored.",
       "rule": "JSON-3",
       "inputs": {
-        "request": "request-json/legacy-members-ignored/request.json"
+        "request": "request-json/unknown-selector-members-ignored/request.json"
       },
       "expected": {
         "outcome": "accept"
@@ -577,12 +577,12 @@
       "status": "active"
     },
     {
-      "id": "response-json/capture-v2",
+      "id": "response-json/capture",
       "capability": "response-json",
       "description": "The response from the real capture.",
       "rule": "RSP-1",
       "inputs": {
-        "response": "response-json/capture-v2/response.json"
+        "response": "response-json/capture/response.json"
       },
       "expected": {
         "outcome": "accept"
@@ -860,13 +860,13 @@
       "status": "active"
     },
     {
-      "id": "cross-validation/capture-v2",
+      "id": "cross-validation/capture",
       "capability": "cross-validation",
       "description": "The real capture's request and response.",
       "rule": "XV-1, XV-2, XV-3",
       "inputs": {
-        "request": "cross-validation/capture-v2/request.json",
-        "response": "cross-validation/capture-v2/response.json"
+        "request": "cross-validation/capture/request.json",
+        "response": "cross-validation/capture/response.json"
       },
       "expected": {
         "outcome": "accept"
@@ -1217,17 +1217,17 @@
       "status": "active"
     },
     {
-      "id": "request-cbor/capture-v2",
+      "id": "request-cbor/capture",
       "capability": "request-cbor",
       "description": "The navigator argument from the real capture.",
       "rule": "WRQ-0, WRQ-6",
       "inputs": {
-        "navigatorArgument": "request-cbor/capture-v2/navigator-argument.json"
+        "navigatorArgument": "request-cbor/capture/navigator-argument.json"
       },
       "expected": {
         "outcome": "accept",
         "outputs": {
-          "smartRequest": "request-cbor/capture-v2/expected-smart-request.json"
+          "smartRequest": "request-cbor/capture/expected-smart-request.json"
         }
       },
       "requirements": [
@@ -1578,18 +1578,18 @@
       "status": "active"
     },
     {
-      "id": "transcript/capture-v2",
+      "id": "transcript/capture",
       "capability": "transcript",
       "description": "The real capture's origin (http, non-default port) and encryptionInfo.",
       "rule": "TR-1, TR-2",
       "inputs": {
-        "origin": "transcript/capture-v2/origin.txt",
-        "encryptionInfo": "transcript/capture-v2/encryption-info.b64u.txt"
+        "origin": "transcript/capture/origin.txt",
+        "encryptionInfo": "transcript/capture/encryption-info.b64u.txt"
       },
       "expected": {
         "outcome": "accept",
         "outputs": {
-          "sessionTranscript": "transcript/capture-v2/expected-session-transcript.cbor"
+          "sessionTranscript": "transcript/capture/expected-session-transcript.cbor"
         }
       },
       "requirements": [
@@ -1639,20 +1639,20 @@
       "status": "active"
     },
     {
-      "id": "hpke-open/capture-v2",
+      "id": "hpke-open/capture",
       "capability": "hpke-open",
       "description": "Open the real capture's response.",
       "rule": "VRS-2, VRS-3, HPKE-1",
       "inputs": {
-        "credential": "hpke-open/capture-v2/credential.json",
-        "recipientPrivateJwk": "hpke-open/capture-v2/recipient-private.jwk.json",
-        "origin": "hpke-open/capture-v2/origin.txt",
-        "encryptionInfo": "hpke-open/capture-v2/encryption-info.b64u.txt"
+        "credential": "hpke-open/capture/credential.json",
+        "recipientPrivateJwk": "hpke-open/capture/recipient-private.jwk.json",
+        "origin": "hpke-open/capture/origin.txt",
+        "encryptionInfo": "hpke-open/capture/encryption-info.b64u.txt"
       },
       "expected": {
         "outcome": "accept",
         "outputs": {
-          "deviceResponse": "hpke-open/capture-v2/expected-device-response.cbor"
+          "deviceResponse": "hpke-open/capture/expected-device-response.cbor"
         }
       },
       "requirements": [
@@ -1822,18 +1822,18 @@
       "status": "active"
     },
     {
-      "id": "mdoc-verify/capture-v2",
+      "id": "mdoc-verify/capture",
       "capability": "mdoc-verify",
       "description": "The real capture's DeviceResponse (detached device signature).",
       "rule": "VRS-4, VRS-5, VRS-6, VRS-7, VRS-8",
       "inputs": {
-        "deviceResponse": "mdoc-verify/capture-v2/device-response.cbor",
-        "credential": "mdoc-verify/capture-v2/credential.json",
-        "recipientPrivateJwk": "mdoc-verify/capture-v2/recipient-private.jwk.json",
-        "origin": "mdoc-verify/capture-v2/origin.txt",
-        "encryptionInfo": "mdoc-verify/capture-v2/encryption-info.b64u.txt",
-        "sessionTranscript": "mdoc-verify/capture-v2/session-transcript.cbor",
-        "now": "mdoc-verify/capture-v2/now.txt"
+        "deviceResponse": "mdoc-verify/capture/device-response.cbor",
+        "credential": "mdoc-verify/capture/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/capture/recipient-private.jwk.json",
+        "origin": "mdoc-verify/capture/origin.txt",
+        "encryptionInfo": "mdoc-verify/capture/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/capture/session-transcript.cbor",
+        "now": "mdoc-verify/capture/now.txt"
       },
       "expected": {
         "outcome": "accept"
@@ -1844,28 +1844,6 @@
         "VRS-6",
         "VRS-7",
         "VRS-8"
-      ],
-      "status": "active"
-    },
-    {
-      "id": "mdoc-verify/capture-v1-attached-equal",
-      "capability": "mdoc-verify",
-      "description": "The pre-fix capture: device signature payload attached but equal to the rebuilt DeviceAuthentication. Accepted.",
-      "rule": "VRS-7",
-      "inputs": {
-        "deviceResponse": "mdoc-verify/capture-v1-attached-equal/device-response.cbor",
-        "credential": "mdoc-verify/capture-v1-attached-equal/credential.json",
-        "recipientPrivateJwk": "mdoc-verify/capture-v1-attached-equal/recipient-private.jwk.json",
-        "origin": "mdoc-verify/capture-v1-attached-equal/origin.txt",
-        "encryptionInfo": "mdoc-verify/capture-v1-attached-equal/encryption-info.b64u.txt",
-        "sessionTranscript": "mdoc-verify/capture-v1-attached-equal/session-transcript.cbor",
-        "now": "mdoc-verify/capture-v1-attached-equal/now.txt"
-      },
-      "expected": {
-        "outcome": "accept"
-      },
-      "requirements": [
-        "VRS-7"
       ],
       "status": "active"
     },
@@ -1937,6 +1915,28 @@
       },
       "requirements": [
         "ALG-2"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "mdoc-verify/attached-payload-equal",
+      "capability": "mdoc-verify",
+      "description": "Device signature carries an attached payload equal to the rebuilt DeviceAuthentication: accepted.",
+      "rule": "VRS-7",
+      "inputs": {
+        "deviceResponse": "mdoc-verify/attached-payload-equal/device-response.cbor",
+        "credential": "mdoc-verify/attached-payload-equal/credential.json",
+        "recipientPrivateJwk": "mdoc-verify/attached-payload-equal/recipient-private.jwk.json",
+        "origin": "mdoc-verify/attached-payload-equal/origin.txt",
+        "encryptionInfo": "mdoc-verify/attached-payload-equal/encryption-info.b64u.txt",
+        "sessionTranscript": "mdoc-verify/attached-payload-equal/session-transcript.cbor",
+        "now": "mdoc-verify/attached-payload-equal/now.txt"
+      },
+      "expected": {
+        "outcome": "accept"
+      },
+      "requirements": [
+        "VRS-7"
       ],
       "status": "active"
     },
@@ -2362,16 +2362,16 @@
       "status": "active"
     },
     {
-      "id": "wallet-response/capture-v2-request",
+      "id": "wallet-response/capture-request",
       "capability": "wallet-response",
       "description": "Answer the real capture's request; the reference verifier must accept the result.",
       "rule": "WRS-0, HPKE-1, HPKE-2",
       "inputs": {
-        "navigatorArgument": "wallet-response/capture-v2-request/navigator-argument.json",
-        "smartResponse": "wallet-response/capture-v2-request/smart-response.json",
-        "recipientPrivateJwk": "wallet-response/capture-v2-request/recipient-private.jwk.json",
-        "origin": "wallet-response/capture-v2-request/origin.txt",
-        "encryptionInfo": "wallet-response/capture-v2-request/encryption-info.b64u.txt"
+        "navigatorArgument": "wallet-response/capture-request/navigator-argument.json",
+        "smartResponse": "wallet-response/capture-request/smart-response.json",
+        "recipientPrivateJwk": "wallet-response/capture-request/recipient-private.jwk.json",
+        "origin": "wallet-response/capture-request/origin.txt",
+        "encryptionInfo": "wallet-response/capture-request/encryption-info.b64u.txt"
       },
       "expected": {
         "outcome": "accept"

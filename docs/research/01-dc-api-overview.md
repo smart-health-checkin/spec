@@ -4,7 +4,7 @@ Captured from: Chrome 141 dev blog, Android Developers Holder docs, digitalcrede
 W3C-FedID DC issue #36 (HOWTO).
 
 Note: this is platform background. The active SMART Check-in design is the direct
-`org-iso-mdoc` profile in [`07-smart-checkin-on-mdoc.md`](07-smart-checkin-on-mdoc.md). OID4VP examples
+`org-iso-mdoc` profile in [`07-smart-checkin-on-mdoc.md`](https://github.com/smart-health-checkin/notes/blob/main/research/07-smart-checkin-on-mdoc.md) (in the notes repo). OID4VP examples
 below are useful for contrast and deferred compatibility only.
 
 ## Status (April 2026)

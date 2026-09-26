@@ -105,7 +105,7 @@ always "your SessionTranscript bytes don't match what the browser computed."
 
 For posterity: under the OID4VP profile path, this is where the JWE wrapping
 and OpenID4VPDCAPIHandover would live. We do not implement either — see
-`../CONTEXT.md` and `07-smart-checkin-on-mdoc.md` for why. The DC API + ISO mdoc + HPKE stack already
+`../CONTEXT.md` and [`07-smart-checkin-on-mdoc.md`](https://github.com/smart-health-checkin/notes/blob/main/research/07-smart-checkin-on-mdoc.md) (notes repo) for why. The DC API + ISO mdoc + HPKE stack already
 gives us authentication, integrity, and confidentiality without the second
 encryption layer.
 

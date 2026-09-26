@@ -1,4 +1,4 @@
-// Computes spec.md Appendix A from the real-chrome-android-smart-checkin-v2
+// Computes spec.md Appendix A from the android-chrome-capture
 // capture, checking every step against the fixture's own files.
 //   bun scripts/worked-example.ts          rewrite the appendix in spec.md
 //   bun scripts/worked-example.ts --check  fail if spec.md's appendix differs
@@ -22,8 +22,8 @@ import {
 } from "@smart-health-checkin/client/wire";
 
 const root = new URL("..", import.meta.url).pathname;
-const REQ = `${root}fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2`;
-const RES = `${root}fixtures/responses/real-chrome-android-smart-checkin-v2`;
+const REQ = `${root}fixtures/dcapi-requests/android-chrome-capture`;
+const RES = `${root}fixtures/responses/android-chrome-capture`;
 const bytes = async (p: string) => new Uint8Array(await Bun.file(p).arrayBuffer());
 const text = async (p: string) => (await Bun.file(p).text()).trim();
 const json = async (p: string) => JSON.parse(await Bun.file(p).text());

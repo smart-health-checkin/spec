@@ -1,11 +1,11 @@
 {
   "crv": "P-256",
-  "d": "26STQCUmzVMGkLPj9w35LnpxzzXOKFauoHNfVkR3iRk",
+  "d": "nd31RaJMT8mjMLIIP0Y6Br1Ah4XXuWFF6WPm_FX2imM",
   "ext": true,
   "key_ops": [
     "deriveBits"
   ],
   "kty": "EC",
-  "x": "Pg-TztyPkuRwb-kF5O743oYaq07xoWKRNULMyCATnus",
-  "y": "3ZLBg4W0ifEjy_u1qH_pCy4vhZL5GwpkOW8LirKZ1qc"
+  "x": "5ArOKfdNDN7vATQVnAwCFBmfxKmVSYSNxqRhu0EZ9As",
+  "y": "xPWjfaYO1bslQQDsHw_wm_qXOPrgUWanKSt8fuWwwWw"
 }

@@ -8,8 +8,8 @@ const md = await Bun.file(`${root}spec.md`).text();
 const cddl = [...md.matchAll(/^```cddl\n([\s\S]*?)^```/gm)].map((m) => m[1]).join("\n");
 const prelude = "";
 
-const REQ = "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2";
-const RES = "fixtures/responses/real-chrome-android-smart-checkin-v2";
+const REQ = "fixtures/dcapi-requests/android-chrome-capture";
+const RES = "fixtures/responses/android-chrome-capture";
 const cases: [string, string][] = [
   ["DeviceRequest", `${REQ}/device-request.cbor`],
   ["ItemsRequestBytes", `${REQ}/items-request-tag24.cbor`],
@@ -42,13 +42,13 @@ for (const [rule, file] of cases) {
     console.error(`FAIL ${rule} <- ${file}\n${out.split("\n").slice(0, 8).join("\n")}`);
   }
 }
-// The pre-fix capture has an attached device-signature payload, which 1.0
-// forbids; the CDDL must reject it.
+// A device signature with an attached payload is what producers must never
+// send; the CDDL must reject it (conformance case mdoc-verify/attached-payload-equal).
 {
   const schema = `${dir.trim()}/neg.cddl`;
   await Bun.write(schema, `start = DeviceResponse\n${prelude}${cddl}`);
-  const r = await $`${tool} ${schema} validate ${root}fixtures/responses/real-chrome-android-smart-checkin/device-response.cbor`.quiet().nothrow();
-  if (r.exitCode === 0) { failures++; console.error("FAIL the pre-fix DeviceResponse (attached device signature) was accepted"); }
+  const r = await $`${tool} ${schema} validate ${root}conformance/mdoc-verify/attached-payload-equal/device-response.cbor`.quiet().nothrow();
+  if (r.exitCode === 0) { failures++; console.error("FAIL a DeviceResponse with an attached device-signature payload was accepted"); }
 }
 if (failures) { console.error(`${failures} of ${cases.length} CDDL checks failed`); process.exit(1); }
 console.log(`All ${cases.length} fixture structures match the spec's CDDL`);

@@ -6,8 +6,6 @@ Short title: **SMART Health Check-in 1.0**. Suggested citation label: **SHC-Chec
 
 ---
 
-<a id="0-front-matter"></a>
-
 ## 0. Status
 
 Editor's draft 1.0, for implementer review. Editors, license, and publication details are still to be settled; the text is intended for CC BY 4.0, and its TypeScript, CDDL, and examples for use in implementations and tests. Identifiers, URLs, keys, and clinical data in examples are illustrative unless this document marks them as fixed values.
@@ -35,8 +33,6 @@ A request says what the Verifier is looking for; it does not limit what the Hold
 
 The mdoc layer is an envelope. It carries the response encrypted to the Verifier, bound to the calling origin, and signed so that it is intact and well formed. Every signature and digest is real and conforms to ISO/IEC 18013-5, so strict mdoc software accepts it. The signatures do not identify a trusted issuer: the Wallet signs its own response. §7 states exactly what each signal proves.
 
-<a id="1-2-why-this-design"></a>
-
 ### 1.2 Design in brief
 
 - The Digital Credentials API with `org-iso-mdoc` is what browsers and phone platforms support today, so it is the interoperability surface.
@@ -46,8 +42,6 @@ The mdoc layer is an envelope. It carries the response encrypted to the Verifier
 ### 1.3 Handoffs as on-ramps
 
 A handoff gets the Holder to a web page that calls the Digital Credentials API: a text-message link, a QR code at the front desk, a portal button, or a kiosk that passes the session to a phone. Handoffs are product and workflow design, not part of this protocol. Everything before the API call can vary by deployment without changing the request, the response, or the validation rules.
-
-<a id="1-4-deliberately-out-of-scope"></a>
 
 ### 1.4 Out of scope
 
@@ -75,8 +69,8 @@ Every requirement starts with a bold ID in brackets, such as [XV-2]. IDs are sta
 
 **Roles**
 
-- **Verifier:** the software that builds a request, invokes the Wallet, and validates and uses the response. A clinic web page, kiosk, or patient portal. Earlier drafts called it the Requester.
-- **Wallet:** the software that receives a request, shows it to the Holder, and builds and returns the response. Earlier drafts called it the Responder.
+- **Verifier:** the software that builds a request, invokes the Wallet, and validates and uses the response. A clinic web page, kiosk, or patient portal.
+- **Wallet:** the software that receives a request, shows it to the Holder, and builds and returns the response.
 - **Holder:** the patient, or a person acting for them, who decides what to share.
 - **Deployment profile:** a document that constrains this specification for one deployment, for example by requiring reader authentication or naming trusted certificates.
 - **Extension author:** the author of an extension selector kind or media type (§9.3).
@@ -548,8 +542,6 @@ Passing these checks means the response is well formed and consistent with the r
 
 ---
 
-<a id="1-1-core-trust-rule"></a>
-
 ## 7. Trust Framework
 
 SMART Health Check-in lets two parties exchange data when the Holder chooses to, without first joining a shared trust framework. Each signal in the exchange proves something specific and nothing more. Deployments can add trust requirements on top (§9.3).
@@ -607,8 +599,6 @@ sequenceDiagram
     B-->>V: DigitalCredential
     V->>V: Decrypt, verify signatures and digests, validate (§6.4)
 ```
-
-<a id="a-1-fixed-identifiers"></a>
 
 ### 8.1 Identifiers and constants
 
@@ -703,10 +693,6 @@ SessionTranscript = [null, null, Handover]
 6. **[WRS-6]** Sign the session: a `COSE_Sign1` with protected header `{1: -7}` and payload `null`, signed with the private key for `deviceKeyInfo.deviceKey` over the detached payload `DeviceAuthenticationBytes` (§8.6).
 7. **[WRS-7]** Build a `DeviceResponse` with `version` `"1.0"`, `status` `0`, and exactly one document holding the issuer-signed item, `issuerAuth`, `DeviceNameSpacesBytes`, and the device signature (§8.7).
 
-<a id="8-6-validation-checklist"></a>
-
-<a id="a-8-extraction-and-validation-reminders"></a>
-
 ### 8.5 HPKE encryption and Verifier processing
 
 **[HPKE-1]** The Wallet SHALL encrypt `CBOR(DeviceResponse)` with HPKE base mode, using the suite in §8.1, to `recipientPublicKey`, with `info = CBOR(SessionTranscript)` and an empty `aad`. `enc` is the 65-byte uncompressed P-256 public key.
@@ -755,13 +741,9 @@ Both sides produce identical bytes for everything that is hashed or signed by fo
 
 **[RA-2]** A Wallet that verifies `readerAuth` SHALL check the algorithm, rebuild `ReaderAuthenticationBytes` from its own `SessionTranscript` and the received `ItemsRequestBytes`, and verify the signature with the first certificate's key.
 
-<a id="appendix-a-same-device-diagnostic-bridge"></a>
-
 ### 8.7 Message structures
 
 This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fixed values. It describes what producers build. A receiver that finds a structure not matching it follows §§8.4–8.5: it fails only where a step says so, and otherwise warns. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
-
-<a id="a-2-digital-credentials-api-wrappers"></a>
 
 The Digital Credentials API request and result, in JSON:
 
@@ -769,8 +751,6 @@ The Digital Credentials API request and result, in JSON:
 { "protocol": "org-iso-mdoc", "data": { "deviceRequest": "<base64url>", "encryptionInfo": "<base64url>" } }
 { "protocol": "org-iso-mdoc", "data": { "response": "<base64url>" } }
 ```
-
-<a id="a-3-devicerequest-docrequest-and-tag-24-itemsrequest"></a>
 
 ```cddl
 DeviceRequest = {
@@ -800,10 +780,6 @@ ItemsRequest = {
 }
 ```
 
-<a id="a-4-optional-per-docrequest-readerauth"></a>
-
-<a id="a-5-encryptioninfo-sessiontranscript-and-hpke-context"></a>
-
 ```cddl
 EncryptionInfo = [
   "dcapi",
@@ -828,10 +804,6 @@ Handover = [ "dcapi", bstr .size 32 ]   ; SHA-256(dcapiInfo)
 ReaderAuthentication = [ "ReaderAuthentication", SessionTranscript, ItemsRequestBytes ]
 ReaderAuthenticationBytes = #6.24(bstr .cbor ReaderAuthentication)
 ```
-
-<a id="a-6-direct-dcapiresponse"></a>
-
-<a id="a-7-issuer-signed-smart-response-item-and-device-authentication"></a>
 
 ```cddl
 DcapiResponse = [
@@ -960,7 +932,7 @@ Display text includes `purpose`, `title`, `summary`, `message`, Questionnaire te
 
 ## Appendix A. Worked example
 
-This appendix follows one real capture, `fixtures/*/real-chrome-android-smart-checkin-v2`: Chrome on Android, with the reference Android wallet at `wallet-v0.3.6`. `scripts/worked-example.ts` computes every value below from the fixture files and checks each step; the build fails if this text and the fixture disagree. The capture's HPKE private key is published with it so anyone can repeat each step.
+This appendix follows one real capture, `fixtures/*/android-chrome-capture`: Chrome on Android, with the reference Android wallet 0.3.6. `scripts/worked-example.ts` computes every value below from the fixture files and checks each step; the build fails if this text and the fixture disagree. The capture's HPKE private key is published with it so anyone can repeat each step.
 
 <!-- BEGIN worked-example (generated by scripts/worked-example.ts; do not edit by hand) -->
 

@@ -139,7 +139,7 @@ We supply all three from scratch.
 ## Test strategy
 
 Three pillars; full strategy in
-[`09-pymdoc-cbor-grounding-strategy.md`](09-pymdoc-cbor-grounding-strategy.md).
+[`09-pymdoc-cbor-grounding-strategy.md`](https://github.com/smart-health-checkin/notes/blob/main/research/09-pymdoc-cbor-grounding-strategy.md) (in the notes repo).
 
 - **Cross-implementation golden files** — pyMDOC-CBOR issues; our TS verifier
   opens. Drives CBOR/MSO/COSE_Sign1 byte-level correctness for the layers it

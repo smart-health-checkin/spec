@@ -8,13 +8,13 @@ regenerate or validate those fixtures, not as runtime dependencies.
 | Fixture root | Generator/check | Purpose |
 | ------------ | --------------- | ------- |
 | `fixtures/responses/pymdoc-minimal/` | `tools/fixtures-tool/bin/issue-checkin.py` via pyMDOC-CBOR | Byte oracle for `IssuerSignedItem`, MSO, `valueDigests`, `issuerAuth`, and a minimal SMART response document. |
-| `fixtures/dcapi-requests/ts-smart-checkin-basic/` | `rp-web/scripts/generate-dcapi-request-fixtures.ts` | Deterministic positive direct `org-iso-mdoc` request fixture with SMART payload, `EncryptionInfo`, and test-only HPKE recipient keypair. |
-| `fixtures/dcapi-requests/ts-smart-checkin-readerauth/` | `rp-web/scripts/generate-dcapi-request-fixtures.ts` | Positive direct `org-iso-mdoc` request fixture with per-`DocRequest.readerAuth`, exact tag-24 `ItemsRequest`, direct `dcapi` SessionTranscript, detached COSE_Sign1, and test-only reader certificate artifacts. |
-| `fixtures/dcapi-requests/real-chrome-android-smart-checkin/` | Real Android handler run promoted from `/tmp/shc-handler-runs/run-1777649836829` + `rp-web/scripts/inspect-mdoc-request.ts` | Real Chrome/Android Credential Manager request with decoded `DeviceRequest`, `ItemsRequest`, `EncryptionInfo`, exact `SessionTranscript`, and intentionally public test-only RP HPKE private JWK. |
+| `fixtures/dcapi-requests/synthetic-basic/` | `rp-web/scripts/generate-dcapi-request-fixtures.ts` | Deterministic positive direct `org-iso-mdoc` request fixture with SMART payload, `EncryptionInfo`, and test-only HPKE recipient keypair. |
+| `fixtures/dcapi-requests/synthetic-reader-auth/` | `rp-web/scripts/generate-dcapi-request-fixtures.ts` | Positive direct `org-iso-mdoc` request fixture with per-`DocRequest.readerAuth`, exact tag-24 `ItemsRequest`, direct `dcapi` SessionTranscript, detached COSE_Sign1, and test-only reader certificate artifacts. |
+| `fixtures/dcapi-requests/android-chrome-capture/` | Real Chrome/Android run with the reference Android wallet 0.3.6, request built by the client library | Real Chrome Android request: DeviceRequest, ItemsRequest, EncryptionInfo, SessionTranscript, and a public test-only HPKE key |
 | `fixtures/dcapi-requests/negative-mattr-mdl/` | `rp-web/scripts/generate-dcapi-request-fixtures.ts` + captured Mattr fixture | Negative request metadata for unrelated mDL direct-mdoc captures. |
-| `../android-wallet/app/build/generated/mdoc-validation/ts-smart-checkin-basic/` | `AndroidMdocValidationFixtureTest` in the android-wallet repo | Deterministic Android-generated response artifacts, validated with the client library and pyMDOC. |
+| `../android-wallet/app/build/generated/mdoc-validation/synthetic-basic/` | `AndroidMdocValidationFixtureTest` in the android-wallet repo | Deterministic Android-generated response artifacts, validated with the client library and pyMDOC. |
 | `fixtures/responses/android-kotlin-generated/` | `vendor/scripts/validate-android-mdoc-response.sh` | Output inspection bundle from RP web HPKE-open + pyMDOC issuer-signed byte checks. |
-| `fixtures/responses/real-chrome-android-smart-checkin/` | Real Android handler run + RP web HPKE open + `rp-web/scripts/inspect-mdoc-response.ts` + `tools/fixtures-tool/bin/check-android-response.py` | Real wallet response debug artifacts, encrypted `dcapi` wrapper, plaintext `DeviceResponse`, COSE/MSO sidecars, Python mdoc/COSE verification output, and saved HPKE-open inspection. |
+| `fixtures/responses/android-chrome-capture/` | The same run: the wallet's encrypted response, opened with the capture's key | Encrypted `dcapi` wrapper, plaintext DeviceResponse, issuer and detached device COSE artifacts, pyMDOC byte check |
 | `fixtures/captures/2026-04-30-mattr-safari-org-iso-mdoc/` | Captured browser verifier + `rp-web` inspectors | Real direct `org-iso-mdoc` request and `EncryptionInfo` shape. |
 | `rp-web/src/protocol/index.test.ts` vectors | `bun test` | Request construction, SessionTranscript derivation, HPKE open/seal, and DeviceResponse inspection. |
 
@@ -115,7 +115,7 @@ model sanity reference.
 | Test | Oracle |
 | ---- | ------ |
 | Kotlin parses TS-generated `deviceRequest` and extracts `requestInfo.smart_health_checkin` | Local TS-generated request fixture |
-| Kotlin preserves tag-24 `ItemsRequest` bytes and verifies detached `DocRequest.readerAuth` | `fixtures/dcapi-requests/ts-smart-checkin-readerauth/` |
+| Kotlin preserves tag-24 `ItemsRequest` bytes and verifies detached `DocRequest.readerAuth` | `fixtures/dcapi-requests/synthetic-reader-auth/` |
 | Kotlin rejects unrelated Mattr mDL direct-mdoc request | Mattr capture fixture |
 | Kotlin direct `dcapi` SessionTranscript matches TS hex | `rp-web` `buildDcapiSessionTranscript()` |
 | Kotlin `IssuerSignedItem` tag-24 bytes hash to MSO `valueDigests` | pyMDOC-CBOR fixture invariants |

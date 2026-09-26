@@ -646,7 +646,7 @@
       <details class="advanced-loader">
         <summary>Load a different capture</summary>
         <div>
-          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>real-chrome-android-smart-checkin-v2</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2</code> and <code>fixtures/responses/real-chrome-android-smart-checkin-v2</code>. The Testing EHR can also open a run here directly.</p>
+          <p class="small">This page auto-loads the checked-in Chrome/Android capture (<code>android-chrome-capture</code>). To compare another capture, pick a folder laid out like <code>fixtures/dcapi-requests/android-chrome-capture</code> and <code>fixtures/responses/android-chrome-capture</code>. The Testing EHR can also open a run here directly.</p>
           <div class="button-row">
             <button id="loadExample" type="button">Reload checked-in capture</button>
             <button id="clearRun" class="secondary" type="button">Clear loaded run</button>
@@ -669,12 +669,11 @@
             <li><b>Response.</b> Check <code>SHA-256(issuer-signed-item-tag24.cbor)</code> against the MSO digest for the item's <code>digestID</code>, then verify <code>issuerAuth</code> and the detached device signature over <code>device-authentication.cbor</code>.</li>
           </ol>
           <p class="small">From a checkout of the spec repository, after <code>bun install</code>:</p>
-<pre class="wrap-pre">bun tools/wire/inspect-mdoc-request.ts fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2 --out /tmp/out/request
-bun tools/wire/inspect-mdoc-response.ts fixtures/responses/real-chrome-android-smart-checkin-v2/device-response.cbor --out /tmp/out/response</pre>
+<pre class="wrap-pre">bun tools/wire/inspect-mdoc-request.ts fixtures/dcapi-requests/android-chrome-capture --out /tmp/out/request
+bun tools/wire/inspect-mdoc-response.ts fixtures/responses/android-chrome-capture/device-response.cbor --out /tmp/out/response</pre>
           <p class="small">
             This capture's SMART response has 4 artifacts and 4 status entries. That describes this capture, not what
-            every response looks like. The older capture, <code>real-chrome-android-smart-checkin</code>, predates the
-            detached device signature and is kept for history.
+            every response looks like.
           </p>
         </div>
       </details>
@@ -686,8 +685,8 @@ bun tools/wire/inspect-mdoc-response.ts fixtures/responses/real-chrome-android-s
   </main>
 
   <script>
-    const REAL_REQUEST_BASE = "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2";
-    const REAL_RESPONSE_BASE = "fixtures/responses/real-chrome-android-smart-checkin-v2";
+    const REAL_REQUEST_BASE = "fixtures/dcapi-requests/android-chrome-capture";
+    const REAL_RESPONSE_BASE = "fixtures/responses/android-chrome-capture";
     const DEFAULT_CAPTURE_LABEL = "Checked-in real Chrome/Android capture (v2, detached device signature): run-1790428465319";
     const DEFAULT_CAPTURE_FILES = [
       [REAL_REQUEST_BASE + "/metadata.json", "manifest.json"],

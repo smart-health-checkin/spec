@@ -10,8 +10,8 @@ import {
 import { type SmartCheckinRequest } from "@smart-health-checkin/client";
 
 const OUT_ROOT = new URL("../../fixtures/dcapi-requests", import.meta.url).pathname;
-const FIXTURE_ID = "ts-smart-checkin-basic";
-const READER_AUTH_FIXTURE_ID = "ts-smart-checkin-readerauth";
+const FIXTURE_ID = "synthetic-basic";
+const READER_AUTH_FIXTURE_ID = "synthetic-reader-auth";
 const ORIGIN = "https://clinic.example";
 const NONCE = new Uint8Array(Array.from({ length: 32 }, (_, i) => i));
 

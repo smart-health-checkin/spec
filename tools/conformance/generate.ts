@@ -3,7 +3,7 @@
 //
 //   bun tools/conformance/generate.ts
 //
-// Positive cases come from the real Chrome/Android capture (-v2) and from
+// Positive cases come from the real Chrome/Android capture and from
 // synthetic requests and mdocs built here with keys we control. Every negative
 // case is ONE deliberate mutation of a positive one, made by code below, never
 // by hand-editing bytes. Expected results follow the decisions in the
@@ -38,10 +38,8 @@ import {
 
 const ROOT = join(import.meta.dir, "../..");
 const OUT = join(ROOT, "conformance");
-const CAPTURE_REQ = join(ROOT, "fixtures/dcapi-requests/real-chrome-android-smart-checkin-v2");
-const CAPTURE_RESP = join(ROOT, "fixtures/responses/real-chrome-android-smart-checkin-v2");
-const CAPTURE_V1_REQ = join(ROOT, "fixtures/dcapi-requests/real-chrome-android-smart-checkin");
-const CAPTURE_V1_RESP = join(ROOT, "fixtures/responses/real-chrome-android-smart-checkin");
+const CAPTURE_REQ = join(ROOT, "fixtures/dcapi-requests/android-chrome-capture");
+const CAPTURE_RESP = join(ROOT, "fixtures/responses/android-chrome-capture");
 
 type Outcome = "accept" | "warn" | "reject" | "warn-or-reject";
 type Expected = {
@@ -171,7 +169,7 @@ const formItem = (content: Record<string, unknown>) =>
     add({ capability: cap, slug, description, rule, inputs: files(cap, slug, { request: text ?? json(req) }), expected: { valid: false, reason } });
   const both = (extra: unknown) => request([extra, item({ id: "patient2" })]);
 
-  ok("capture-v2", "The request from the real Chrome/Android capture.", null, "REQ-1, REQ-2", undefined, captureRequestText);
+  ok("capture", "The request from the real Chrome/Android capture.", null, "REQ-1, REQ-2", undefined, captureRequestText);
   ok("minimal", "One selection.fhir item with an exact profile.", request([item()]), "REQ-2");
   ok("no-filters", "selection.fhir with no filter arrays: the wallet decides.", request([item({ content: { kind: "selection.fhir" } })]), "SEL-7");
   ok("empty-items", "An empty items array is valid (items SHOULD be non-empty).", request([]), "REQ-3");
@@ -182,7 +180,7 @@ const formItem = (content: Record<string, unknown>) =>
   ok("form-inline", "form.fhir with an inline Questionnaire.", request([formItem({ questionnaire: { resourceType: "Questionnaire", status: "active", item: [{ linkId: "q", text: "Why?", type: "string" }] } })]), "FORM-2");
   ok("profiles-from", "selection.fhir by profile family narrowed by resourceTypes.", request([item({ content: { kind: "selection.fhir", profilesFrom: ["http://hl7.org/fhir/us/core"], resourceTypes: ["Condition"] } })]), "SEL-3");
   ok("unknown-kind", "An unknown content.kind: the request stands; that item is unsupported.", both(item({ id: "x", content: { kind: "example.extension", anything: 1 } })), "SEL-9", { x: "unsupported" });
-  ok("legacy-members-ignored", "Old selector members canonical and resource are ignored like any unknown member.", request([item({ content: { kind: "selection.fhir", profiles: ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"], canonical: "x", resource: "Patient" } })]), "JSON-3");
+  ok("unknown-selector-members-ignored", "Unknown selector members (here canonical and resource) are ignored.", request([item({ content: { kind: "selection.fhir", profiles: ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"], canonical: "x", resource: "Patient" } })]), "JSON-3");
   ok("unknown-top-member", "Unknown top-level members are ignored.", request([item()], { futureThing: { a: 1 } }), "JSON-3");
   // Problems inside content affect only that item (REQ-2): the request stands, the item is unsupported.
   ok("mixed-form-with-profiles", "form.fhir that also carries profiles: that item is unsupported.", both(formItem({ questionnaireCanonical: PHQ2, profiles: ["http://example.org/p"] })), "FORM-1, REQ-2", { intake: "unsupported" });
@@ -238,7 +236,7 @@ const SHC = { verifiableCredential: ["eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZC
   const bad = (slug: string, description: string, resp: unknown, reason: string, rule: string, text?: string) =>
     add({ capability: cap, slug, description, rule, inputs: files(cap, slug, { response: text ?? json(resp) }), expected: { valid: false, reason } });
 
-  ok("capture-v2", "The response from the real capture.", captureResponse, "RSP-1");
+  ok("capture", "The response from the real capture.", captureResponse, "RSP-1");
   ok("minimal", "One FHIR Patient Artifact.", response([artifactFhir()], [fulfilled()]), "RSP-1");
   ok("declined-no-artifacts", "Everything declined, no Artifacts.", response([], [{ item: "patient", status: "declined" }]), "RSP-2, HOLD-4");
   ok("health-card", "A SMART Health Card Artifact.", response([{ id: "c1", mediaType: "application/smart-health-card", fulfills: ["patient"], value: SHC }], [fulfilled()]), "ART-6");
@@ -280,8 +278,8 @@ const SHC = { verifiableCredential: ["eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiIsImtpZC
     add({ capability: cap, slug, description, rule, status, pendingOn, inputs: files(cap, slug, { request: json(r), response: json(resp) }), expected });
 
   add({
-    capability: cap, slug: "capture-v2", description: "The real capture's request and response.", rule: "XV-1, XV-2, XV-3",
-    inputs: files(cap, "capture-v2", { request: captureRequestText, response: json(captureResponse) }), expected: { valid: true },
+    capability: cap, slug: "capture", description: "The real capture's request and response.", rule: "XV-1, XV-2, XV-3",
+    inputs: files(cap, "capture", { request: captureRequestText, response: json(captureResponse) }), expected: { valid: true },
   });
   pair("baseline", "Three items, three Artifacts, three fulfilled.", req, good(), { valid: true }, "XV-1, XV-2, XV-3");
   pair("one-artifact-two-items", "One Bundle fulfills two items.", req, response([artifactFhir({ fulfills: ["patient", "insurance"], value: { resourceType: "Bundle", type: "collection", entry: [] } }), qr(PHQ2)], statusAll()), { valid: true }, "MM-1");
@@ -462,7 +460,7 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
   const warn = (slug: string, description: string, a: unknown, code: string, rule: string, outcome: Outcome = "warn", smart = expectedSmart) =>
     add({ capability: cap, slug, description, rule, inputs: files(cap, slug, { navigatorArgument: json(a) }), expected: { ...WARN(code), outcome, outputs: { smartRequest: write(`${cap}/${slug}/expected-smart-request.json`, smart) } } });
 
-  ok("capture-v2", "The navigator argument from the real capture.", captureNavigatorArgument, "WRQ-0, WRQ-6", captureRequestText.trimEnd() + "\n");
+  ok("capture", "The navigator argument from the real capture.", captureNavigatorArgument, "WRQ-0, WRQ-6", captureRequestText.trimEnd() + "\n");
   ok("synthetic-reader-auth", "A request built by the reference builder, with readerAuth.", synth.navigatorArgument, "WRQ-0, WRQ-9");
   ok("no-reader-auth", "No readerAuth in the DocRequest.", arg(deviceRequest()), "WRQ-9, VRQ-7");
   ok("unknown-docrequest-key", "An unknown key in the DocRequest is ignored.", arg(deviceRequest(itemsRequest(), "1.0", true)), "ALG-2");
@@ -517,7 +515,7 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
     });
   };
   const capEnc = read(join(CAPTURE_REQ, "encryption-info.b64u")).trim();
-  await tcase("capture-v2", "The real capture's origin (http, non-default port) and encryptionInfo.", read(join(CAPTURE_REQ, "metadata.json")) && JSON.parse(read(join(CAPTURE_REQ, "metadata.json"))).origin, capEnc, "TR-1, TR-2");
+  await tcase("capture", "The real capture's origin (http, non-default port) and encryptionInfo.", read(join(CAPTURE_REQ, "metadata.json")) && JSON.parse(read(join(CAPTURE_REQ, "metadata.json"))).origin, capEnc, "TR-1, TR-2");
   await tcase("https-default-port", "An https origin with no port.", ORIGIN, synthEncInfoB64u, "TR-2");
   await tcase("https-explicit-port", "An https origin with a non-default port.", "https://clinic.example:8443", synthEncInfoB64u, "TR-2");
   // Sanity: the capture's own transcript matches what we compute.
@@ -535,9 +533,9 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
     files(cap, slug, { credential: json(credential), recipientPrivateJwk: jwk, origin, encryptionInfo: encB64u });
 
   add({
-    capability: cap, slug: "capture-v2", description: "Open the real capture's response.", rule: "VRS-2, VRS-3, HPKE-1",
-    inputs: inputs("capture-v2", JSON.parse(read(join(CAPTURE_RESP, "credential.json"))), read(join(CAPTURE_REQ, "recipient-private.jwk.json")), capOrigin, capEnc),
-    expected: { valid: true, outputs: { deviceResponse: write(`${cap}/capture-v2/expected-device-response.cbor`, readBytes(join(CAPTURE_RESP, "device-response.cbor"))) } },
+    capability: cap, slug: "capture", description: "Open the real capture's response.", rule: "VRS-2, VRS-3, HPKE-1",
+    inputs: inputs("capture", JSON.parse(read(join(CAPTURE_RESP, "credential.json"))), read(join(CAPTURE_REQ, "recipient-private.jwk.json")), capOrigin, capEnc),
+    expected: { valid: true, outputs: { deviceResponse: write(`${cap}/capture/expected-device-response.cbor`, readBytes(join(CAPTURE_RESP, "device-response.cbor"))) } },
   });
   const dr = await buildMdoc(synthResponseJson, synthTranscript, synthOtherTranscript);
   const good = await seal(dr, synthTranscript, synthPublicJwk);
@@ -595,18 +593,11 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
     });
 
   const capOrigin = JSON.parse(read(join(CAPTURE_REQ, "metadata.json"))).origin;
-  add1("capture-v2", "The real capture's DeviceResponse (detached device signature).", readBytes(join(CAPTURE_RESP, "device-response.cbor")), JSON.parse(read(join(CAPTURE_RESP, "credential.json"))), { valid: true }, "VRS-4, VRS-5, VRS-6, VRS-7, VRS-8", {
+  add1("capture", "The real capture's DeviceResponse (detached device signature).", readBytes(join(CAPTURE_RESP, "device-response.cbor")), JSON.parse(read(join(CAPTURE_RESP, "credential.json"))), { valid: true }, "VRS-4, VRS-5, VRS-6, VRS-7, VRS-8", {
     origin: capOrigin, encB64u: read(join(CAPTURE_REQ, "encryption-info.b64u")).trim(), transcript: readBytes(join(CAPTURE_REQ, "session-transcript.cbor")),
     // Just after the MSO was signed (the capture's capturedAt is 28 s earlier: host and emulator clocks differ).
     now: "2026-09-26T13:15:30Z", jwk: read(join(CAPTURE_REQ, "recipient-private.jwk.json")),
   });
-  {
-    const v1Meta = JSON.parse(read(join(CAPTURE_V1_REQ, "metadata.json")));
-    add1("capture-v1-attached-equal", "The pre-fix capture: device signature payload attached but equal to the rebuilt DeviceAuthentication. Accepted.", readBytes(join(CAPTURE_V1_RESP, "device-response.cbor")), JSON.parse(read(join(CAPTURE_V1_RESP, "credential.json"))), { valid: true }, "VRS-7", {
-      origin: v1Meta.origin, encB64u: read(join(CAPTURE_V1_REQ, "encryption-info.b64u")).trim(), transcript: readBytes(join(CAPTURE_V1_REQ, "session-transcript.cbor")),
-      now: "2026-05-03T03:33:00Z", jwk: read(join(CAPTURE_V1_REQ, "recipient-private.jwk.json")),
-    });
-  }
   const one = async (slug: string, description: string, knobs: MdocKnobs, expected: Expected, rule: string, status?: Case["status"], pendingOn?: string, now?: string) => {
     const dr = await buildMdoc(synthResponseJson, synthTranscript, synthOtherTranscript, knobs);
     add1(slug, description, dr, await seal(dr, synthTranscript, synthPublicJwk), expected, rule, { status, pendingOn, now });
@@ -614,6 +605,7 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
   await one("synthetic", "A reference-built DeviceResponse with a detached device signature.", {}, { valid: true }, "WRS-0, VRS-4, VRS-5, VRS-6, VRS-7, VRS-8");
   await one("unknown-top-level-key", "An unknown top-level DeviceResponse key is ignored.", { extraTopLevelKey: true }, { valid: true }, "ALG-2");
   await one("unknown-unprotected-header", "An unknown unprotected header label in issuerAuth is ignored.", { extraUnprotectedHeader: true }, { valid: true }, "ALG-2");
+  await one("attached-payload-equal", "Device signature carries an attached payload equal to the rebuilt DeviceAuthentication: accepted.", { attachDevicePayload: "rebuilt" }, { valid: true }, "VRS-7");
   await one("attached-payload-other-session", "Device signature carries an attached payload built for another origin's transcript: warn.", { attachDevicePayload: "other-session" }, WARN("device-signature"), "VRS-7");
   await one("tampered-device-signature", "One bit of the device signature flipped: warn.", { tamperDeviceSignature: true }, WARN("device-signature"), "VRS-7");
   await one("tampered-issuer-signature", "One bit of the issuer signature flipped: warn.", { tamperIssuerSignature: true }, WARN("issuer-signature"), "VRS-5");
@@ -643,7 +635,7 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
       inputs: files(cap, slug, { navigatorArgument: json(navigatorArgument), smartResponse: json(smartResponse), recipientPrivateJwk: jwk, origin, encryptionInfo: encB64u }),
       expected: { valid: true },
     });
-  w("capture-v2-request", "Answer the real capture's request; the reference verifier must accept the result.",
+  w("capture-request", "Answer the real capture's request; the reference verifier must accept the result.",
     captureNavigatorArgument, captureResponse,
     read(join(CAPTURE_REQ, "recipient-private.jwk.json")), JSON.parse(read(join(CAPTURE_REQ, "metadata.json"))).origin,
     read(join(CAPTURE_REQ, "encryption-info.b64u")).trim(), "WRS-0, HPKE-1, HPKE-2");
