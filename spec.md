@@ -1,6 +1,6 @@
 # SMART Health Check-in 1.0
 
-A clinic app asks a patient's wallet for check-in information and gets back the FHIR data and form answers the patient chose to share. This specification defines that request and response, and how they travel through the W3C Digital Credentials API as an ISO mdoc presentation.
+A clinic app asks a patient's wallet for check-in information and gets back the FHIR data and form answers the patient chose to share. This specification defines that request and response, and how they travel through the [W3C Digital Credentials API](#ref-W3C-DC-API) as an ISO mdoc presentation.
 
 ---
 
@@ -36,13 +36,13 @@ The explainers teach the same material with examples. They are non-normative, an
 SMART Health Check-in 1.0 has two layers:
 
 - **The clinical model (§§5–6):** a JSON request listing the items a Verifier would like, and a JSON response carrying the records the Holder shared and one outcome per item. This layer does not depend on the transport.
-- **The same-device flow (§8):** the request and response travel through the W3C Digital Credentials API as a direct `org-iso-mdoc` presentation. The response is one mdoc element whose value is the whole response JSON.
+- **The same-device flow (§8):** the request and response travel through the [W3C Digital Credentials API](#ref-W3C-DC-API) as a direct `org-iso-mdoc` presentation. The response is one mdoc element whose value is the whole response JSON.
 
 A request says what the Verifier is looking for; it does not limit what the Holder may share. The Holder can share less, more, or different content, and the response accounts for it with Artifacts, `fulfills[]`, and a status per item.
 
 ### 1.1 What the mdoc layer is for
 
-The mdoc layer is an envelope. It carries the response encrypted to the Verifier, bound to the calling origin, and signed so that it is intact and well formed. Every signature and digest is real and conforms to ISO/IEC 18013-5, so strict mdoc software accepts it. The signatures do not identify a trusted issuer: the Wallet signs its own response. §7 states exactly what each signal proves.
+The mdoc layer is an envelope. It carries the response encrypted to the Verifier, bound to the calling origin, and signed so that it is intact and well formed. Every signature and digest is real and conforms to [ISO/IEC 18013-5](#ref-ISO18013-5), so strict mdoc software accepts it. The signatures do not identify a trusted issuer: the Wallet signs its own response. §7 states exactly what each signal proves.
 
 ### 1.2 Design in brief
 
@@ -61,7 +61,7 @@ Version 1.0 does not define:
 - handoff URLs, relays, or cross-device flows;
 - credential issuance, data-source synchronization, or Wallet storage;
 - EHR write-back, payment, claims, patient matching, identity proofing, or proxy authority;
-- a general FHIR query language or a replacement for SMART App Launch;
+- a general FHIR query language or a replacement for [SMART App Launch](#ref-SMART-APP-LAUNCH);
 - a trust framework, or algorithm negotiation.
 
 Products can build these around the protocol. **[CONF-1]** A product that does so SHALL NOT change the meaning of anything §§5–8 define.
@@ -74,7 +74,7 @@ Explainers, captures, tools, and reference code are listed under [References and
 
 ## 2. Terminology and conventions
 
-The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL are to be interpreted as described in BCP 14 (RFC 2119, RFC 8174) when, and only when, they appear in all capitals. This document uses SHALL, SHOULD, and MAY.
+The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL are to be interpreted as described in BCP 14 ([RFC 2119](#ref-RFC2119), [RFC 8174](#ref-RFC8174)) when, and only when, they appear in all capitals. This document uses SHALL, SHOULD, and MAY.
 
 Every requirement starts with a bold ID in brackets, such as [XV-2]. IDs are stable across edits; a removed requirement's ID is not reused. The ID's prefix names its topic, not its section.
 
@@ -98,9 +98,9 @@ Every requirement starts with a bold ID in brackets, such as [XV-2]. IDs are sta
 
 **Notation**
 
-- JSON is RFC 8259. CBOR is RFC 8949 and CDDL is RFC 8610. COSE is RFC 9052 and 9053. HPKE is RFC 9180.
-- **base64url** means RFC 4648 base64url without padding.
-- `CBOR(x)` is the CBOR encoding of `x`. `tag24(b)` is CBOR tag 24 wrapping the byte string `b` (`#6.24(bstr)`). A name ending in `Bytes`, such as `ItemsRequestBytes`, is `tag24(CBOR(x))` of the structure named without the suffix, following ISO/IEC 18013-5.
+- JSON is [RFC 8259](#ref-RFC8259). CBOR is [RFC 8949](#ref-RFC8949) and CDDL is [RFC 8610](#ref-RFC8610). COSE is [RFC 9052](#ref-RFC9052) and [9053](#ref-RFC9053). HPKE is [RFC 9180](#ref-RFC9180). JWS is [RFC 7515](#ref-RFC7515). The COSE header `x5chain` (label 33) is [RFC 9360](#ref-RFC9360).
+- **base64url** means [RFC 4648](#ref-RFC4648) base64url without padding.
+- `CBOR(x)` is the CBOR encoding of `x`. `tag24(b)` is CBOR tag 24 wrapping the byte string `b` (`#6.24(bstr)`). A name ending in `Bytes`, such as `ItemsRequestBytes`, is `tag24(CBOR(x))` of the structure named without the suffix, following [ISO/IEC 18013-5](#ref-ISO18013-5).
 - `SessionTranscript` is a CBOR array (§8.3). Where its encoding is used as bytes, this document writes `CBOR(SessionTranscript)`.
 - In TypeScript, `NonEmptyString` is a string with at least one character, and `NonEmptyArray<T>` is an array with at least one element.
 
@@ -130,13 +130,13 @@ The clinical rules in §§5–6 are unaffected: they already say which problems 
 | Trust (§7) | What each signal proves, and what it doesn't | Trusted certificates, allow-lists, patient matching |
 | Same-device flow (§8) | Identifiers, byte structures, transcript, encryption, signatures, processing steps | Browser and wallet UX, platform registration |
 
-Selectors use FHIR's own terms: exact profile canonicals in `profiles[]`, profile families in `profilesFrom[]`, FHIR resource type names in `resourceTypes[]`, and Questionnaires through `form.fhir`.
+Selectors use [FHIR](#ref-FHIR-R4)'s own terms: exact profile canonicals in `profiles[]`, profile families in `profilesFrom[]`, FHIR resource type names in `resourceTypes[]`, and Questionnaires through `form.fhir`.
 
 ### 3.2 mdoc primer for this profile
 
-An mdoc is the CBOR document format from ISO/IEC 18013-5, built for mobile driver's licenses. In a usual mdoc, an issuer such as a licensing agency signs a Mobile Security Object (MSO) that holds digests of the data elements. The presenting device then proves it holds a key named in the MSO by signing the session.
+An mdoc is the CBOR document format from [ISO/IEC 18013-5](#ref-ISO18013-5), built for mobile driver's licenses. In a usual mdoc, an issuer such as a licensing agency signs a Mobile Security Object (MSO) that holds digests of the data elements. The presenting device then proves it holds a key named in the MSO by signing the session.
 
-This profile uses that structure differently. The Wallet puts the whole SMART response JSON into one element, `smart_health_checkin_response`. At presentation time, the Wallet builds the MSO for that element and signs it itself, as the mdoc issuer, with keys it controls. It also signs the session as the device. The result is a complete, verifiable mdoc presentation. Its signatures show that the bytes are intact and well formed. They do not show who issued the content. Evidence about where clinical content came from lives inside Artifacts, for example a SMART Health Card's signature (§7).
+This profile uses that structure differently. The Wallet puts the whole SMART response JSON into one element, `smart_health_checkin_response`. At presentation time, the Wallet builds the MSO for that element and signs it itself, as the mdoc issuer, with keys it controls. It also signs the session as the device. The result is a complete, verifiable mdoc presentation. Its signatures show that the bytes are intact and well formed. They do not show who issued the content. Evidence about where clinical content came from lives inside Artifacts, for example a [SMART Health Card](#ref-SMART-HEALTH-CARDS)'s signature (§7).
 
 ---
 
@@ -168,7 +168,7 @@ A SMART request is a JSON object that asks for a list of items. §8 defines how 
 
 These rules apply to both the SMART request and the SMART response.
 
-**[JSON-1]** A producer (the Verifier for a request, the Wallet for a response) SHALL produce an RFC 8259 JSON object, encoded as UTF-8, with no duplicate member names at any level. Every field has the type §5.2 or §6.1 gives it; the model has no numeric fields.
+**[JSON-1]** A producer (the Verifier for a request, the Wallet for a response) SHALL produce an [RFC 8259](#ref-RFC8259) JSON object, encoded as UTF-8, with no duplicate member names at any level. Every field has the type §5.2 or §6.1 gives it; the model has no numeric fields.
 
 **[JSON-2]** A receiver (the Wallet for a request, the Verifier for a response) SHALL reject a SMART request or response that is not a JSON object, cannot be parsed, or has duplicate member names at any level.
 
@@ -386,7 +386,7 @@ A selector says what the Verifier is looking for. It is not a query language, an
 | Media type | Artifact carries |
 | --- | --- |
 | `application/fhir+json` | A FHIR resource or Bundle in `value`, and `fhirVersion`. For `form.fhir` items, a `QuestionnaireResponse`. |
-| `application/smart-health-card` | A SMART Health Card file's JSON in `value`, with `verifiableCredential[]`; no `fhirVersion`. |
+| `application/smart-health-card` | A [SMART Health Card](#ref-SMART-HEALTH-CARDS) file's JSON in `value`, with `verifiableCredential[]`; no `fhirVersion`. |
 
 ### 5.7 Identity, trust, and Holder control
 
@@ -557,7 +557,7 @@ An example response to the request in §5.2 that passes every check in §6.4:
 
 **[ART-1]** The Wallet SHALL give each Artifact an `id` unique within the response, and list in `fulfills[]` only ids of items in the request.
 
-**[ART-2]** In an `application/fhir+json` Artifact, the Wallet SHALL set `fhirVersion` to the FHIR release version of every resource in `value`, such as `4.0.1`, and SHALL NOT mix releases in one Artifact.
+**[ART-2]** In an `application/fhir+json` Artifact, the Wallet SHALL set `fhirVersion` to the [FHIR](#ref-FHIR-R4) release version of every resource in `value`, such as `4.0.1`, and SHALL NOT mix releases in one Artifact.
 
 **[ART-3]** The Wallet SHOULD choose a FHIR release from the request's `fhirVersions[]`, when present.
 
@@ -616,7 +616,7 @@ A Verifier checks a response against the request it sent before using anything i
 
 **[XV-12]** The Verifier SHOULD flag an item with status `fulfilled` or `partial` that no valid Artifact lists.
 
-**[XV-13]** Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the SMART Health Cards specification describes, and apply its own trust policy to the issuer.
+**[XV-13]** Before relying on a SMART Health Card, the Verifier SHALL verify each JWS as the [SMART Health Cards](#ref-SMART-HEALTH-CARDS) specification describes, and apply its own trust policy to the issuer.
 
 **[XV-14]** The Verifier SHALL interpret an Artifact's members only as its media type defines them. A member's name alone implies nothing, such as that a value is a URL to fetch.
 
@@ -630,7 +630,7 @@ SMART Health Check-in lets two parties exchange data when the Holder chooses to,
 
 | Signal | Proves | Does not prove |
 | --- | --- | --- |
-| Origin, reported by the browser or platform | Which web origin or app called the Digital Credentials API | That the caller is an organization you trust |
+| Origin, reported by the browser or platform | Which web origin or app called the [Digital Credentials API](#ref-W3C-DC-API) | That the caller is an organization you trust |
 | HPKE encryption bound to `SessionTranscript` | Only the holder of the Verifier's private key, for this origin and this `encryptionInfo`, can read the response | Who sent it: anyone can encrypt to the Verifier's public key |
 | `readerAuth`, when present | The request was signed, for this session, by the key in its certificate | Who holds that key, unless a deployment trusts the certificate |
 | `issuerAuth` and value digests | The response element is intact, and the mdoc is well formed and verifiable | Who issued the content. The Wallet signs its own MSO with its own key. |
@@ -662,7 +662,7 @@ Receivers check these signals and report what they find ([RCV-1]). A failed sign
 
 ## 8. Same-device Presentation Flow
 
-The Verifier sends a §5 request through the W3C Digital Credentials API using the `org-iso-mdoc` protocol of ISO/IEC TS 18013-7 Annex C. The Wallet returns a §6 response inside an mdoc `DeviceResponse`, encrypted to the Verifier. This is the only presentation flow in version 1.0. §8.7 defines every structure named in the steps below.
+The Verifier sends a §5 request through the [W3C Digital Credentials API](#ref-W3C-DC-API) using the `org-iso-mdoc` protocol of [ISO/IEC TS 18013-7](#ref-ISO18013-7) Annex C. The Wallet returns a §6 response inside an mdoc `DeviceResponse`, encrypted to the Verifier. This is the only presentation flow in version 1.0. §8.7 defines every structure named in the steps below.
 
 ```mermaid
 sequenceDiagram
@@ -748,7 +748,7 @@ SessionTranscript = [null, null, Handover]
 
 **[TR-1]** `encryptionInfoBase64url` SHALL be the exact `encryptionInfo` string the Verifier sent, not a re-encoding of its decoded bytes.
 
-**[TR-2]** For a web page, `origin` SHALL be the ASCII serialization of the calling page's origin: scheme, `://`, host, and `:port` only for a non-default port, with no trailing slash (for example `https://clinic.example`). A Wallet SHALL use this serialization even when its platform delivers the origin in another form, such as a URL with a trailing slash. For a native app, it SHALL be the origin string its platform reports to the Wallet. Where the platform reports none, as Android does for app callers, it SHALL be `android:apk-key-hash:` followed by the base64url SHA-256 of the DER-encoded signing certificate the platform reports for the calling app (its current certificate, if it has a rotation history). [Platform notes](https://smart-health-checkin.org/spec/platform-notes.html#origins) covers each platform.
+**[TR-2]** For a web page, `origin` SHALL be the [ASCII serialization](#ref-HTML-ORIGIN) of the calling page's origin: scheme, `://`, host, and `:port` only for a non-default port, with no trailing slash (for example `https://clinic.example`). A Wallet SHALL use this serialization even when its platform delivers the origin in another form, such as a URL with a trailing slash. For a native app, it SHALL be the origin string its platform reports to the Wallet. Where the platform reports none, as Android does for app callers, it SHALL be `android:apk-key-hash:` followed by the base64url SHA-256 of the DER-encoded signing certificate the platform reports for the calling app (its current certificate, if it has a rotation history). [Platform notes](https://smart-health-checkin.org/spec/platform-notes.html#origins) covers each platform.
 
 **[TR-3]** The Wallet SHALL take the origin only from the browser or platform, never from anything in the request.
 
@@ -803,7 +803,7 @@ SessionTranscript = [null, null, Handover]
 
 Both sides produce identical bytes for everything that is hashed or signed by following these rules.
 
-**[ENC-1]** Structures that both sides build independently (`dcapiInfo`, `SessionTranscript`, `ReaderAuthentication`, `DeviceAuthentication`, and each COSE `Sig_structure`) SHALL be encoded with RFC 8949 preferred serialization and definite lengths.
+**[ENC-1]** Structures that both sides build independently (`dcapiInfo`, `SessionTranscript`, `ReaderAuthentication`, `DeviceAuthentication`, and each COSE `Sig_structure`) SHALL be encoded with [RFC 8949](#ref-RFC8949) preferred serialization and definite lengths.
 
 **[ENC-2]** Transmitted bytes that are signed or hashed (`ItemsRequestBytes`, `IssuerSignedItemBytes`, `MobileSecurityObjectBytes`, `DeviceNameSpacesBytes`, and COSE protected headers) SHALL be hashed and verified exactly as received, never decoded and re-encoded.
 
@@ -830,7 +830,7 @@ Both sides produce identical bytes for everything that is hashed or signed by fo
 
 ### 8.7 Message structures
 
-This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fixed values. It describes what producers build. A receiver that finds a structure not matching it follows §§8.4–8.5: it fails only where a step says so, and otherwise warns. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
+This CDDL is normative. It uses [ISO/IEC 18013-5](#ref-ISO18013-5) names and adds this profile's fixed values. It describes what producers build. A receiver that finds a structure not matching it follows §§8.4–8.5: it fails only where a step says so, and otherwise warns. `* key => any` marks where unknown keys may appear and are ignored ([ALG-2]).
 
 The Digital Credentials API request and result, in JSON:
 
@@ -983,7 +983,7 @@ DeviceAuthentication = [
 DeviceAuthenticationBytes = #6.24(bstr .cbor DeviceAuthentication)
 ```
 
-`tdate` is CBOR tag 0 over an RFC 3339 date-time string. The two signature forms are `COSE_Sign1` (RFC 9052) with the payload present or `null`:
+`tdate` is CBOR tag 0 over an [RFC 3339](#ref-RFC3339) date-time string. The two signature forms are `COSE_Sign1` ([RFC 9052](#ref-RFC9052)) with the payload present or `null`:
 
 ```cddl
 AttachedSign1 = [
@@ -1009,7 +1009,7 @@ DetachedSign1 = [
 §7 lists what each signal proves and the threats the protocol does and does not address. In addition:
 
 - A response can be opened only with the private key of the session that asked, so a Verifier's private key is as sensitive as the response itself. Anything able to run script on the Verifier's page can read both.
-- Nothing in the protocol stops a party that holds an old SMART response from presenting it again in a new, valid session. Where that matters, rely on signed content such as SMART Health Cards, or on deployment controls.
+- Nothing in the protocol stops a party that holds an old SMART response from presenting it again in a new, valid session. Where that matters, rely on signed content such as [SMART Health Cards](#ref-SMART-HEALTH-CARDS), or on deployment controls.
 - Request ids, item ids, and Artifact ids correlate messages; they are not secrets and give no freshness.
 
 **[SEC-1]** The Verifier SHOULD NOT act on a response for a session it has already completed or abandoned.
@@ -1042,7 +1042,7 @@ Display text includes `purpose`, `title`, `summary`, `message`, Questionnaire te
 
 **[I18N-1]** Translating, reordering, or normalizing display text SHALL NOT change any protocol value, or any bytes that are signed, hashed, or encrypted.
 
-**[I18N-2]** Language tags attached to display text SHOULD be well-formed BCP 47 tags.
+**[I18N-2]** Language tags attached to display text SHOULD be well-formed [BCP 47](#ref-BCP47) tags.
 
 **[I18N-3]** Wallet and Verifier user interfaces SHALL NOT let display text from the other party imitate or hide origins, identities, identifiers, statuses, trust indicators, or controls, including through Unicode bidirectional characters.
 
@@ -1125,6 +1125,7 @@ deviceKey        kty 2, crv 1, x 416b38a2ed65265d…
 
 - **[RFC2119]** Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 - **[RFC8174]** Leiba, B. *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174).
+- **[BCP47]** Phillips, A. and M. Davis. *Tags for Identifying Languages*. BCP 47, [RFC 5646](https://www.rfc-editor.org/rfc/rfc5646).
 - **[RFC3339]** Klyne, G. and C. Newman. *Date and Time on the Internet: Timestamps*. [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339).
 - **[RFC4648]** Josefsson, S. *The Base16, Base32, and Base64 Data Encodings*. [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648).
 - **[RFC7515]** Jones, M., Bradley, J., and N. Sakimura. *JSON Web Signature (JWS)*. [RFC 7515](https://www.rfc-editor.org/rfc/rfc7515).

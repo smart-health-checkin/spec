@@ -100,9 +100,15 @@ const REQ_ID = "[A-Z]+(?:[0-9]+[A-Z]+)?-\\d+";
 const body = (await marked.parse(md, { renderer }))
   .replace(new RegExp(`<strong>\\[(${REQ_ID})\\]</strong>`, "g"), '<strong class="req-id" id="$1"><a href="#$1">[$1]</a></strong>')
   .replace(new RegExp(`(?<!["#>])\\[(${REQ_ID})\\](?!</a>)`, "g"), '<a class="req-ref" href="#$1">[$1]</a>');
+// References: each entry (- **[RFC8949]** …) gets the id ref-RFC8949 and a
+// citation label, so in-text citations can link to it (#ref-RFC8949).
+const refBody = body.replace(
+  /<li><strong>\[([A-Za-z0-9][A-Za-z0-9-]*)\]<\/strong>\s*/g,
+  '<li class="ref-entry" id="ref-$1"><a class="ref-key" href="#ref-$1">[$1]</a> ',
+);
 // Section references (§8.2, §§5–6, §§6, 8.4, 8.5) link each number to its
 // heading, outside code blocks and diagrams.
-const linkedBody = body
+const linkedBody = refBody
   .split(/(<pre[\s\S]*?<\/pre>|<div class="mermaid">[\s\S]*?<\/div>)/)
   .map((part) =>
     part.startsWith("<pre") || part.startsWith('<div class="mermaid">')
@@ -350,6 +356,13 @@ const html = `<!doctype html>
     margin: 0 0 var(--space-4);
     text-align: center;
   }
+
+  /* Reference entries: a bold [KEY] citation label, hanging indent. */
+  .spec-body ul:has(> li.ref-entry) { list-style: none; padding-left: 0; max-width: 46em; }
+  li.ref-entry { padding: 2px 6px 2px 2.25em; text-indent: -1.75em; margin: 0 0 var(--space-2); overflow-wrap: anywhere; border-radius: var(--radius-sm, 4px); }
+  li.ref-entry:target { background: var(--surface-alt); }
+  .ref-key { font-weight: 700; color: var(--fg-1); white-space: nowrap; margin-right: 0.35em; overflow-wrap: normal; }
+  .ref-key:hover { color: var(--brand-ink); }
 
   /* Jump targets land below the sticky bar. */
   :target { scroll-margin-top: 80px; }

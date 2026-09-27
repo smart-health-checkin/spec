@@ -12,7 +12,8 @@ smart-health-checkin.org/spec/ on every push to `main`.
   if the CDDL no longer matches the real capture (`check-spec-cddl.ts`), if
   Appendix A doesn't recompute from the capture (`worked-example.ts`), if a
   heading anchor or site link breaks (`check-spec-anchors.ts`,
-  `check-site-links.ts`), or if a page shows a `{{…}}` marker. A PR runs the
+  `check-site-links.ts`), if a citation names no reference entry or an entry
+  is never cited (`check-spec-anchors.ts`), or if a page shows a `{{…}}` marker. A PR runs the
   same build (`check.yml`).
 - Pages use the shared page template ([The shared site](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#the-shared-site)):
   `data-smart-topbar`, a `data-smart-breadcrumb` on every page but the spec,
@@ -49,6 +50,11 @@ smart-health-checkin.org/spec/ on every push to `main`.
   (`#6-4-verifier-cross-validation`). Renaming a heading breaks those links.
   Section references in the text (`§8.2`, `§§5–6`) link to their numbered
   headings when the spec renders; one that names no heading fails the build.
+- Each reference entry (`- **[RFC8949]** …`) gets the anchor `#ref-RFC8949`
+  when the spec renders. Cite a standard as a Markdown link with its name as
+  the text, `[RFC 8949](#ref-RFC8949)`: the first mention in each numbered
+  section, and normative uses. Explainers link to `./spec.html#ref-KEY`.
+  Every entry must be cited at least once.
 - This section's menu is `site/nav.json`.
 - `scripts/llms.ts` writes `llms.txt` at the end of the build: the apex's
   shared background, then every page in `nav.json` order as Markdown. The

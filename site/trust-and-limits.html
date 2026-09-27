@@ -42,7 +42,7 @@
       <ul>
         <li><b>The encryption</b> is what protects the response in transit. Only the holder of the Verifier's private key, for this origin and this request, can open it, and a changed ciphertext doesn't open <a class="rid" href="./spec.html#VRS-3">VRS-3</a>.</li>
         <li><b>The origin</b> comes from the browser or platform, never from the request <a class="rid" href="./spec.html#TR-3">TR-3</a>. It tells the wallet which page asked; it doesn't tell anyone that the page belongs to an organization you trust.</li>
-        <li><b>Evidence about clinical content</b> lives in the content. A SMART Health Card is signed by its issuer, and the Verifier checks that signature against its own trust policy <a class="rid" href="./spec.html#XV-13">XV-13</a>. Raw FHIR and form answers are what the patient chose to share.</li>
+        <li><b>Evidence about clinical content</b> lives in the content. A <a href="./spec.html#ref-SMART-HEALTH-CARDS">SMART Health Card</a> is signed by its issuer, and the Verifier checks that signature against its own trust policy <a class="rid" href="./spec.html#XV-13">XV-13</a>. Raw FHIR and form answers are what the patient chose to share.</li>
       </ul>
       <p>
         The spec's <a href="./spec.html#7-trust-framework">§7</a> has the full table: each signal, what it proves,

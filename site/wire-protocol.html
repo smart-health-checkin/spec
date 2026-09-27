@@ -121,7 +121,7 @@
     <div class="wrap hero">
       <h1>Wire protocol</h1>
       <p class="lede">
-        How the request and response travel through the W3C Digital Credentials API as an ISO mdoc presentation:
+        How the request and response travel through the <a href="./spec.html#ref-W3C-DC-API">W3C Digital Credentials API</a> as an ISO mdoc presentation:
         who builds each structure, what gets hashed, signed, and encrypted, and what each side checks. The steps follow
         <a href="./spec.html#8-same-device-presentation-flow">spec §8</a>, and each links its requirement. For what the
         JSON inside means, see <a href="./request-response.html">Request and response</a>.
@@ -264,7 +264,7 @@ SessionTranscript = [null, null, Handover]      // HPKE info = CBOR(SessionTrans
           <li><code>encryptionInfoBase64url</code> is the exact string the Verifier sent, not a re-encoding <a class="rid" href="./spec.html#TR-1">TR-1</a>.</li>
           <li><code>origin</code> for a web page is its ASCII origin, such as <code>https://clinic.example</code>: no path, no trailing slash <a class="rid" href="./spec.html#TR-2">TR-2</a>. For a native app, it is exactly what the platform reports; see <a href="./platform-notes.html#origins">Platform notes</a>.</li>
           <li>The wallet takes the origin only from the browser or platform, never from the request <a class="rid" href="./spec.html#TR-3">TR-3</a>. With no origin it cannot respond <a class="rid" href="./spec.html#TR-4">TR-4</a>.</li>
-          <li>The two <code>null</code> slots are ISO 18013-5's <code>DeviceEngagementBytes</code> and <code>EReaderKeyBytes</code>, which the Digital Credentials API flow doesn't use.</li>
+          <li>The two <code>null</code> slots are <a href="./spec.html#ref-ISO18013-5">ISO 18013-5</a>'s <code>DeviceEngagementBytes</code> and <code>EReaderKeyBytes</code>, which the Digital Credentials API flow doesn't use.</li>
         </ul>
       </section>
 
