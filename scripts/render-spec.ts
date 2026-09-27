@@ -403,6 +403,14 @@ ${linkedBody}
 <div data-smart-footer></div>
 
 <script type="module">
+  // A link straight to an anchor (/spec/#XV-2, #ref-RFC8949) can land in the
+  // wrong place when content above it grows after load (the sequence diagram,
+  // webfonts). Once those settle, bring the target back into view, unless the
+  // reader has already scrolled.
+  let readerScrolled = false;
+  for (const ev of ["wheel", "touchmove", "keydown", "mousedown"]) addEventListener(ev, () => { readerScrolled = true; }, { once: true, passive: true });
+  const settled = [document.fonts?.ready];
+
   // Mermaid diagrams (only initialized if any .mermaid blocks are present).
   if (document.querySelector(".mermaid")) {
     const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs");
@@ -416,6 +424,11 @@ ${linkedBody}
       console.warn("mermaid.run failed", e);
     }
   }
+
+  await Promise.allSettled(settled);
+  const id = decodeURIComponent(location.hash.slice(1));
+  const target = id && document.getElementById(id);
+  if (target && !readerScrolled) target.scrollIntoView();
 </script>
 </body>
 </html>
