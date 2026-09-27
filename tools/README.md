@@ -8,4 +8,5 @@ public static site.
 | --- | --- |
 | [`capture/`](capture/) | Browser and Android capture scripts for real Digital Credentials API runs. |
 | [`fixtures-tool/`](fixtures-tool/) | Python pyMDOC-CBOR sidecar for fixture generation and byte-level validation. |
-| [`matcher-c/`](matcher-c/) | Diagnostic always-match C WASM matcher used for Android Credential Manager troubleshooting. |
+| [`conformance/`](conformance/) | `generate.ts`, which writes the conformance cases in `../conformance/` (never hand-edit them). |
+| [`wire/`](wire/) | Tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
