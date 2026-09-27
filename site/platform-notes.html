@@ -87,39 +87,9 @@
         documentation, Multipaz, and Google Wallet use. The app computes the same string for its own transcript. The
         <a href="https://github.com/smart-health-checkin/android-wallet/releases/latest">reference Android wallet</a> uses it.
       </p>
-      <h3 id="app-callers">Naming an app caller to the patient</h3>
       <p>
-        The <code>android:apk-key-hash:</code> string binds the response to the app, but a patient can't recognize
-        it. The app's package name and label don't help either: the app chose both itself, and neither Android nor
-        Google Play turns them into anything a patient can rely on. What a patient can rely on is a website they
-        recognize vouching for this exact app, meaning its signing key. A Wallet should name an app caller only by
-        such a website, and never by its package name or label. Checking it takes Digital Asset Links in both
-        directions:
-      </p>
-      <ol>
-        <li><b>The app declares the website.</b> The app's manifest has
-          <code>&lt;meta-data android:name="asset_statements" android:resource="@string/asset_statements"/&gt;</code>,
-          a JSON array of statements, and one of them has the target
-          <code>{"namespace": "web", "site": "https://example.org"}</code>. The Wallet reads it through
-          <code>PackageManager</code>; on Android 11 and later that needs the <code>QUERY_ALL_PACKAGES</code>
-          permission, because the calling app isn't known in advance.</li>
-        <li><b>The website vouches for the app.</b> <code>https://example.org/.well-known/assetlinks.json</code>,
-          fetched over HTTPS without following redirects, has a statement whose target is the app's package name
-          with the SHA-256 fingerprint of the certificate the app is actually signed with, and whose relation is
-          <code>delegate_permission/common.use_as_origin</code>, <code>delegate_permission/common.handle_all_urls</code>,
-          or <code>delegate_permission/common.get_login_creds</code>.</li>
-      </ol>
-      <p>
-        Only when both match is the website verified for the app, and the consent screen can say that an app linked
-        to example.org is asking. If no website passes, including when the Wallet is offline, the screen says the app
-        isn't linked to a verified website and asks the patient to share only if they opened the request from an app
-        they trust. The package name, the label, and the <code>android:apk-key-hash:</code> origin belong in a
-        collapsed technical section. The check changes only what the patient sees; the session transcript keeps the
-        <code>android:apk-key-hash:</code> origin. The reference Android wallet (0.4.6 and later) runs the check in
-        the background while its consent screen loads and caches each answer for an hour. The
-        <a href="/client/docs/native-apps.html#how-wallets-name-your-app">Native Verifier apps</a> guide shows what
-        an app publishes, and the <a href="/client/docs/build-a-wallet.html#naming-an-app-that-calls-directly">Wallet
-        guide</a> covers the Wallet's side.
+        A Wallet can't yet name a native app that calls it, so it says that an app is asking; how Wallets should
+        identify native app callers is still open.
       </p>
     </section>
 
