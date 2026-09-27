@@ -15,7 +15,8 @@
  * example ../smart-health-checkin.github.io/llms-background.md offline.
  *
  * The build fails if a page in the site is neither included nor skipped
- * below, or if a file named below is missing.
+ * below, if a file named below is missing, or if a link in llms.txt into
+ * this section names a file the build didn't produce.
  */
 // @ts-ignore: @mixmark-io/domino ships no types.
 import domino from "@mixmark-io/domino";
@@ -37,7 +38,8 @@ const SKIP: Record<string, string> = {
 };
 // Pages in llms.txt that no menu lists, after the menu's pages.
 const PAGES: string[] = [];
-// Published Markdown or text files llms.txt includes as they are, after the pages.
+// Published Markdown or text files llms.txt includes as they are, after the
+// pages, each under its title here in place of its own H1.
 const TEXTS: { title: string; href: string }[] = [];
 // Elements inside <main> that are page furniture, not content.
 const DROP = ["nav", ".toc"];
@@ -262,8 +264,7 @@ for (const t of texts) {
   // Relative links become absolute, as in the pages.
   const text = readFileSync(fileFor(t.url)!, "utf8").trim()
     .replace(/\]\((?![a-z][a-z0-9+.-]*:|#)([^)\s]+)\)/gi, (m, href) => { try { return `](${new URL(href, t.url).href})`; } catch { return m; } });
-  const title = text.match(/^# (.+)/)?.[1] ?? t.title;
-  pages.push(`# ${title}\n\nSource: ${t.url}\n\n${text.replace(/^# .+\n*/, "")}`);
+  pages.push(`# ${t.title}\n\nSource: ${t.url}\n\n${text.replace(/^# .+\n*/, "")}`);
 }
 const llms = [
   `# ${TITLE}`,
@@ -278,6 +279,13 @@ const llms = [
   ...pages.flatMap((p) => ["", "---", "", p]),
   "",
 ].join("\n");
+
+// Every link in llms.txt into this section names a file this build produced.
+const broken = [...new Set([...llms.matchAll(/\]\((https?:[^)\s]+)\)/g)].map((m) => m[1]!))].filter((url) => {
+  const file = fileFor(url.replace(/[?#].*$/, ""));
+  return file !== undefined && !existsSync(file);
+});
+if (broken.length) die(`llms.txt links to files this build doesn't have: ${broken.join(", ")}`);
 
 writeFileSync(join(OUT, "llms.txt"), llms);
 console.log(`llms.txt: ${pages.length} pages, ${(Buffer.byteLength(llms) / 1024).toFixed(1)} KB`);
