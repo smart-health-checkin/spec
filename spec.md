@@ -8,6 +8,8 @@ A clinic app asks a patient's wallet for check-in information and gets back the 
 
 Editor's draft 1.0, for implementer review. Editors, license, and publication details are still to be settled; the text is intended for CC BY 4.0, and its TypeScript, CDDL, and examples for use in implementations and tests. Identifiers, URLs, keys, and clinical data in examples are illustrative unless this document marks them as fixed values.
 
+<div class="reading-guide">
+
 ### 0.1 How to read this document
 
 The requirements apply to two roles. The **Verifier** is the software that asks: a clinic's check-in page, a patient portal, a kiosk, or a clinic's app. It builds the request (§5), calls the browser (§8.2), and checks the response before using it (§6.4, §8.5). The **Wallet** is the patient's health app. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6). An implementation needs the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1); reader authentication is optional.
@@ -24,6 +26,8 @@ The explainers teach the same material with examples. They are non-normative, an
 - [Capture inspector](https://smart-health-checkin.org/spec/inspector.html): one real exchange, byte by byte.
 
 [Appendix A](#appendix-a-worked-example) walks the same captured exchange within this document.
+
+</div>
 
 ---
 

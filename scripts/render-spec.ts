@@ -290,6 +290,10 @@ const html = `<!doctype html>
   }
   .nowrap { white-space: nowrap; }
   /* Prose keeps a readable measure; code, tables, and diagrams use the full width. */
+  /* 0.1 "How to read this document": a panel that sets the reading guide apart. */
+  .reading-guide { margin: var(--space-5) 0; padding: var(--space-2) var(--space-5) var(--space-4); background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-md); }
+  .reading-guide > :is(p, ul) { max-width: 38em; }
+  .reading-guide h3 { margin-top: var(--space-4); }
   .spec-body > :is(p, ul, ol, blockquote),
   .spec-body > :is(ul, ol) p { max-width: 38em; }
 
