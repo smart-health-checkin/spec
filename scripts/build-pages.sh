@@ -47,9 +47,8 @@ cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
 # this section's front page.
 cp "$SITE_DIR/spec.html" "$SITE_DIR/index.html"
 cp -R "$ROOT/fixtures" "$SITE_DIR/fixtures"
-# llms.txt (the pages, grouped as in nav.json) and llms-full.txt (the shared
-# background fetched from the apex, then every page as Markdown). Fails if a
-# page is missing from them or llms.txt links to a file the build didn't make.
+# llms.txt: the shared background fetched from the apex, then every page as
+# Markdown. Fails if a page is neither in it nor skipped with a reason.
 bun "$ROOT/scripts/llms.ts" "$SITE_DIR"
 
 touch "$SITE_DIR/.nojekyll"

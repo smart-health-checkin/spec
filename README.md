@@ -46,7 +46,7 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./kiosk.html` | Kiosk check-in: start at a kiosk or the desk, continue on the phone |
 | `./trust-and-limits.html` | Security and limits: what signatures prove, warnings, reader authentication, cancel, timeouts |
 | `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
-| `./llms.txt`, `./llms-full.txt` | For AI models: an index of the pages, and the shared background plus every page in one file |
+| `./llms.txt` | For AI models: the shared background and every page, in one file |
 | `./fixtures/` | The fixtures |
 
 ## Tests and fixtures
