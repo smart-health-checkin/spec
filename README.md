@@ -6,8 +6,9 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 
 - **Spec:** <https://smart-health-checkin.org/spec/>
 - **Client library** (EHR pages, web wallets, testing): [smart-health-checkin/client](https://github.com/smart-health-checkin/client), docs at <https://smart-health-checkin.org/client/>
-- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet.apk)). It moved out of this repo with its history.
-- **Also moved out:** the exploratory Swift package ([smart-health-checkin/swift](https://github.com/smart-health-checkin/swift)) and archived planning notes ([smart-health-checkin/notes](https://github.com/smart-health-checkin/notes)).
+- **Reference Android wallet:** [smart-health-checkin/android-wallet](https://github.com/smart-health-checkin/android-wallet) ([latest APK](https://github.com/smart-health-checkin/android-wallet/releases/latest/download/smart-health-checkin-wallet.apk))
+- **Swift package:** [smart-health-checkin/swift](https://github.com/smart-health-checkin/swift)
+- **Archived planning notes:** [smart-health-checkin/notes](https://github.com/smart-health-checkin/notes)
 - **Connectathon:** [smart-health-checkin/connectathon](https://github.com/smart-health-checkin/connectathon), at <https://smart-health-checkin.org/connectathon/>
 
 ## What's here
@@ -15,8 +16,8 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | Path | What it is |
 | --- | --- |
 | [`spec.md`](spec.md) | The draft spec. [§§5–6](https://smart-health-checkin.org/spec/#5-clinical-request-model) define the request and response model; [§8](https://smart-health-checkin.org/spec/#8-same-device-presentation-flow) the `org-iso-mdoc` flow; [Appendix A](https://smart-health-checkin.org/spec/#appendix-a-worked-example) a worked example computed from a real capture. |
-| [`site/`](site/) | Explainers published with the spec: the model, the wire protocol, a byte-level inspector, kiosk check-in, security and limits, and platform notes. |
-| [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see below). |
+| [`site/`](site/) | Explainers published with the spec: Request and response, Wire protocol, Capture inspector, Kiosk check-in, Security and limits, and Platform notes. |
+| [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see [Tests and fixtures](#tests-and-fixtures)). |
 | [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
 | [`tools/fixtures-tool/`](tools/fixtures-tool/) | Python fixture checks with pyMDOC. |

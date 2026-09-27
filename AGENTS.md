@@ -47,4 +47,6 @@ smart-health-checkin.org/spec/ on every push to `main`.
   Bump the URL to upgrade.
 - Section headings in `spec.md` become anchors that other sites link to
   (`#6-4-verifier-cross-validation`). Renaming a heading breaks those links.
+  Section references in the text (`§8.2`, `§§5–6`) link to their numbered
+  headings when the spec renders; one that names no heading fails the build.
 - This section's menu is `site/nav.json`.

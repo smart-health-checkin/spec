@@ -27,6 +27,8 @@ interface Heading {
 }
 const headings: Heading[] = [];
 const slugSeen = new Map<string, number>();
+// Numbered headings ("8.2" → its id), so section references like §8.2 link to them.
+const sectionIds = new Map<string, string>();
 
 function slugify(raw: string): string {
   const base =
@@ -65,6 +67,8 @@ renderer.heading = function ({ tokens, depth }) {
     .map((t: any) => ("text" in t ? t.text : "raw" in t ? t.raw : ""))
     .join(" ");
   const id = slugify(raw || text);
+  const num = /^(\d+(?:\.\d+)*)\.?\s/.exec(raw.trim());
+  if (num) sectionIds.set(num[1], id);
   if (depth === 2 || depth === 3) {
     headings.push({ depth, text, id });
   }
@@ -96,6 +100,23 @@ const REQ_ID = "[A-Z]+(?:[0-9]+[A-Z]+)?-\\d+";
 const body = (await marked.parse(md, { renderer }))
   .replace(new RegExp(`<strong>\\[(${REQ_ID})\\]</strong>`, "g"), '<strong class="req-id" id="$1"><a href="#$1">[$1]</a></strong>')
   .replace(new RegExp(`(?<!["#>])\\[(${REQ_ID})\\](?!</a>)`, "g"), '<a class="req-ref" href="#$1">[$1]</a>');
+// Section references (§8.2, §§5–6, §§6, 8.4, 8.5) link each number to its
+// heading, outside code blocks and diagrams.
+const linkedBody = body
+  .split(/(<pre[\s\S]*?<\/pre>|<div class="mermaid">[\s\S]*?<\/div>)/)
+  .map((part) =>
+    part.startsWith("<pre") || part.startsWith('<div class="mermaid">')
+      ? part
+      : part.replace(/(§§?)(\d+(?:\.\d+)*(?:(?:–|, )\d+(?:\.\d+)*)*)/g, (_m, sign: string, list: string) =>
+          sign +
+          list.replace(/\d+(?:\.\d+)*/g, (n) => {
+            const id = sectionIds.get(n);
+            if (!id) throw new Error(`spec.md refers to §${n}, which has no heading`);
+            return `<a class="sec-ref" href="#${id}">${n}</a>`;
+          }),
+        ),
+  )
+  .join("");
 
 const docTitle = titleArg ?? "SMART Health Check-in 1.0 — Draft Spec";
 const docDescription =
@@ -358,7 +379,7 @@ ${tocItems}
   </script>
 
   <article class="spec-body smart-prose">
-${body}
+${linkedBody}
   </article>
 </main>
 
