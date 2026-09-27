@@ -16,7 +16,7 @@ Editor's draft 1.0, for implementer review. Editors, license, and publication de
 > - A patient's wallet app is the **Wallet**. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6).
 > - The minimum to implement: the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1). Reader authentication is optional.
 > - Every requirement has an ID such as [XV-2]. The [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance) cite these IDs, and [`requirements.json`](https://github.com/smart-health-checkin/spec/blob/main/requirements.json) lists them all.
-> - [Appendix A](#appendix-a-worked-example) walks one real capture byte by byte. The [explainers](#companion-material) teach the model and the wire format with examples.
+> - New to this? [Request and response](https://smart-health-checkin.org/spec/request-response.html) walks the request and response JSON with one example, and [Wire protocol](https://smart-health-checkin.org/spec/wire-protocol.html) shows how they are sealed and sent. [Appendix A](#appendix-a-worked-example) walks one real capture byte by byte.
 
 ---
 
