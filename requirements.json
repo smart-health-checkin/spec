@@ -564,7 +564,7 @@
       "id": "VRQ-10",
       "section": "8.2",
       "actor": "Verifier",
-      "summary": "The Verifier SHOULD apply its own timeout to the call. On some platforms, a response that is too large never arrives, and the call never settles."
+      "summary": "The Verifier SHOULD apply its own timeout to the call. On some platforms, a response that fails in delivery never arrives, and the call never settles."
     },
     {
       "id": "TR-1",

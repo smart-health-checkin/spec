@@ -22,7 +22,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
 | [`tools/fixtures-tool/`](tools/fixtures-tool/) | Python fixture checks with pyMDOC. |
 | [`tools/capture/`](tools/capture/README.md) | Browser capture and probing scripts. |
-| [`docs/research/`](docs/research/) | Research notes, such as Android response-size limits. Not part of the spec. |
+| [`docs/research/`](docs/research/) | Internal research notes. Not part of the spec. |
 
 The TypeScript Verifier and web-wallet code is the [client library](https://github.com/smart-health-checkin/client); its demos run at <https://smart-health-checkin.org/client/demo/>.
 
@@ -44,7 +44,7 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./wire-protocol.html` | The wire protocol, byte by byte |
 | `./inspector.html` | Inspect the checked-in captures |
 | `./kiosk.html` | Kiosk check-in: start at a kiosk or the desk, continue on the phone |
-| `./trust-and-limits.html` | Security and limits: what signatures prove, warnings, reader authentication, response size |
+| `./trust-and-limits.html` | Security and limits: what signatures prove, warnings, reader authentication, cancel, timeouts |
 | `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
 | `./llms.txt` | The spec and explainers in one file |
 | `./fixtures/` | The fixtures |

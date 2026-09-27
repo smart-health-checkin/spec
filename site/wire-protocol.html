@@ -244,7 +244,7 @@ navigator.credentials.get({
   digital: { requests: [{ protocol: "org-iso-mdoc",
     data: { deviceRequest: base64url(DeviceRequest), encryptionInfo: base64url(EncryptionInfo) } }] }
 })</pre>
-              <p class="note">Set a timeout on the call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>. Response size is not a practical limit on current platforms, with one exception: a wallet using the two-argument <code>setGetCredentialResponse</code>, or Chrome below 150, drops responses above about 520 KB, and the call never settles (<a href="./trust-and-limits.html#size">response size</a>).</p>
+              <p class="note">Set a timeout on the call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>. On some platforms a failed delivery never settles the call (<a href="./trust-and-limits.html#timeouts">timeouts</a>).</p>
             </div>
           </div>
         </div>

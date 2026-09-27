@@ -49,8 +49,8 @@
           build trusts whichever caller it sees, which is fine for testing and wrong for production.</li>
         <li><b>The response.</b> The wallet returns it with the three-argument
           <code>PendingIntentHandler.setGetCredentialResponse(intent, response, request)</code> on
-          <code>androidx.credentials</code> 1.7.0-alpha03, so large responses travel as a file
-          (<a href="./trust-and-limits.html#size">response size</a>).</li>
+          <code>androidx.credentials</code> 1.7.0-alpha03. That overload hands the response to the browser as a file,
+          so responses of any size get through. Use it rather than the older two-argument form.</li>
       </ul>
     </section>
 
@@ -68,9 +68,9 @@
           talks to, under the patient's existing session, and the app fetches it there.</li>
         <li><b>A Custom Tabs message channel</b> (Android). The app opens the page in a Custom Tab and asks for a
           message channel, which Chrome grants after checking the app against the page's domain with Digital Asset
-          Links. The page sends the result to the app in parts, since each message is capped at about 1 MB.
-          This works end to end: a web wallet opened from the page keeps its link back to it, and a 1.9 MB response
-          arrives in 10 parts in under 3 seconds (Android 17, Chrome 145). The
+          Links. The page sends the result to the app in parts, so a result of any size
+          gets through. This works end to end: a web wallet opened from the page keeps its link back to it, and a
+          large response arrives intact (Android 17, Chrome 145). The
           <a href="/client/docs/native-apps.html">Native Verifier apps</a> guide has the code.</li>
       </ul>
       <p class="smart-callout warn">
@@ -133,8 +133,8 @@
         <table>
           <thead><tr><th>Setup</th><th>Versions</th><th>How</th></tr></thead>
           <tbody>
-            <tr><td>Android phone, Chrome, reference wallet</td><td>Android 17, Chrome 151, Play services 26.32</td><td>By hand, including the response-size measurements</td></tr>
-            <tr><td>Android emulator, Chrome, reference wallet, <a href="/connectathon/testing-ehr/">Testing EHR</a></td><td>API 37 image, Chrome 145, Play services 26.11</td><td>Nightly in <a href="https://github.com/smart-health-checkin/connectathon/actions/workflows/android-e2e.yml">CI</a>; the large-response scenario is skipped because Chrome 145 is below 150</td></tr>
+            <tr><td>Android phone, Chrome, reference wallet</td><td>Android 17, Chrome 151, Play services 26.32</td><td>By hand, including large responses</td></tr>
+            <tr><td>Android emulator, Chrome, reference wallet, <a href="/connectathon/testing-ehr/">Testing EHR</a></td><td>API 37 image, Chrome 145, Play services 26.11</td><td>Nightly in <a href="https://github.com/smart-health-checkin/connectathon/actions/workflows/android-e2e.yml">CI</a>; the large-response scenario runs by hand on a phone, since the emulator's Chrome 145 predates the browser's large-response path</td></tr>
             <tr><td>Native Android app as Verifier, through a Custom Tab</td><td>Android 17, Chrome 145</td><td>Automated, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a> and the SMART Testing Wallet</td></tr>
             <tr><td>Native Android app as Verifier, direct</td><td>Android 17</td><td>Automated, with the <a href="https://github.com/smart-health-checkin/android-wallet/tree/main/verifier-app">example app</a></td></tr>
             <tr><td>Web wallets in any browser</td><td>Current Chrome and Chromium</td><td>After every deploy and nightly, by the <a href="https://smart-health-checkin.org/connectathon/testing-ehr/">Testing EHR</a> self-test</td></tr>

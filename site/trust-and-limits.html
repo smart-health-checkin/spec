@@ -17,8 +17,8 @@
     <header>
       <h1>Security and limits</h1>
       <p class="lede">
-        What the exchange proves and what it leaves to you, how receivers treat problems, and the practical limits:
-        response size, cancelling, and timeouts. The rules are in the <a href="./spec.html">spec</a>; this page
+        What the exchange proves and what it leaves to you, how receivers treat problems, and how cancelling and
+        timeouts work. The rules are in the <a href="./spec.html">spec</a>; this page
         explains them and links each one.
       </p>
     </header>
@@ -27,7 +27,6 @@
       <a href="#signatures">What the signatures prove</a>
       <a href="#warnings">Warnings, not failures</a>
       <a href="#reader-auth">Reader authentication</a>
-      <a href="#size">Response size</a>
       <a href="#cancel">Cancel and decline</a>
       <a href="#timeouts">Timeouts</a>
     </nav>
@@ -113,28 +112,6 @@
       </p>
     </section>
 
-    <section id="size">
-      <h2>Response size</h2>
-      <p>
-        <b>Response size is not a practical limit on current platforms.</b> A wallet on
-        <code>androidx.credentials</code> 1.7 or later that returns its response with the three-argument
-        <code>PendingIntentHandler.setGetCredentialResponse(intent, response, request)</code>, answering Chrome 150 or
-        later, hands responses of 200 KB and up to Chrome as a file. Measured with no transport limit up to about
-        67 MB; the practical ceiling is the wallet's own memory, about 20 MB at a default Android heap. The reference
-        Android wallet uses this path.
-      </p>
-      <p>
-        The one exception: a wallet that uses the older two-argument
-        <code>setGetCredentialResponse(intent, response)</code>, or a browser that doesn't offer the large-payload
-        path (Chrome below 150), drops responses above about 520 KB. Measured: 514 KB passes, 522 KB never arrives,
-        and the browser call never settles. That silent hang is why a Verifier sets its own timeout <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>.
-      </p>
-      <p>
-        Measurements: Pixel, Android 17, Chrome 151, Google Play services 26.32, August 2026
-        (<a href="https://github.com/smart-health-checkin/spec/blob/main/docs/research/10-android-response-size.md">full write-up</a>).
-      </p>
-    </section>
-
     <section id="cancel">
       <h2>Cancel and decline</h2>
       <p>
@@ -152,8 +129,8 @@
     <section id="timeouts">
       <h2>Timeouts</h2>
       <p>
-        A Verifier sets its own timeout on the browser call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>, because the too-large case above never
-        settles. The <a href="/client/">client library</a> gives a web wallet 5 minutes by default; for the phone's
+        A Verifier sets its own timeout on the browser call <a class="rid" href="./spec.html#VRQ-10">VRQ-10</a>, because on some platforms a failed delivery
+        never settles the call. The <a href="/client/">client library</a> gives a web wallet 5 minutes by default; for the phone's
         own wallet, pass an <code>AbortSignal</code> to <code>runCheckin</code>. A response that arrives after the
         Verifier gave up is not acted on <a class="rid" href="./spec.html#SEC-1">SEC-1</a>.
       </p>
