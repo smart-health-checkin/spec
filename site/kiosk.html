@@ -9,36 +9,6 @@
   <link rel="stylesheet" href="/assets/smart-design.css">
   <script src="/assets/site-chrome.js" defer></script>
   <link rel="stylesheet" href="./pages.css">
-  <style>
-    .actions { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: var(--space-5); }
-
-    .facts { margin: 12px 0 0; padding-left: 20px; }
-    .facts li { margin: 8px 0; }
-
-    .flow-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: var(--space-5);
-      margin-top: var(--space-5);
-    }
-    .flow-card {
-      padding: 22px 24px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      background: var(--surface);
-      box-shadow: var(--shadow-sm);
-    }
-    .flow-card h3 { margin-top: 0; }
-    .flow-card.kiosk  { border-top: 3px solid var(--smart-teal); }
-    .flow-card.portal { border-top: 3px solid var(--brand); }
-
-    .steps strong { display: block; margin-bottom: var(--space-1); color: var(--fg-1); }
-
-
-    @media (max-width: 760px) {
-      .flow-grid { grid-template-columns: 1fr; }
-    }
-  </style>
 </head>
 <body>
   <div data-smart-topbar></div>
@@ -48,58 +18,26 @@
     <header>
       <h1>Kiosk check-in</h1>
       <p class="lede">
-        A check-in can begin at the front desk, at a kiosk, or in a provider app.
-        The patient opens the request on their phone, reviews it in their wallet,
-        chooses what to share, and the check-in flow updates when the response is
-        ready.
+        In a kiosk check-in, the visit starts on a screen the clinic controls,
+        such as a kiosk in the waiting room or the front desk's computer, and
+        the patient finishes it on their own phone. The clinic's screen can't
+        reach the patient's wallet, and a shared screen is the wrong place to
+        review health information, so the screen shows a code that the patient
+        scans, and the wallet on the phone answers the request. The diagram
+        shows the four steps and what each device holds. You can try it in the
+        <a href="/client/demo/kiosk.html">kiosk demo</a>.
       </p>
-      <div class="actions" aria-label="Primary links">
-        <a href="/client/demo/kiosk.html">Try the kiosk demo</a>
-        <a href="/client/demo/#wallet=platform">Try phone check-in</a>
-      </div>
     </header>
 
-    <nav class="toc" aria-label="Page sections">
-      <a href="#mental-model">What staff and patients see</a>
-      <a href="#flow">Step by step</a>
-      <a href="#contract">What the handoff needs to do</a>
+    <nav class="toc" aria-label="On this page">
+      <a href="#flow">The four steps</a>
+      <a href="#contract">What the handoff must guarantee</a>
       <a href="#implementers">Keys and origins</a>
       <a href="#deployment">The connection can vary</a>
     </nav>
 
-    <section id="mental-model">
-      <h2>What staff and patients see</h2>
-      <p>
-        The clinic starts the visit, but the patient reviews and shares from
-        their phone. That keeps private health information off a shared clinic
-        screen, while staff can still see when the check-in information has
-        arrived. On the phone, the patient uses the same wallet step as in a
-        check-in they start on the phone themselves; the clinic's screen waits
-        for the result.
-      </p>
-
-      <div class="flow-grid">
-        <div class="flow-card portal">
-          <h3>Patient checks in from phone</h3>
-          <p>
-            The patient opens the check-in page on their phone, reviews the
-            wallet request, shares approved information, and sees the result on
-            the same phone.
-          </p>
-        </div>
-        <div class="flow-card kiosk">
-          <h3>Check-in continues on the patient's phone</h3>
-          <p>
-            The visit can begin at the front desk, at a kiosk, or in a provider
-            app. The patient opens the wallet request on their phone and shares
-            approved information back to the waiting check-in session.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <section id="flow">
-      <h2>Step by step</h2>
+      <h2>The four steps</h2>
       <div class="xd-figure xd-wide">
 <svg class="xd" viewBox="0 0 880 520" role="img" aria-labelledby="k-title k-desc">
       <title id="k-title">Kiosk check-in, step by step</title>
@@ -253,59 +191,27 @@
       <text x="99" y="674" text-anchor="middle" class="pill-ok-t">Check-in received</text>
     </svg>
       </div>
-
-      <ol class="steps">
-        <li>
-          <div>
-            <strong>The clinic starts check-in.</strong>
-            The check-in flow creates a request for this visit and gives the
-            patient a way to open it on their phone.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>The patient opens it on their phone.</strong>
-            The handoff connects the patient's phone to the same check-in visit,
-            without asking the patient to type private information into a shared
-            clinic screen.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>The patient reviews the request.</strong>
-            The phone shows what the clinic is asking for, such as insurance,
-            demographics, medications, or an intake form.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>The patient approves sharing in their wallet.</strong>
-            The wallet shows what will be shared. The patient can approve,
-            decline, or share only some items.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>The check-in screen updates.</strong>
-            The approved response returns to the waiting session. The clinic
-            system checks it against the original request and displays the result
-            for staff.
-          </div>
-        </li>
-      </ol>
     </section>
 
     <section id="contract">
-      <h2>What the handoff needs to do</h2>
+      <h2>What the handoff must guarantee</h2>
       <p>
-        The handoff only needs to connect the waiting kiosk session with the
-        patient's phone. Once connected, the phone runs the normal wallet sharing
-        flow and returns the approved SMART Health Check-in response to that
-        session.
+        The handoff is everything that connects the clinic's screen to the
+        patient's phone: the code, the page the phone opens, and the service
+        that carries messages between them. Whatever form it takes, it has to
+        deliver the request the kiosk built to the phone unchanged, connect the
+        phone to the one session that is waiting for it, and bring the
+        encrypted response back to that session. The code identifies the
+        session, so it needs a random identifier that no one can guess from
+        another visit's code.
       </p>
       <p>
-        Identity, clinical provenance, patient matching, EHR write-back, and
-        payment or claims handling remain decisions for each site and its
+        Anyone who scans the code can read the request, so the request should
+        say what the clinic needs without containing private details itself.
+        The code also doesn't prove who is holding the phone. A response tells
+        the kiosk what the patient chose to share; matching it to the right
+        patient's record, identity checks, clinical provenance, writing the
+        data back to the EHR, and billing stay with the site and its
         integration.
       </p>
     </section>
@@ -313,31 +219,42 @@
     <section id="implementers">
       <h2>Keys and origins</h2>
       <p>
-        The kiosk has no wallet, so the phone makes the browser call. This is how the
-        <a href="/client/docs/wallets.html#kiosk-hand-off">client library's hand-off</a> works, and
-        what any hand-off has to get right.
+        The kiosk's key pair is the HPKE key pair of the ordinary same-device
+        flow: the public key travels to the phone inside
+        <code>encryptionInfo</code>, and the wallet seals its response to it.
+        That is why the connection can't read the response, and why a
+        response changed on the way fails to decrypt at the kiosk instead of
+        reaching staff altered.
       </p>
-      <ul class="facts">
-        <li><b>The kiosk builds the request and holds the key.</b> It creates the SMART request, the HPKE key pair, and <code>encryptionInfo</code>, and keeps the private key. Only the kiosk can open the response.</li>
-        <li><b>The phone's hand-off page is the caller.</b> It calls <code>navigator.credentials.get</code> with exactly the argument the kiosk built, so the wallet binds the transcript to the <em>hand-off page's</em> origin (<a href="./spec.html#TR-2">TR-2</a>).</li>
-        <li><b>The kiosk computes the transcript for that origin.</b> When it opens the response, it uses the hand-off page's origin, not its own, and the exact <code>encryptionInfo</code> string it sent (<a href="./spec.html#TR-1">TR-1</a>). If the origins differ by even a trailing slash, decryption fails.</li>
-        <li><b>The relay sees only public material.</b> Whatever carries messages between the devices sees the request argument going out and the encrypted result coming back. It cannot read or change the response: a changed ciphertext doesn't decrypt.</li>
-        <li><b>Cross-device flows are out of scope for the spec</b> (<a href="./spec.html#1-4-out-of-scope">§1.4</a>). Once the phone makes the call, it is the ordinary same-device flow of <a href="./spec.html#8-same-device-presentation-flow">§8</a>.</li>
-      </ul>
+      <p>
+        The page that calls <code>navigator.credentials.get</code> is the
+        check-in page on the phone, not the kiosk, and the wallet binds its
+        response to the origin of the page that called it
+        (<a href="./spec.html#TR-2">TR-2</a>). The check-in page must therefore
+        pass exactly the argument the kiosk built, and the kiosk must compute
+        the session transcript with the check-in page's origin rather than its
+        own, together with the exact <code>encryptionInfo</code> string it sent
+        (<a href="./spec.html#TR-1">TR-1</a>). If the two origins differ at
+        all, even by a trailing slash, the response doesn't decrypt. The
+        <a href="/client/docs/wallets.html#kiosk-hand-off">client library's
+        kiosk hand-off</a> does all of this.
+      </p>
     </section>
 
     <section id="deployment">
       <h2>The connection can vary</h2>
       <p>
-        A clinic can choose the handoff that fits its setting: a kiosk prompt,
-        a front-desk prompt, a provider app notification, or another
-        authenticated way to connect the visit and the patient's phone. The user
-        experience can vary while the wallet sharing step stays the same.
-      </p>
-      <p>
-        SMART Health Check-in defines the request, the wallet step, and the
-        returned response. The handoff mechanism and the completion screen are
-        implementation choices, unless a deployment profile defines them.
+        The spec defines the request, the wallet step, and the response. How
+        the phone reaches the waiting session is outside its scope
+        (<a href="./spec.html#1-4-out-of-scope">§1.4</a>): once the check-in
+        page on the phone makes the call, the rest is the ordinary same-device
+        flow of <a href="./spec.html#8-same-device-presentation-flow">§8</a>.
+        A clinic can therefore choose the connection that fits its setting,
+        such as a QR code on a kiosk or front-desk screen, or a link that the
+        clinic's own app or a text message opens on the patient's phone, as
+        long as it meets the <a href="#contract">guarantees above</a>. What the
+        clinic's screen shows when the answer arrives is also up to the
+        implementation.
       </p>
     </section>
   </main>
