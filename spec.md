@@ -38,7 +38,7 @@ SMART Health Check-in 1.0 has two layers:
 - **The clinical model (§§5–6):** a JSON request listing the items a Verifier would like, and a JSON response carrying the records the Holder shared and one outcome per item. This layer does not depend on the transport.
 - **The same-device flow (§8):** the request and response travel through the [W3C Digital Credentials API](#ref-W3C-DC-API) as a direct `org-iso-mdoc` presentation. The response is one mdoc element whose value is the whole response JSON.
 
-A request says what the Verifier is looking for; it does not limit what the Holder may share. The Holder can share less, more, or different content, and the response accounts for it with Artifacts, `fulfills[]`, and a status per item.
+A request says what the Verifier is looking for; it does not limit what the Holder may share for each item. The Holder can share less, more, or different content, and the response accounts for it with Artifacts, `fulfills[]`, and a status per item. Every Artifact names the items it answers ([XV-5]), so a Verifier that wants anything else the patient finds relevant includes an item with no selector ([SEL-7]).
 
 ### 1.1 What the mdoc layer is for
 
