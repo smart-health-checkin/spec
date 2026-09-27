@@ -11,6 +11,9 @@
     "shiki": "^4.4.3"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@mixmark-io/domino": "^2.2.0",
+    "@types/bun": "latest",
+    "@types/turndown": "^5.0.6",
+    "turndown": "^7.2.4"
   }
 }

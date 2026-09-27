@@ -50,3 +50,9 @@ smart-health-checkin.org/spec/ on every push to `main`.
   Section references in the text (`§8.2`, `§§5–6`) link to their numbered
   headings when the spec renders; one that names no heading fails the build.
 - This section's menu is `site/nav.json`.
+- `scripts/llms.ts` writes `llms.txt` and `llms-full.txt` at the end of the
+  build, from the built pages and `nav.json`, with the apex's shared
+  background (fetched from `https://smart-health-checkin.org/llms-background.md`;
+  `LLMS_BACKGROUND=../smart-health-checkin.github.io/llms-background.md`
+  builds offline). A new page must be in `nav.json` or the script's `EXTRA`
+  or `SKIP`, or the build fails. See [llms.txt](https://github.com/smart-health-checkin/smart-health-checkin.github.io/blob/main/MAINTAINING.md#llmstxt) in MAINTAINING.md.

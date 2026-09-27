@@ -46,10 +46,11 @@ cp "$ROOT/requirements.json" "$SITE_DIR/requirements.json"
 # system and the shared chrome every page here loads — and the draft spec is
 # this section's front page.
 cp "$SITE_DIR/spec.html" "$SITE_DIR/index.html"
-bun "$ROOT/scripts/generate-llms-txt.mjs" "$SITE_DIR/llms.txt"
-# llms.txt here is already the full bundle; every section also serves it as llms-full.txt.
-cp "$SITE_DIR/llms.txt" "$SITE_DIR/llms-full.txt"
 cp -R "$ROOT/fixtures" "$SITE_DIR/fixtures"
+# llms.txt (the pages, grouped as in nav.json) and llms-full.txt (the shared
+# background fetched from the apex, then every page as Markdown). Fails if a
+# page is missing from them or llms.txt links to a file the build didn't make.
+bun "$ROOT/scripts/llms.ts" "$SITE_DIR"
 
 touch "$SITE_DIR/.nojekyll"
 
