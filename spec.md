@@ -2,28 +2,28 @@
 
 A clinic app asks a patient's wallet for check-in information and gets back the FHIR data and form answers the patient chose to share. This specification defines that request and response, and how they travel through the W3C Digital Credentials API as an ISO mdoc presentation.
 
-Short title: **SMART Health Check-in 1.0**. Suggested citation label: **SHC-Checkin-1.0**. Suggested document identifier: `smart-health-checkin-1.0`.
-
 ---
 
 ## 0. Status
 
 Editor's draft 1.0, for implementer review. Editors, license, and publication details are still to be settled; the text is intended for CC BY 4.0, and its TypeScript, CDDL, and examples for use in implementations and tests. Identifiers, URLs, keys, and clinical data in examples are illustrative unless this document marks them as fixed values.
 
-> **Start here**
->
-> - A clinic web page, kiosk, or patient portal is the **Verifier**. It builds the request (§5), calls the browser (§8.2), and checks the response before using it (§6.4, §8.5).
-> - A patient's wallet app is the **Wallet**. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6).
-> - The minimum to implement: the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1). Reader authentication is optional.
-> - Every requirement has an ID such as [XV-2]. The [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance) cite these IDs, and [`requirements.json`](https://github.com/smart-health-checkin/spec/blob/main/requirements.json) lists them all.
-> - The explainers teach with examples. They are non-normative; where they differ, this document is right.
->     - [Request and response](https://smart-health-checkin.org/spec/request-response.html): the request and response JSON, with one running example.
->     - [Wire protocol](https://smart-health-checkin.org/spec/wire-protocol.html): how the request and response are built, sealed, and checked in the same-device flow.
->     - [Kiosk check-in](https://smart-health-checkin.org/spec/kiosk.html): starting on a clinic screen and finishing on the patient's phone.
->     - [Security and timeouts](https://smart-health-checkin.org/spec/trust-and-limits.html): what the signatures show, warnings, reader authentication, cancel and decline, and timeouts.
->     - [Platform notes](https://smart-health-checkin.org/spec/platform-notes.html): Android, iOS, desktop browsers, and native Verifier apps.
->     - [Capture inspector](https://smart-health-checkin.org/spec/inspector.html): a real exchange, byte by byte.
-> - [Appendix A](#appendix-a-worked-example) walks one real capture byte by byte.
+### 0.1 How to read this document
+
+The requirements apply to two roles. The **Verifier** is the software that asks: a clinic's check-in page, a patient portal, a kiosk, or a clinic's app. It builds the request (§5), calls the browser (§8.2), and checks the response before using it (§6.4, §8.5). The **Wallet** is the patient's health app. It reads the request (§8.4), lets the patient choose what to share (§5.7), and returns the response (§6). An implementation needs the two selector kinds, the two media types, the six statuses, ES256 signatures, SHA-256 digests, and one HPKE suite (§8.1); reader authentication is optional.
+
+Every requirement has an ID such as [XV-2] that stays the same across edits. The [conformance tests](https://github.com/smart-health-checkin/spec/tree/main/conformance) cite these IDs, and [`requirements.json`](https://github.com/smart-health-checkin/spec/blob/main/requirements.json) lists them all.
+
+The explainers teach the same material with examples. They are non-normative, and where they differ from this document, this document is right:
+
+- [Request and response](https://smart-health-checkin.org/spec/request-response.html): the request and response JSON, with one running example.
+- [Wire protocol](https://smart-health-checkin.org/spec/wire-protocol.html): how the request and response are built, sealed, and checked in the same-device flow.
+- [Kiosk check-in](https://smart-health-checkin.org/spec/kiosk.html): starting on a clinic screen and finishing on the patient's phone.
+- [Security and timeouts](https://smart-health-checkin.org/spec/trust-and-limits.html): what the signatures show, warnings, reader authentication, cancel and decline, and timeouts.
+- [Platform notes](https://smart-health-checkin.org/spec/platform-notes.html): Android, iOS, desktop browsers, and native Verifier apps.
+- [Capture inspector](https://smart-health-checkin.org/spec/inspector.html): one real exchange, byte by byte.
+
+[Appendix A](#appendix-a-worked-example) walks the same captured exchange within this document.
 
 ---
 
