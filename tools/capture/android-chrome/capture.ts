@@ -60,18 +60,22 @@ const server = Bun.serve({
   },
 });
 
-type Node = { text: string; desc: string; cls: string; checked: boolean; left: number; top: number; bottom: number; x: number; y: number };
+type Node = { text: string; id: string; desc: string; cls: string; checked: boolean; left: number; top: number; bottom: number; x: number; y: number };
 async function screen(): Promise<Node[]> {
   await adb("shell", "uiautomator", "dump", "/sdcard/ui.xml");
   const xml = (await adb("shell", "cat", "/sdcard/ui.xml")).stdout.toString();
   return [...xml.matchAll(/<node ([^>]*)>/g)].map((m) => {
     const a = Object.fromEntries([...m[1]!.matchAll(/([\w-]+)="([^"]*)"/g)].map((x) => [x[1], x[2]]));
     const [l, t, r, b] = (a.bounds ?? "[0,0][0,0]").match(/\d+/g)!.map(Number);
-    return { text: a.text ?? "", desc: a["content-desc"] ?? "", cls: a.class ?? "", checked: a.checked === "true", left: l!, top: t!, bottom: b!, x: (l! + r!) >> 1, y: (t! + b!) >> 1 };
+    return { text: a.text ?? "", id: (a["resource-id"] ?? "").replace(/^.*:id\//, ""), desc: a["content-desc"] ?? "", cls: a.class ?? "", checked: a.checked === "true", left: l!, top: t!, bottom: b!, x: (l! + r!) >> 1, y: (t! + b!) >> 1 };
   });
 }
+// The wallet's controls carry test tags, which show as resource ids (wallet 0.4.5
+// and later); older wallets are matched by their labels and layout.
+const isShare = (n: Node) => n.id === "share-selected" || n.text === "Share selected data";
+const SHARE = /^(share-selected|Share selected data)$/;
 async function tapIfShown(re: RegExp): Promise<boolean> {
-  const n = (await screen()).find((n) => re.test(n.text) || re.test(n.desc));
+  const n = (await screen()).find((n) => re.test(n.text) || re.test(n.desc) || re.test(n.id));
   if (!n) return false;
   await adb("shell", "input", "tap", String(n.x), String(n.y));
   return true;
@@ -86,7 +90,8 @@ async function answerForms(): Promise<number> {
     const signature = nodes.map((n) => n.text + n.checked).join("|");
     if (signature === last) break;
     last = signature;
-    const viewBottom = Math.max(...nodes.filter((n) => /Share selected data/.test(n.text)).map((n) => n.top), 0) || 2000;
+    const viewBottom = Math.max(...nodes.filter(isShare).map((n) => n.top), 0) || 2000;
+    const tagged = nodes.some((n) => n.id === "question");
     let question = "";
     let group: Node[] = [];
     const flush = async () => {
@@ -98,7 +103,7 @@ async function answerForms(): Promise<number> {
     };
     for (const n of nodes) {
       if (n.cls.endsWith("RadioButton")) group.push(n);
-      else if (n.cls.endsWith("TextView") && n.text && n.left <= 110) { await flush(); question = n.text; }
+      else if (tagged ? n.id === "question" : n.cls.endsWith("TextView") && n.text && n.left <= 110) { await flush(); question = n.text; }
     }
     await flush();
     await adb("shell", "input", "swipe", "540", "1500", "540", "700", "300");
@@ -124,9 +129,9 @@ for (let i = 0; i < 10 && !tapped; i++) tapped = (await tapIfShown(/^Check in$/)
 if (!tapped) fail("could not find the page's Check in button");
 for (let i = 0; i < 60 && !credential && !pageError; i++) {
   const nodes = await screen();
-  if (nodes.some((n) => n.text === "Share selected data")) {
+  if (nodes.some(isShare)) {
     steps.push(`answered ${await answerForms()} question(s)`);
-    if (await tapIfShown(/^Share selected data$/)) steps.push("shared from the wallet");
+    if (await tapIfShown(SHARE)) steps.push("shared from the wallet");
   } else {
     for (const [re, what] of [[/^No thanks$/, "dismissed a Chrome prompt"], [/^Continue$/, "trusted the site"], [/^Agree and continue$/, "picked the wallet"]] as const) {
       if (await tapIfShown(re)) { steps.push(what); break; }
