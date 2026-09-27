@@ -91,7 +91,7 @@ Each implementation has a runner and a small config next to it:
   the list is removed as fixes land and never goes stale.
 
 Runners fetch the spec repository at a pinned tag with `scripts/fetch-spec.sh`
-(`SPEC_REF`, for example `v1.0.0-draft.1`; set `SPEC_DIR=../spec` to use a local
+(`SPEC_REF`, for example `v1.0.0-draft.2`; set `SPEC_DIR=../spec` to use a local
 checkout) and read `conformance/` from it.
 
 ## What the expectations follow

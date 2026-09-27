@@ -21,9 +21,10 @@ Fixture roots:
 Notable fixtures:
 
 - `dcapi-requests/android-chrome-capture/` and `responses/android-chrome-capture/` -
-  a real Chrome/Android capture: Chrome 145 on an Android 17 emulator, answered by
-  the reference Android wallet 0.3.6, with the detached `deviceSignature` and MSO
-  `validityInfo`. Includes an intentionally public test-only HPKE private JWK so
+  a real Chrome/Android capture made 2026-09-27 (UTC): Chrome 145 on an Android 17
+  emulator, a Verifier page built with client library 0.4.4, answered by the
+  reference Android wallet 0.4.3, with the detached `deviceSignature` and MSO
+  `validityInfo`. `tools/capture/android-chrome/capture.ts` re-captures it. Includes an intentionally public test-only HPKE private JWK so
   anyone can reopen the response. `pymdoc-byte-check.json` checks it independently
   with pyMDOC/cryptography. Spec Appendix A walks it byte by byte.
 - `dcapi-requests/synthetic-basic/` - a deterministic synthetic request.

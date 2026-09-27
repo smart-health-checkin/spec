@@ -1,13 +1,17 @@
 {
   "id": "android-chrome-capture",
   "kind": "positive-smart-health-checkin-real-platform-response",
-  "source": "android handler run-1790428465319",
-  "capturedAt": "2026-09-26T13:14:25.404098Z",
+  "source": "android handler run-1790474416904",
+  "capturedAt": "2026-09-27T02:00:16.928914Z",
   "origin": "http://127.0.0.1:3010",
   "protocol": "org-iso-mdoc",
   "packageName": "org.smarthealthit.checkin.wallet",
   "containsPhi": false,
   "note": "Matching real Android wallet response captured alongside dcapi-requests/android-chrome-capture/. Demo data only. deviceSignature has a detached (null) payload per ISO 18013-5; the MSO carries validityInfo.",
+  "wallet": {
+    "release": "0.4.3",
+    "versionCode": 4003
+  },
   "deviceResponse": {
     "version": "1.0",
     "status": 0
@@ -15,11 +19,11 @@
   "deviceSignaturePayload": "detached",
   "sourceRequestFixture": "fixtures/dcapi-requests/android-chrome-capture",
   "sha256": {
-    "credential.json": "7ee42cfdc2d5f0fb0071e57e83c8d9fce4a2f9e5f995333532aa91d7e0def2c9",
-    "dcapi-response.cbor": "876a72790df5638fdfe7f184a9966d5452f7dba8756fac089edb7a37cf9ac2fc",
-    "device-response.cbor": "26ebf942bcdf9031605fbf98177799efee1147245bee4047bdaf4033f0e5d30a",
-    "wallet-response.digital-credential.json": "7ee42cfdc2d5f0fb0071e57e83c8d9fce4a2f9e5f995333532aa91d7e0def2c9",
-    "smart-response.expected.json": "39fb9df8a0bd4892c563e6493643550c7a7cecf5912b56b51a20dd60def12d16",
-    "session-transcript.cbor": "70840a6bb718c1bcb229b7cb702233269f272a21fa64814ae374b14ae05954ea"
+    "credential.json": "af27d5bc028d1abf4914b09bb6a225edf7ddf773049d9ec0022f2a726b04984f",
+    "dcapi-response.cbor": "42ee9aa0b21a30f742c74825b38d796cb21e0ed147968c76cf8ed750842ef75a",
+    "device-response.cbor": "b39ae423e53f69a3e2fdbae232e4707f5063e4646831a2a4f08f7c27bca32e6f",
+    "wallet-response.digital-credential.json": "af27d5bc028d1abf4914b09bb6a225edf7ddf773049d9ec0022f2a726b04984f",
+    "smart-response.expected.json": "0a458a98b77b1546d1b0ce6d0432f9c9208dfce062bd90ee07cb001e34811191",
+    "session-transcript.cbor": "932341d479c76cffe890c3ff0e68be42ee9f49f06d36675d1428a120886b8b0b"
   }
 }

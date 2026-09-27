@@ -592,11 +592,20 @@ async function seal(deviceResponse: Uint8Array, transcript: Uint8Array, publicJw
       expected,
     });
 
+  const captureMsoSignedPlus = (seconds: number) => {
+    const m = (map: unknown, key: string) => (map as Map<string, unknown>).get(key);
+    const doc = (m(cborDecode(readBytes(join(CAPTURE_RESP, "device-response.cbor"))), "documents") as unknown[])[0];
+    const msoBytes = (m(m(doc, "issuerSigned"), "issuerAuth") as unknown[])[2] as Uint8Array;
+    const mso = cborDecode(((cborDecode(msoBytes) as CborTag).value) as Uint8Array);
+    const signed = (m(m(mso, "validityInfo"), "signed") as CborTag).value as string;
+    return new Date(Date.parse(signed) + seconds * 1000).toISOString().replace(/\.000Z$/, "Z");
+  };
   const capOrigin = JSON.parse(read(join(CAPTURE_REQ, "metadata.json"))).origin;
   add1("capture", "The real capture's DeviceResponse (detached device signature).", readBytes(join(CAPTURE_RESP, "device-response.cbor")), JSON.parse(read(join(CAPTURE_RESP, "credential.json"))), { valid: true }, "VRS-4, VRS-5, VRS-6, VRS-7, VRS-8", {
     origin: capOrigin, encB64u: read(join(CAPTURE_REQ, "encryption-info.b64u")).trim(), transcript: readBytes(join(CAPTURE_REQ, "session-transcript.cbor")),
-    // Just after the MSO was signed (the capture's capturedAt is 28 s earlier: host and emulator clocks differ).
-    now: "2026-09-26T13:15:30Z", jwk: read(join(CAPTURE_REQ, "recipient-private.jwk.json")),
+    // 30 s after the MSO was signed (when the Holder shared; the capture's
+    // capturedAt is earlier, when the wallet received the request).
+    now: captureMsoSignedPlus(30), jwk: read(join(CAPTURE_REQ, "recipient-private.jwk.json")),
   });
   const one = async (slug: string, description: string, knobs: MdocKnobs, expected: Expected, rule: string, status?: Case["status"], pendingOn?: string, now?: string) => {
     const dr = await buildMdoc(synthResponseJson, synthTranscript, synthOtherTranscript, knobs);

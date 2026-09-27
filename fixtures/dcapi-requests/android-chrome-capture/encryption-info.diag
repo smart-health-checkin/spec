@@ -1,1 +1,1 @@
-["dcapi", {"nonce": h'f61661693eacf90c4df963876bb1d7f3fe435929c1c0edb012829014b4207599', "recipientPublicKey": {1: 2, -1: 1, -2: h'f026861216af649117284de2f0d091262fc466f8dc6ba186dace3cea1fcfa78c', -3: h'01fe366ca00581d686e154fc6f83aef0d5e009abd95a78a4c873a10617cc83bc'}}]
+["dcapi", {"nonce": h'4ffb77b0b6e27fe8de060de664bc497f782dce60a100d6517f7a5bf701f4ba5d', "recipientPublicKey": {1: 2, -1: 1, -2: h'05505a666c8decd469e67f7c1bc63424ea18dfc913f951ffb09eaf5a668dbb6b', -3: h'b40047678451780e0e6d9718e6260a917b1d16b52fc22b4e310d18a4f96b15cb'}}]

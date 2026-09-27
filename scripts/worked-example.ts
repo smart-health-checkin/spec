@@ -129,7 +129,10 @@ const chainShape = (c: unknown) =>
   Array.isArray(c) ? (c.length === 1 ? "an array holding one certificate" : `an array of ${c.length} certificates`) : "one certificate byte string";
 const date = (t: CborTag) => `0("${t.value}")`;
 
+const captured = meta.capturedAt.slice(0, 10);
 const out = `
+The capture was made on ${captured} (UTC) with the reference Android wallet ${meta.wallet.release}, Chrome ${meta.chrome.split(".")[0]} on an Android emulator, and a Verifier page built with client library ${meta.client.release}.
+
 **1. The request.** The Verifier at \`${origin}\` sent this \`encryptionInfo\` (base64url, ${encryptionInfoB64u.length} characters):
 
 ${block(encryptionInfoB64u)}
