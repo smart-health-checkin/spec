@@ -83,7 +83,7 @@ body {
   .page { padding: 28px 16px 48px; }
 }
 
-/* Text pages (Security and limits, Platform notes): a narrower column. */
+/* Text pages (Security and timeouts, Platform notes): a narrower column. */
 .page.narrow { max-width: 860px; }
 :where(.narrow) ul { padding-left: 22px; }
 :where(.narrow) li { max-width: 38em; margin: 6px 0; text-wrap: pretty; }

@@ -13,7 +13,7 @@
     {
       "title": "Implementing",
       "items": [
-        { "title": "Security and limits", "href": "trust-and-limits.html", "note": "What signatures prove, size, cancel" },
+        { "title": "Security and timeouts", "href": "trust-and-limits.html", "note": "Signatures, warnings, reader authentication, cancel and decline, timeouts" },
         { "title": "Platform notes", "href": "platform-notes.html", "note": "Android, iOS, browsers, app origins" },
         { "title": "Capture inspector", "href": "inspector.html", "note": "Walk a real capture byte by byte" }
       ]

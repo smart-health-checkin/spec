@@ -16,7 +16,7 @@ SMART Health Check-in is two layers: a transport-neutral request/response model 
 | Path | What it is |
 | --- | --- |
 | [`spec.md`](spec.md) | The draft spec. [§§5–6](https://smart-health-checkin.org/spec/#5-clinical-request-model) define the request and response model; [§8](https://smart-health-checkin.org/spec/#8-same-device-presentation-flow) the `org-iso-mdoc` flow; [Appendix A](https://smart-health-checkin.org/spec/#appendix-a-worked-example) a worked example computed from a real capture. |
-| [`site/`](site/) | Explainers published with the spec: Request and response, Wire protocol, Capture inspector, Kiosk check-in, Security and limits, and Platform notes. |
+| [`site/`](site/) | Explainers published with the spec: Request and response, Wire protocol, Capture inspector, Kiosk check-in, Security and timeouts, and Platform notes. |
 | [`conformance/`](conformance/) | Single-capability conformance cases that every implementation runs in CI (see [Tests and fixtures](#tests-and-fixtures)). |
 | [`fixtures/`](fixtures/) | Checked-in byte captures and generated request fixtures. The client library, the Android wallet, and the Swift package test against a tagged version of them. |
 | [`tools/wire/`](tools/wire/) | Developer tools that inspect requests and responses and generate request fixtures, using the client library's `/wire` module. |
@@ -44,7 +44,7 @@ Pushes to `main` deploy to <https://smart-health-checkin.org/spec/> through [`.g
 | `./wire-protocol.html` | The wire protocol, byte by byte |
 | `./inspector.html` | Inspect the checked-in captures |
 | `./kiosk.html` | Kiosk check-in: start at a kiosk or the desk, continue on the phone |
-| `./trust-and-limits.html` | Security and limits: what signatures prove, warnings, reader authentication, cancel, timeouts |
+| `./trust-and-limits.html` | Security and timeouts: what signatures prove, warnings, reader authentication, cancel, timeouts |
 | `./platform-notes.html` | Android, iOS, desktop browsers, and native apps |
 | `./llms.txt` | For AI models: the shared background and every page, in one file |
 | `./fixtures/` | The fixtures |
