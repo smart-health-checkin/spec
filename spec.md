@@ -187,51 +187,73 @@ The TypeScript below defines the request's shape: which members exist, their typ
 ```typescript
 type NonEmptyString = string;
 type NonEmptyArray<T> = [T, ...T[]];
-type FhirCanonical = NonEmptyString;   // canonical URL, optionally with |version
-type FhirRelease = NonEmptyString;     // FHIR release version, e.g. "4.0.1"
-type MediaType = NonEmptyString;       // e.g. "application/fhir+json"
+// canonical URL, optionally with |version
+type FhirCanonical = NonEmptyString;
+// FHIR release version, e.g. "4.0.1"
+type FhirRelease = NonEmptyString;
+// e.g. "application/fhir+json"
+type MediaType = NonEmptyString;
 
 interface SmartHealthCheckinRequest {
   type: "smart-health-checkin-request";
   version: "1";
-  id: NonEmptyString;             // chosen by the Verifier; echoed as requestId
-  purpose?: string;               // why the Verifier is asking, shown to the Holder
-  fhirVersions?: FhirRelease[];   // FHIR releases the Verifier can read, preferred first
+  // chosen by the Verifier; echoed as requestId
+  id: NonEmptyString;
+  // why the Verifier is asking, shown to the Holder
+  purpose?: string;
+  // FHIR releases the Verifier can read, preferred first
+  fhirVersions?: FhirRelease[];
   items: SmartHealthCheckinRequestItem[];
 }
 
 interface SmartHealthCheckinRequestItem {
-  id: NonEmptyString;             // unique within the request
-  title: NonEmptyString;          // shown to the Holder
-  summary?: string;               // one more line for the Holder
-  required?: boolean;             // advice to the Holder; default false
+  id: NonEmptyString;      // unique within the request
+  title: NonEmptyString;   // shown to the Holder
+  summary?: string;        // one more line for the Holder
+  required?: boolean;      // advice to the Holder; default false
   content: Selector;
-  accept: NonEmptyArray<MediaType>;   // media types the Verifier can read, preferred first
+  // media types the Verifier can read, preferred first
+  accept: NonEmptyArray<MediaType>;
 }
 
-type Selector = SelectionFhirSelector | FormFhirSelector | ExtensionSelector;
+type Selector =
+  | SelectionFhirSelector
+  | FormFhirSelector
+  | ExtensionSelector;
 
-interface SelectionFhirSelector {       // share existing FHIR resources
+// share existing FHIR resources
+interface SelectionFhirSelector {
   kind: "selection.fhir";
-  profiles?: NonEmptyArray<FhirCanonical>;       // exact StructureDefinitions
-  profilesFrom?: NonEmptyArray<FhirCanonical>;   // profile families, e.g. an IG
-  resourceTypes?: NonEmptyArray<NonEmptyString>; // FHIR resourceType names
+  // exact StructureDefinitions
+  profiles?: NonEmptyArray<FhirCanonical>;
+  // profile families, e.g. an IG
+  profilesFrom?: NonEmptyArray<FhirCanonical>;
+  // FHIR resourceType names
+  resourceTypes?: NonEmptyArray<NonEmptyString>;
 }
 
-interface FormFhirSelector {            // fill in a Questionnaire
+// fill in a Questionnaire
+interface FormFhirSelector {
   kind: "form.fhir";
   questionnaireCanonical?: FhirCanonical;
-  questionnaire?: { resourceType: "Questionnaire"; url?: string; version?: string; [member: string]: unknown };
-  // at least one of questionnaireCanonical and questionnaire is present
+  questionnaire?: {
+    resourceType: "Questionnaire";
+    url?: string;
+    version?: string;
+    [member: string]: unknown;
+  };
+  // at least one of questionnaireCanonical and questionnaire
+  // is present
 }
 
-interface ExtensionSelector {           // defined by an extension (§9.3)
-  kind: NonEmptyString;                 // any value other than the two above
+// defined by an extension (§9.3)
+interface ExtensionSelector {
+  kind: NonEmptyString;   // any value other than the two above
   [member: string]: unknown;
 }
 ```
 
-An example request, which the build validates:
+An example of a valid request:
 
 ```json check=request id=example-request
 {
@@ -247,7 +269,9 @@ An example request, which the build validates:
       "required": true,
       "content": {
         "kind": "selection.fhir",
-        "profiles": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+        "profiles": [
+          "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+        ]
       },
       "accept": ["application/fhir+json"]
     },
@@ -259,7 +283,10 @@ An example request, which the build validates:
         "profilesFrom": ["http://hl7.org/fhir/us/core"],
         "resourceTypes": ["Immunization"]
       },
-      "accept": ["application/smart-health-card", "application/fhir+json"]
+      "accept": [
+        "application/smart-health-card",
+        "application/fhir+json"
+      ]
     },
     {
       "id": "intake",
@@ -387,46 +414,60 @@ A SMART response carries the Artifacts the Holder chose to share and one status 
 interface SmartHealthCheckinResponse {
   type: "smart-health-checkin-response";
   version: "1";
-  requestId: NonEmptyString;         // the request's id, exactly
-  artifacts: Artifact[];             // may be empty
-  requestStatus: RequestItemStatus[];// one per request item
+  requestId: NonEmptyString;           // the request's id, exactly
+  artifacts: Artifact[];               // may be empty
+  requestStatus: RequestItemStatus[];  // one per request item
 }
 
-type Artifact = FhirJsonArtifact | SmartHealthCardArtifact | ExtensionArtifact;
+type Artifact =
+  | FhirJsonArtifact
+  | SmartHealthCardArtifact
+  | ExtensionArtifact;
 
 interface ArtifactBase {
-  id: NonEmptyString;                        // unique within the response
+  // unique within the response
+  id: NonEmptyString;
   mediaType: MediaType;
-  fulfills: NonEmptyArray<NonEmptyString>;   // request item ids
+  // request item ids
+  fulfills: NonEmptyArray<NonEmptyString>;
 }
 
 interface FhirJsonArtifact extends ArtifactBase {
   mediaType: "application/fhir+json";
-  fhirVersion: FhirRelease;                  // e.g. "4.0.1"
-  value: { resourceType: NonEmptyString; [member: string]: unknown };  // a resource or a Bundle
+  fhirVersion: FhirRelease;   // e.g. "4.0.1"
+  // a resource or a Bundle
+  value: { resourceType: NonEmptyString; [member: string]: unknown };
 }
 
 interface SmartHealthCardArtifact extends ArtifactBase {
   mediaType: "application/smart-health-card";
-  value: { verifiableCredential: NonEmptyArray<NonEmptyString>; [member: string]: unknown };
+  value: {
+    verifiableCredential: NonEmptyArray<NonEmptyString>;
+    [member: string]: unknown;
+  };
 }
 
 interface ExtensionArtifact extends ArtifactBase {
-  mediaType: MediaType;                      // defined by an extension (§9.3)
+  mediaType: MediaType;   // defined by an extension (§9.3)
   [member: string]: unknown;
 }
 
 type RequestItemStatusCode =
-  "fulfilled" | "partial" | "unavailable" | "declined" | "unsupported" | "error";
+  | "fulfilled"
+  | "partial"
+  | "unavailable"
+  | "declined"
+  | "unsupported"
+  | "error";
 
 interface RequestItemStatus {
-  item: NonEmptyString;                      // a request item id
+  item: NonEmptyString;   // a request item id
   status: RequestItemStatusCode;
-  message?: string;                          // short explanation for people
+  message?: string;       // short explanation for people
 }
 ```
 
-An example response to the request in §5.2, which the build validates against it:
+An example response to the request in §5.2 that passes every check in §6.4:
 
 ```json check=response request=example-request
 {
@@ -441,7 +482,11 @@ An example response to the request in §5.2, which the build validates against i
       "fulfills": ["patient"],
       "value": {
         "resourceType": "Patient",
-        "meta": { "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"] },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"
+          ]
+        },
         "name": [{ "family": "Okafor", "given": ["Sam"] }],
         "birthDate": "1986-04-12"
       }
@@ -450,7 +495,11 @@ An example response to the request in §5.2, which the build validates against i
       "id": "a2",
       "mediaType": "application/smart-health-card",
       "fulfills": ["immunizations"],
-      "value": { "verifiableCredential": ["eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiJ9.example.signature"] }
+      "value": {
+        "verifiableCredential": [
+          "eyJ6aXAiOiJERUYiLCJhbGciOiJFUzI1NiJ9.example.signature"
+        ]
+      }
     },
     {
       "id": "a3",
@@ -462,15 +511,37 @@ An example response to the request in §5.2, which the build validates against i
         "questionnaire": "https://smart-health-checkin.org/connectathon/Questionnaire/phq-2.json|1",
         "status": "completed",
         "item": [
-          { "linkId": "phq2-1", "answer": [{ "valueCoding": { "system": "http://loinc.org", "code": "LA6568-5", "display": "Not at all" } }] },
-          { "linkId": "phq2-2", "answer": [{ "valueCoding": { "system": "http://loinc.org", "code": "LA6569-3", "display": "Several days" } }] }
+          {
+            "linkId": "phq2-1",
+            "answer": [{
+              "valueCoding": {
+                "system": "http://loinc.org",
+                "code": "LA6568-5",
+                "display": "Not at all"
+              }
+            }]
+          },
+          {
+            "linkId": "phq2-2",
+            "answer": [{
+              "valueCoding": {
+                "system": "http://loinc.org",
+                "code": "LA6569-3",
+                "display": "Several days"
+              }
+            }]
+          }
         ]
       }
     }
   ],
   "requestStatus": [
     { "item": "patient", "status": "fulfilled" },
-    { "item": "immunizations", "status": "partial", "message": "One vaccine record was not shared" },
+    {
+      "item": "immunizations",
+      "status": "partial",
+      "message": "One vaccine record was not shared"
+    },
     { "item": "intake", "status": "fulfilled" }
   ]
 }
@@ -591,7 +662,7 @@ Receivers check these signals and report what they find ([RCV-1]). A failed sign
 
 ## 8. Same-device Presentation Flow
 
-The Verifier sends a §5 request through the W3C Digital Credentials API using the `org-iso-mdoc` protocol. The Wallet returns a §6 response inside an mdoc `DeviceResponse`, encrypted to the Verifier. This is the only presentation flow in version 1.0. §8.7 defines every structure named in the steps below.
+The Verifier sends a §5 request through the W3C Digital Credentials API using the `org-iso-mdoc` protocol of ISO/IEC TS 18013-7 Annex C. The Wallet returns a §6 response inside an mdoc `DeviceResponse`, encrypted to the Verifier. This is the only presentation flow in version 1.0. §8.7 defines every structure named in the steps below.
 
 ```mermaid
 sequenceDiagram
@@ -625,7 +696,7 @@ sequenceDiagram
 | mdoc `docType` | `org.smarthealthit.checkin.1` |
 | mdoc namespace | `org.smarthealthit.checkin` |
 | Response element identifier | `smart_health_checkin_response` |
-| Request carrier | `ItemsRequest.requestInfo["org.smarthealthit.checkin.request"]` |
+| `ItemsRequest.requestInfo` key holding the SMART request | `org.smarthealthit.checkin.request` |
 | `DeviceRequest` and `DeviceResponse` version | `1.0` |
 | Signatures (`readerAuth`, `issuerAuth`, device signature) | ES256: COSE `alg` `-7`, ECDSA P-256 with SHA-256 |
 | MSO `digestAlgorithm` | `SHA-256` |
@@ -653,7 +724,12 @@ sequenceDiagram
    ```js
    navigator.credentials.get({
      mediation: "required",
-     digital: { requests: [{ protocol: "org-iso-mdoc", data: { deviceRequest, encryptionInfo } }] }
+     digital: {
+       requests: [{
+         protocol: "org-iso-mdoc",
+         data: { deviceRequest, encryptionInfo }
+       }]
+     }
    })
    ```
 
@@ -759,14 +835,24 @@ This CDDL is normative. It uses ISO/IEC 18013-5 names and adds this profile's fi
 The Digital Credentials API request and result, in JSON:
 
 ```json
-{ "protocol": "org-iso-mdoc", "data": { "deviceRequest": "<base64url>", "encryptionInfo": "<base64url>" } }
+{
+  "protocol": "org-iso-mdoc",
+  "data": {
+    "deviceRequest": "<base64url>",
+    "encryptionInfo": "<base64url>"
+  }
+}
+```
+
+```json
 { "protocol": "org-iso-mdoc", "data": { "response": "<base64url>" } }
 ```
 
 ```cddl
 DeviceRequest = {
   "version" => "1.0",
-  "docRequests" => [ + DocRequest ],   ; exactly one with this profile's docType
+  ; exactly one with this profile's docType
+  "docRequests" => [ + DocRequest ],
   * tstr => any
 }
 
@@ -781,10 +867,13 @@ ItemsRequestBytes = #6.24(bstr .cbor ItemsRequest)
 ItemsRequest = {
   "docType" => "org.smarthealthit.checkin.1",
   "nameSpaces" => {
-    "org.smarthealthit.checkin" => { "smart_health_checkin_response" => bool }  ; intentToRetain
+    "org.smarthealthit.checkin" => {
+      "smart_health_checkin_response" => bool   ; intentToRetain
+    }
   },
   "requestInfo" => {
-    "org.smarthealthit.checkin.request" => tstr,   ; SMART request, UTF-8 JSON text
+    ; SMART request, UTF-8 JSON text
+    "org.smarthealthit.checkin.request" => tstr,
     * tstr => any
   },
   * tstr => any
@@ -812,7 +901,11 @@ P256PublicKey = {        ; COSE_Key
 SessionTranscript = [ null, null, Handover ]
 Handover = [ "dcapi", bstr .size 32 ]   ; SHA-256(dcapiInfo)
 
-ReaderAuthentication = [ "ReaderAuthentication", SessionTranscript, ItemsRequestBytes ]
+ReaderAuthentication = [
+  "ReaderAuthentication",
+  SessionTranscript,
+  ItemsRequestBytes
+]
 ReaderAuthenticationBytes = #6.24(bstr .cbor ReaderAuthentication)
 ```
 
@@ -836,8 +929,11 @@ DeviceResponse = {
 Document = {
   "docType" => "org.smarthealthit.checkin.1",
   "issuerSigned" => {
-    "nameSpaces" => { "org.smarthealthit.checkin" => [ IssuerSignedItemBytes ] },
-    "issuerAuth" => AttachedSign1,   ; payload: MobileSecurityObjectBytes
+    "nameSpaces" => {
+      "org.smarthealthit.checkin" => [ IssuerSignedItemBytes ]
+    },
+    ; payload: MobileSecurityObjectBytes
+    "issuerAuth" => AttachedSign1,
     * tstr => any
   },
   "deviceSigned" => {
@@ -860,7 +956,9 @@ MobileSecurityObjectBytes = #6.24(bstr .cbor MobileSecurityObject)
 MobileSecurityObject = {
   "version" => "1.0",
   "digestAlgorithm" => "SHA-256",
-  "valueDigests" => { "org.smarthealthit.checkin" => { uint => bstr .size 32 } },
+  "valueDigests" => {
+    "org.smarthealthit.checkin" => { uint => bstr .size 32 }
+  },
   "deviceKeyInfo" => { "deviceKey" => P256PublicKey, * tstr => any },
   "docType" => "org.smarthealthit.checkin.1",
   "validityInfo" => {
@@ -873,7 +971,8 @@ MobileSecurityObject = {
 }
 
 DeviceNameSpacesBytes = #6.24(bstr .cbor DeviceNameSpaces)
-DeviceNameSpaces = { * tstr => any }   ; empty unless a deployment profile defines elements
+; empty unless a deployment profile defines elements
+DeviceNameSpaces = { * tstr => any }
 
 DeviceAuthentication = [
   "DeviceAuthentication",
@@ -887,8 +986,18 @@ DeviceAuthenticationBytes = #6.24(bstr .cbor DeviceAuthentication)
 `tdate` is CBOR tag 0 over an RFC 3339 date-time string. The two signature forms are `COSE_Sign1` (RFC 9052) with the payload present or `null`:
 
 ```cddl
-AttachedSign1 = [ protected: bstr, unprotected: { * int => any }, payload: bstr, signature: bstr ]
-DetachedSign1 = [ protected: bstr, unprotected: { * int => any }, payload: null, signature: bstr ]
+AttachedSign1 = [
+  protected: bstr,
+  unprotected: { * int => any },
+  payload: bstr,
+  signature: bstr
+]
+DetachedSign1 = [
+  protected: bstr,
+  unprotected: { * int => any },
+  payload: null,
+  signature: bstr
+]
 ```
 
 ---
@@ -943,7 +1052,7 @@ Display text includes `purpose`, `title`, `summary`, `message`, Questionnaire te
 
 ## Appendix A. Worked example
 
-This appendix follows one real capture, `fixtures/*/android-chrome-capture`: Chrome on Android, answered by the reference Android wallet. `tools/capture/android-chrome/capture.ts` re-captures it on an emulator. `scripts/worked-example.ts` computes every value below from the fixture files and checks each step; the build fails if this text and the fixture disagree. The capture's HPKE private key is published with it so anyone can repeat each step.
+This appendix follows one real capture, `android-chrome-capture` ([request](https://github.com/smart-health-checkin/spec/tree/main/fixtures/dcapi-requests/android-chrome-capture), [response](https://github.com/smart-health-checkin/spec/tree/main/fixtures/responses/android-chrome-capture)): Chrome on Android, answered by the reference Android wallet. [`tools/capture/android-chrome/capture.ts`](https://github.com/smart-health-checkin/spec/blob/main/tools/capture/android-chrome/capture.ts) re-captures it on an emulator. [`scripts/worked-example.ts`](https://github.com/smart-health-checkin/spec/blob/main/scripts/worked-example.ts) computes every value below from the fixture files and checks each step, so this text always matches the fixture. The capture's HPKE private key is published with it so anyone can repeat each step.
 
 <!-- BEGIN worked-example (generated by scripts/worked-example.ts; do not edit by hand) -->
 
@@ -1014,31 +1123,28 @@ deviceKey        kty 2, crv 1, x 416b38a2ed65265d…
 
 ### Normative references
 
-- **[RFC2119]** Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, RFC 2119.
-- **[RFC8174]** Leiba, B. *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, RFC 8174.
-- **[RFC3339]** Klyne, G. and C. Newman. *Date and Time on the Internet: Timestamps*. RFC 3339.
-- **[RFC4648]** Josefsson, S. *The Base16, Base32, and Base64 Data Encodings*. RFC 4648.
-- **[RFC7515]** Jones, M., Bradley, J., and N. Sakimura. *JSON Web Signature (JWS)*. RFC 7515.
-- **[RFC8259]** Bray, T. *The JavaScript Object Notation (JSON) Data Interchange Format*. RFC 8259.
-- **[RFC8610]** Birkholz, H., Vigano, C., and C. Bormann. *Concise Data Definition Language (CDDL)*. RFC 8610.
-- **[RFC8949]** Bormann, C. and P. Hoffman. *Concise Binary Object Representation (CBOR)*. RFC 8949.
-- **[RFC9052]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Structures and Process*. RFC 9052.
-- **[RFC9053]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Initial Algorithms*. RFC 9053.
-- **[RFC9180]** Barnes, R., Bhargavan, K., Lipp, B., and C. Wood. *Hybrid Public Key Encryption*. RFC 9180.
-- **[RFC9360]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates*. RFC 9360.
-- **[ISO18013-5]** ISO/IEC 18013-5. *Personal identification — ISO-compliant driving licence — Part 5: Mobile driving licence application*.
-- **[ISO18013-7]** ISO/IEC TS 18013-7. *Mobile driving licence add-on functions*, Annex C (Digital Credentials API).
-- **[W3C-DC-API]** W3C. *Digital Credentials API*.
-- **[HTML-ORIGIN]** WHATWG. *HTML Standard*, "ASCII serialization of an origin".
-- **[FHIR-R4]** HL7. *FHIR Release 4, Version 4.0.1*.
-- **[SMART-HEALTH-CARDS]** SMART Health IT. *SMART Health Cards Framework*.
+- **[RFC2119]** Bradner, S. *Key words for use in RFCs to Indicate Requirement Levels*. BCP 14, [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
+- **[RFC8174]** Leiba, B. *Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words*. BCP 14, [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174).
+- **[RFC3339]** Klyne, G. and C. Newman. *Date and Time on the Internet: Timestamps*. [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339).
+- **[RFC4648]** Josefsson, S. *The Base16, Base32, and Base64 Data Encodings*. [RFC 4648](https://www.rfc-editor.org/rfc/rfc4648).
+- **[RFC7515]** Jones, M., Bradley, J., and N. Sakimura. *JSON Web Signature (JWS)*. [RFC 7515](https://www.rfc-editor.org/rfc/rfc7515).
+- **[RFC8259]** Bray, T. *The JavaScript Object Notation (JSON) Data Interchange Format*. [RFC 8259](https://www.rfc-editor.org/rfc/rfc8259).
+- **[RFC8610]** Birkholz, H., Vigano, C., and C. Bormann. *Concise Data Definition Language (CDDL)*. [RFC 8610](https://www.rfc-editor.org/rfc/rfc8610).
+- **[RFC8949]** Bormann, C. and P. Hoffman. *Concise Binary Object Representation (CBOR)*. [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949).
+- **[RFC9052]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Structures and Process*. [RFC 9052](https://www.rfc-editor.org/rfc/rfc9052).
+- **[RFC9053]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Initial Algorithms*. [RFC 9053](https://www.rfc-editor.org/rfc/rfc9053).
+- **[RFC9180]** Barnes, R., Bhargavan, K., Lipp, B., and C. Wood. *Hybrid Public Key Encryption*. [RFC 9180](https://www.rfc-editor.org/rfc/rfc9180).
+- **[RFC9360]** Schaad, J. *CBOR Object Signing and Encryption (COSE): Header Parameters for Carrying and Referencing X.509 Certificates*. [RFC 9360](https://www.rfc-editor.org/rfc/rfc9360).
+- **[ISO18013-5]** ISO/IEC. *Personal identification — ISO-compliant driving licence — Part 5: Mobile driving licence (mDL) application*. ISO/IEC 18013-5:2021, September 2021. <https://www.iso.org/standard/69084.html>
+- **[ISO18013-7]** ISO/IEC. *Personal identification — ISO-compliant driving licence — Part 7: Mobile driving licence (mDL) add-on functions*. ISO/IEC TS 18013-7:2025. <https://www.iso.org/standard/91154.html>
+- **[W3C-DC-API]** W3C. *Digital Credentials API*. W3C Working Draft. <https://www.w3.org/TR/digital-credentials/>
+- **[HTML-ORIGIN]** WHATWG. *HTML Standard*, "ASCII serialization of an origin". Living Standard. <https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin>
+- **[FHIR-R4]** HL7. *FHIR Release 4, Version 4.0.1*. October 2019. <https://hl7.org/fhir/R4/>
+- **[SMART-HEALTH-CARDS]** SMART Health IT. *SMART Health Cards Framework*, version 1.4.0. <https://spec.smarthealth.cards/>
 
 ### Informative references
 
-- **[OpenID4VP]** OpenID Foundation. *OpenID for Verifiable Presentations*.
-- **[US-CORE]** HL7. *US Core Implementation Guide*.
-- **[CARIN-BB]** HL7. *CARIN Consumer Directed Payer Data Exchange Implementation Guide*.
-- **[SMART-APP-LAUNCH]** SMART Health IT. *SMART App Launch Framework*.
+- **[SMART-APP-LAUNCH]** HL7. *SMART App Launch*. <https://hl7.org/fhir/smart-app-launch/>
 
 ### Companion material
 
