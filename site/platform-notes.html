@@ -115,7 +115,10 @@
           the origin is the top-level page's.</li>
         <li><b>Native iOS apps</b> have no public API for asking a third-party wallet directly. They use the pattern in
           <a href="#native-apps">Native Verifier apps</a>.</li>
-        <li>There is no reference iOS wallet or checked-in iOS capture yet. The
+        <li>The <a href="https://github.com/smart-health-checkin/ios-wallet-kit">iOS wallet kit</a> is a Swift
+          framework for the Identity Document Provider extension: it validates the request, and signs and encrypts
+          the answer. Its README walks through holding <code>sendResponse</code> open. There is no reference iOS
+          wallet app or checked-in iOS capture yet. The
           <a href="https://github.com/smart-health-checkin/swift">Swift package</a> implements the Verifier and Wallet
           sides and runs the spec's <a href="https://github.com/smart-health-checkin/spec/tree/main/conformance">conformance tests</a>.</li>
       </ul>
